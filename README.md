@@ -1,4 +1,6 @@
-# Nomisweb API wrapper
+# UK Census Data API
+
+[![Build Status](https://travis-ci.org/virgesmith/UKCensusAPI.png?branch=master)](https://travis-ci.org/virgesmith/UKCensusAPI) [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
 
 This package provides a wrapper around the nomisweb census data API, enabling automated downloads of data.
 
@@ -204,8 +206,3 @@ KS401EW = NomiswebApi.getData(queryUrl, cacheDir)
 
 ```
 
-## TODO
-- Tests!
-- Use the `reticulate` R package for improved python integration, then remove as much duplicate R code as possible
-- R package
-- Remove need for laMapping.csv? (Use query on E&W (UK?), type=LA, search=Blah?)

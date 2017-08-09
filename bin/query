@@ -1,9 +1,10 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
-from NomiswebApi import NomiswebApi
+#from ukcensusapi import NomiswebApi
+import ukcensusapi.Nomisweb as NomiswebApi
 import sys
 
-api = NomiswebApi("../data/", "../persistent_data/laMapping.csv")
+api = NomiswebApi.Nomisweb("../data/", "../persistent_data/laMapping.csv")
 
 print("Nomisweb census data interactive query builder")
 print("See README.md for details on how to use this package")

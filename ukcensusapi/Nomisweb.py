@@ -10,8 +10,8 @@ from socket import timeout
 import os
 
 
-# The core functionality
-class NomiswebApi:
+# The core functionality for accessing the www.nomisweb.co.uk API
+class Nomisweb:
 
   # static variables
   url = "https://www.nomisweb.co.uk/"
@@ -32,11 +32,11 @@ class NomiswebApi:
   GB = 2092957698
   UK = 2092957697
 
-  # initialise, supplying a location to cache downloads, and a LA mappings
-  def __init__(self, cacheDir, mappingFile):
+  # initialise, supplying a location to cache downloads
+  def __init__(self, cacheDir):
     self.cacheDir = cacheDir
-    self.mappingFile = mappingFile
-    if NomiswebApi.key is None:
+    self.mappingFile = os.path.dirname(__file__) + "/../data/laMapping.csv"
+    if Nomisweb.key is None:
       print("Warning - no API key found, downloads may be truncated.\n"
             "Set the key value in the environment variable NOMIS_API_KEY.\n"
             "Register at www.nomisweb.co.uk to obtain a key")
@@ -58,9 +58,14 @@ class NomiswebApi:
     # if single valued arg, convert to a list
     if type(laNames) is not list:
       laNames = [ laNames ]
-    geoCodes = pd.read_csv(self.mappingFile, delimiter=',')
+    # TODO error handling on file load
+    geoCodes = pd.read_csv(self.mappingFile, delimiter=';')
     codes = []
+    print(type(geoCodes.name[0]))
     for i in range(0,len(laNames)):
+      # This throws for "Leeds" for some reason
+      #if not laNames[i] in geoCodes.name:
+      #  raise ValueError("ERROR: " + laNames[i] + " is not a valid local authority name")
       codes.append(geoCodes[geoCodes["name"] == laNames[i]]["nomiscode"].tolist()[0])
     return codes
 
@@ -72,10 +77,10 @@ class NomiswebApi:
     for key in sorted(queryParams):
       ordered[key] = queryParams[key]
 
-    return NomiswebApi.url + "api/v01/dataset/" + table + ".data.tsv?" + str(urlencode(ordered))
+    return Nomisweb.url + "api/v01/dataset/" + table + ".data.tsv?" + str(urlencode(ordered))
 
   def getData(self, table, queryParams):
-    queryParams["uid"] = NomiswebApi.key
+    queryParams["uid"] = Nomisweb.key
     queryString = self.getUrl(table, queryParams)
 
     filename = self.cacheDir + hashlib.md5(queryString.encode()).hexdigest()+".tsv"
@@ -83,7 +88,7 @@ class NomiswebApi:
     # retrieve if not in cache
     if not os.path.isfile(self.cacheDir + filename):
       print("Downloading and cacheing data: " + filename)
-      request.urlretrieve(queryString, filename) #, timeout = NomiswebApi.Timeout)
+      request.urlretrieve(queryString, filename) #, timeout = Nomisweb.Timeout)
 
       # check for empty file, if so delete it and report error
       if os.stat(filename).st_size == 0:
@@ -159,11 +164,11 @@ class NomiswebApi:
 
   def __fetchJSON(self, path, queryParams):
     # add API key to params
-    queryParams["uid"] = NomiswebApi.key
+    queryParams["uid"] = Nomisweb.key
 
-    queryString = NomiswebApi.url + path + str(urlencode(queryParams))
+    queryString = Nomisweb.url + path + str(urlencode(queryParams))
 
-    response = request.urlopen(queryString, timeout = NomiswebApi.Timeout)
+    response = request.urlopen(queryString, timeout = Nomisweb.Timeout)
     return json.loads(response.read().decode("utf-8"))
 
 
