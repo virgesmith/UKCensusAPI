@@ -29,12 +29,26 @@ Queries can be customised on geographical coverage, geographical resolution, and
 
 Since census data is essentially static, it makes little sense to download the data every time it is requested: all data downloads are cached.
 
+## Installation
+
+R:
+```
+> devtools::install_github("virgesmith/UKCensusAPI")
+```
+python (from local repo):
+```
+?? user@host:~/dev/UKCensusAPI$ ./setup.py build
+user@host:~/dev/UKCensusAPI$ ./setup.py sdist
+user@host:~/dev/UKCensusAPI$ pip3 install dist/ukcensusapi-0.1.tar.gz
+``` 
+
 ## Usage
 
 The general usage model is a two-step process. Firstly users can execute a one-off interactive query where the user specifies:
 - a census table, 
 - geographical coverage and resolution
 - the fields and categories required in the output
+
 This produces:
 - the data itself in the cache directory
 - python and R code 
@@ -47,7 +61,7 @@ Another important usage example is to be able to easily switch a model to a diff
 
 - `NomiswebApi.py` - python class containing the API functionality 
 - `NomiswebApi.R` - R equivalent of above
-- `interactive.py` - interactive python script for building queries and downloading data for later use, can be called from R
+- `query.py` - interactive python script for building queries and downloading data for later use, can be called from R
 
 Queries have three distinct subtypes:
 - metadata: query a table for the fields and categories it contains

@@ -61,7 +61,6 @@ class Nomisweb:
     # TODO error handling on file load
     geoCodes = pd.read_csv(self.mappingFile, delimiter=';')
     codes = []
-    print(type(geoCodes.name[0]))
     for i in range(0,len(laNames)):
       # This throws for "Leeds" for some reason
       #if not laNames[i] in geoCodes.name:

@@ -30,7 +30,7 @@ queryMetadata = function() {
   }
 }
 
-#' Fetch census data
+#' Fetch and cache census data using a predefined query
 #'
 #' This function ...
 #' @export

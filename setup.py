@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from setuptools import setup
 
 def readme():
@@ -7,6 +9,7 @@ def readme():
 setup(name='ukcensusapi',
   version='0.1',
   description='UK census data query automation',
+  long_description=readme(),
   url='https://github.com/virgesmith/UKCensusAPI',
   author='Andrew P Smith',
   author_email='a.p.smith@leeds.ac.uk',
@@ -15,5 +18,9 @@ setup(name='ukcensusapi',
   zip_safe=False,
   test_suite='nose.collector',
   tests_require=['nose'],
-  scripts=['bin/query']
+  package_data = {
+    # paths relative to the package directory
+    'ukcensusapi': ['../README.md', '../data/laMapping.csv'],
+  },
+  include_package_data=True
 )
