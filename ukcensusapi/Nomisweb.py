@@ -42,6 +42,7 @@ class Nomisweb:
             "Register at www.nomisweb.co.uk to obtain a key")
 
   def geoCodes(self, laCodes, type):
+
     geoCodes = []
     for i in range(0,len(laCodes)):
       path = "api/v01/dataset/NM_144_1/geography/"+str(laCodes[i])+"TYPE" + str(type) + ".def.sdmx.json?"

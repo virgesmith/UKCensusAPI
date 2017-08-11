@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
-from NomiswebApi import NomiswebApi
+import ukcensusapi.Nomisweb as Api
 
-api = NomiswebApi("../data/", "../persistent_data/laMapping.csv")
+api = Api.Nomisweb("./")
 
 print("Nomisweb census data geographical query example")
 print("See README.md for details on how to use this package")
@@ -21,7 +21,7 @@ queryParams["MEASURES"] = "20100"
 # Define the new coverage area in terms of local authorities
 coverage = ["Leeds","Bradford"]
 # Define the new resolution
-resolution = NomiswebApi.OA
+resolution = Api.Nomisweb.OA
 # Convert the coverage area into nomis codes
 coverageCodes = api.readLADCodes(coverage)
 # replace the geography value in the query
@@ -30,7 +30,7 @@ queryParams["geography"] = api.geoCodes(coverageCodes, resolution)
 KS401EWfine = api.getData(table, queryParams)
 
 # Now widen the coverage to England & Wales and coarsen the resolution to LA
-queryParams["geography"] = api.geoCodes([NomiswebApi.EnglandWales], NomiswebApi.LAD)
+queryParams["geography"] = api.geoCodes([Api.Nomisweb.EnglandWales], Api.Nomisweb.LAD)
 # get the data
 KS401EWbroad = api.getData(table, queryParams)
 
