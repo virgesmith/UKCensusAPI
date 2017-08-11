@@ -11,6 +11,8 @@ warnings_are_errors: false
 
 r_packages:
   - data.table
+  - digest
+  - rjson
 
 notifications:
   email:
