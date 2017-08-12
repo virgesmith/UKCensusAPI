@@ -2,7 +2,7 @@
 % Please edit documentation in R/NomiswebApi.R
 \name{getData}
 \alias{getData}
-\title{Fetch census data}
+\title{Fetch and cache census data using a predefined query}
 \usage{
 getData(queryUrl, cacheDir)
 }
