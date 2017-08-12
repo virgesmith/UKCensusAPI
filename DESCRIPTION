@@ -5,10 +5,7 @@ Authors@R: person("First", "Last", email = "first.last@example.com", role = c("a
 Description: What the package does (one paragraph).
 Depends: R (>= 3.4.1)
 Imports:
-<<<<<<< HEAD
   data.table,
-=======
->>>>>>> 990ed7bdf3876053a1e4b0bd8fd8df3bd0987dcc
   rjson,
   digest
 License: What license is it under?
