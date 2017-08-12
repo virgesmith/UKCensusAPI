@@ -4,9 +4,10 @@ import sys
 
 class Query:
 
-  api = Api.Nomisweb("./")
+  def __init__(self, api):
+    self.api = api
 
-  def table():
+  def table(self):
 
     print("Nomisweb census data interactive query builder")
     print("See README.md for details on how to use this package")
@@ -39,7 +40,7 @@ class Query:
     elif coverage == "UK":
       coverageCodes = [NomiswebApi.UK]
     else:
-      coverageCodes = api.readLADCodes(coverage.split(","))
+      coverageCodes = api.getLADCodes(coverage.split(","))
 
     areaCodes = api.geoCodes(coverageCodes, resolution)
 
@@ -101,13 +102,12 @@ class Query:
       rFile.write("\n"+table + " = NomiswebApi.getData(queryUrl, cacheDir)\n")
 
   # returns a geography string that can be inserted into an existing query
-  def getGeographyFromNames(coverage, resolution):
+  def getGeographyFromNames(self, coverage, resolution):
   
     # Convert the coverage area into nomis codes
-    coverageCodes = Query.api.readLADCodes(coverage)
-    return Query.getGeographyFromCodes(coverageCodes, resolution)
+    coverageCodes = self.api.getLADCodes(coverage)
+    return self.getGeographyFromCodes(coverageCodes, resolution)
     
-  def getGeographyFromCodes(coverage, resolution):
-  
-    return Query.api.geoCodes(coverage, resolution)
+  def getGeographyFromCodes(self, coverage, resolution):
+    return self.api.geoCodes(coverage, resolution)
 

@@ -23,7 +23,7 @@ coverage = ["Leeds","Bradford"]
 # Define the new resolution
 resolution = Api.Nomisweb.OA
 # Convert the coverage area into nomis codes
-coverageCodes = api.readLADCodes(coverage)
+coverageCodes = api.getLADCodes(coverage)
 # replace the geography value in the query
 queryParams["geography"] = api.geoCodes(coverageCodes, resolution)
 # get the data

@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 from collections import OrderedDict
 from urllib import request
+from urllib.error import HTTPError
+from urllib.error import URLError
 import urllib.parse as urlparse
 from urllib.parse import urlencode
 from socket import timeout
@@ -16,12 +18,13 @@ class Nomisweb:
   # static variables
   url = "https://www.nomisweb.co.uk/"
   key = os.environ.get("NOMIS_API_KEY")
-
+  
   # timeout for http requests
-  Timeout = 30
+  Timeout = 15
 
   # Define Nomisweb geographic area codes
-  LAD = 293 # check this is consistent
+  LAD = 464 # defined in NM_144_1 (also 463 is county not district and returns fewer entries)
+  # https://www.nomisweb.co.uk/api/v01/dataset/NM_144_1/geography/2092957703TYPE464.def.sdmx.json
   MSOA = 297
   LSOA = 298
   OA = 299
@@ -35,11 +38,14 @@ class Nomisweb:
   # initialise, supplying a location to cache downloads
   def __init__(self, cacheDir):
     self.cacheDir = cacheDir
-    self.mappingFile = os.path.dirname(__file__) + "/../data/laMapping.csv"
     if Nomisweb.key is None:
       print("Warning - no API key found, downloads may be truncated.\n"
             "Set the key value in the environment variable NOMIS_API_KEY.\n"
             "Register at www.nomisweb.co.uk to obtain a key")
+
+    #self.mappingFile = os.path.dirname(__file__) + "/../data/laMapping.csv"
+    print("Cacheing local authority codes")
+    self.cachedLADCodes = self.__cacheLADCodes()
 
   def geoCodes(self, laCodes, type):
 
@@ -55,6 +61,7 @@ class Nomisweb:
         geoCodes.append(rawdata["structure"]["codelists"]["codelist"][0]["code"][j]["value"])
     return self.__shorten(geoCodes)
 
+  # Deprecated - use getLADCodes instead
   def readLADCodes(self, laNames):
     # if single valued arg, convert to a list
     if type(laNames) is not list:
@@ -67,6 +74,15 @@ class Nomisweb:
       #if not laNames[i] in geoCodes.name:
       #  raise ValueError("ERROR: " + laNames[i] + " is not a valid local authority name")
       codes.append(geoCodes[geoCodes["name"] == laNames[i]]["nomiscode"].tolist()[0])
+    return codes
+
+  def getLADCodes(self, laNames):
+    if type(laNames) is not list:
+      laNames = [ laNames ]
+    codes = []
+    for laName in laNames:
+      if laName in self.cachedLADCodes:
+        codes.append(self.cachedLADCodes[laName])
     return codes
 
   def getUrl(self, table, queryParams):
@@ -143,6 +159,20 @@ class Nomisweb:
 
 # private
 
+  # download and cache the nomis codes for local authorities
+  def __cacheLADCodes(self):
+
+    data = self.__fetchJSON("api/v01/dataset/NM_144_1/geography/" 
+      + str(Nomisweb.EnglandWales) + "TYPE" + str(Nomisweb.LAD) + ".def.sdmx.json?", {})
+    if data == {}:
+      return []
+    rawfields = data["structure"]["codelists"]["codelist"][0]["code"]
+    
+    codes = {}
+    for rawfield in rawfields:
+      codes[rawfield["description"]["value"]] = rawfield["value"]
+    return codes
+
   # given a list of integer codes, generates a string using the nomisweb shortened form
   # (consecutive numbers represented by a range, non-consecutive are comma separated
   def __shorten(self, codeList):
@@ -167,8 +197,16 @@ class Nomisweb:
     queryParams["uid"] = Nomisweb.key
 
     queryString = Nomisweb.url + path + str(urlencode(queryParams))
-
-    response = request.urlopen(queryString, timeout = Nomisweb.Timeout)
-    return json.loads(response.read().decode("utf-8"))
-
+    
+    #print(queryString)
+    reply = {}
+    try:
+      response = request.urlopen(queryString, timeout = Nomisweb.Timeout)
+    except (HTTPError, URLError) as error:
+      print('ERROR: ' + error + '\n' + url)
+    except timeout:
+      print('ERROR: request timed out\n' + queryString)
+    else:
+      reply = json.loads(response.read().decode("utf-8"))
+    return reply
 
