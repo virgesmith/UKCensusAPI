@@ -2,9 +2,7 @@
 matrix:
   include:
     - language: r
-      r: 
-        - release
-#        - devel
+      r: release
       cache: packages
       sudo: false
       dist: trusty
