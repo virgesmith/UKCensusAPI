@@ -6,11 +6,21 @@ matrix:
       cache: packages
       sudo: false
       dist: trusty
-      warnings_are_errors: false
       r_packages:
         - data.table
         - digest
         - rjson
+
+    - language: r
+      r: devel
+      cache: packages
+      sudo: false
+      dist: trusty
+      r_packages:
+        - data.table
+        - digest
+        - rjson
+
     - language: python
       python: 
         - 3.5
@@ -19,6 +29,8 @@ matrix:
         - pip install -r requirements.txt
       script:
         - python setup.py test
+      
+warnings_are_errors: false
 
 notifications:
   email:
