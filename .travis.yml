@@ -2,7 +2,9 @@
 matrix:
   include:
     - language: r
-      r: release
+      r: 
+        - release
+        - devel
       cache: packages
       sudo: false
       dist: trusty
@@ -12,7 +14,9 @@ matrix:
         - digest
         - rjson
     - language: python
-      python: 3.5
+      python: 
+        - 3.5
+        - 3.6
       install:
         - pip install -r requirements.txt
       script:
