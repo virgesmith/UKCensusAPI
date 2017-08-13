@@ -2,6 +2,16 @@
 matrix:
   include:
     - language: r
+      r: oldrel
+      cache: packages
+      sudo: false
+      dist: trusty
+      r_packages:
+        - data.table
+        - digest
+        - rjson
+
+    - language: r
       r: release
       cache: packages
       sudo: false
@@ -23,8 +33,12 @@ matrix:
 
     - language: python
       python: 
+        - 3.2
+        - 3.3
+        - 3.4
         - 3.5
         - 3.6
+        - 3.7-dev
       install:
         - pip install -r requirements.txt
       script:
