@@ -4,7 +4,7 @@ matrix:
     - language: r
       r: 
         - release
-        - devel
+#        - devel
       cache: packages
       sudo: false
       dist: trusty
