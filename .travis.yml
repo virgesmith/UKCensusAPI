@@ -32,6 +32,13 @@ matrix:
         - rjson
 
     - language: python
+      python: 3.4 
+      install:
+        - pip install -r requirements.txt
+      script:
+        - python setup.py test
+
+    - language: python
       python: 3.5 
       install:
         - pip install -r requirements.txt
@@ -40,13 +47,6 @@ matrix:
       
     - language: python
       python: 3.6 
-      install:
-        - pip install -r requirements.txt
-      script:
-        - python setup.py test
-      
-    - language: python
-      python: 3.7-dev 
       install:
         - pip install -r requirements.txt
       script:
