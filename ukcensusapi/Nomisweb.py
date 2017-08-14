@@ -176,6 +176,12 @@ class Nomisweb:
   # given a list of integer codes, generates a string using the nomisweb shortened form
   # (consecutive numbers represented by a range, non-consecutive are comma separated
   def __shorten(self, codeList):
+  
+    if (len(codeList) == 0):
+      return ""
+    if (len(codeList) == 1):
+      return str(codeList)
+  
     codeList.sort() # assume this is a modifying operation
     shortString = ""
     i0 = 0
