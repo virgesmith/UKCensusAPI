@@ -2,10 +2,17 @@
 % Please edit documentation in R/NomiswebApi.R
 \name{geoCodes}
 \alias{geoCodes}
-\title{Get nomisweb geographical codes for a region}
+\title{geoCodes
+Get nomisweb geographical codes for a region}
 \usage{
 geoCodes(coverage, resolution)
 }
+\arguments{
+\item{coverage}{an integer vector of nomisweb geographical codes}
+
+\item{resolution}{the nomisweb code for a particular area type (e.g. 297 for MSOA)}
+}
 \description{
-This function ...
+geoCodes
+Get nomisweb geographical codes for a region
 }

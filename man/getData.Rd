@@ -2,13 +2,21 @@
 % Please edit documentation in R/NomiswebApi.R
 \name{getData}
 \alias{getData}
-\title{Fetch and cache census data using a predefined query}
+\title{getData()
+Fetch and cache census data using a predefined query}
 \usage{
 getData(queryUrl, cacheDir)
 }
+\arguments{
+\item{queryUrl}{a predefined query}
+
+\item{cacheDir}{directory to cache the tables in}
+}
 \description{
-This function ...
+getData()
+Fetch and cache census data using a predefined query
 }
 \examples{
-queryMetadata()
+queryUrl = "https://www.nomisweb.co.uk/api/v01/dataset/NM_618_1.data.tsv?CELL=7...13&MEASURES=20100&RURAL_URBAN=0&date=latest&geography=1245710558...1245710660\%2C1245714998...1245714998\%2C1245715007...1245715007\%2C1245715021...1245715022&select=GEOGRAPHY_CODE\%2CCELL\%2COBS_VALUE"
+getData(queryUrl, "./")
 }

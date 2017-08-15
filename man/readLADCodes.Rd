@@ -6,6 +6,12 @@
 \usage{
 readLADCodes(laNames)
 }
+\arguments{
+\item{laNames}{a string vector of local authority names.}
+}
+\value{
+an integer vector of nomisweb local authority codes
+}
 \description{
-This function ...
+Map local authority names to nomisweb codes
 }

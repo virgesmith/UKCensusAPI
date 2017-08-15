@@ -1,35 +1,35 @@
 
+cache: packages
+sudo: false
+
 matrix:
   include:
     - language: r
       r: oldrel
       cache: packages
-      sudo: false
       dist: trusty
-      r_packages:
-        - data.table
-        - digest
-        - rjson
+#      r_packages:
+#        - data.table
+#        - digest
+#        - rjson
 
     - language: r
       r: release
       cache: packages
-      sudo: false
       dist: trusty
-      r_packages:
-        - data.table
-        - digest
-        - rjson
+#      r_packages:
+#        - data.table
+#        - digest
+#        - rjson
 
     - language: r
       r: devel
       cache: packages
-      sudo: false
       dist: trusty
-      r_packages:
-        - data.table
-        - digest
-        - rjson
+#      r_packages:
+#        - data.table
+#        - digest
+#        - rjson
 
     - language: python
       python: 3.4 

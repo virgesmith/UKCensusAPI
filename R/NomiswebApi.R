@@ -30,12 +30,15 @@ queryMetadata = function() {
   }
 }
 
+#' getData()
 #' Fetch and cache census data using a predefined query
 #'
-#' This function ...
 #' @export
+#' @param queryUrl a predefined query
+#' @param cacheDir directory to cache the tables in
 #' @examples
-#' queryMetadata()
+#' queryUrl = "https://www.nomisweb.co.uk/api/v01/dataset/NM_618_1.data.tsv?CELL=7...13&MEASURES=20100&RURAL_URBAN=0&date=latest&geography=1245710558...1245710660%2C1245714998...1245714998%2C1245715007...1245715007%2C1245715021...1245715022&select=GEOGRAPHY_CODE%2CCELL%2COBS_VALUE"
+#' getData(queryUrl, "./")
 getData = function(queryUrl, cacheDir) {
   # append API key to query
   queryUrl = paste0(queryUrl, "&uid=", Sys.getenv("NOMIS_API_KEY"))
@@ -55,7 +58,8 @@ getData = function(queryUrl, cacheDir) {
 
 #' Map local authority names to nomisweb codes
 #'
-#' This function ...
+#' @param laNames a string vector of local authority names.
+#' @return an integer vector of nomisweb local authority codes
 #' @export
 readLADCodes = function(laNames) {
   data(laMapping)
@@ -66,9 +70,11 @@ readLADCodes = function(laNames) {
   return(codes)
 }
 
+#' geoCodes
 #' Get nomisweb geographical codes for a region
 #'
-#' This function ...
+#' @param coverage an integer vector of nomisweb geographical codes
+#' @param resolution the nomisweb code for a particular area type (e.g. 297 for MSOA)
 #' @export
 geoCodes = function(coverage, resolution) {
 
@@ -81,7 +87,7 @@ geoCodes = function(coverage, resolution) {
   for (c in coverage) {
     queryUrl = httr::modify_url(NomiswebApi.url, path = paste0("/api/v01/dataset/NM_144_1/geography/", c, "TYPE", resolution,".def.sdmx.json"))#, query = list))
 
-    print(queryUrl)
+    #print(queryUrl)
 
     result <- fromJSON(file=paste0(queryUrl))
     nResults = length(result$structure$codelists$codelist[[1]]$code)
@@ -96,10 +102,48 @@ geoCodes = function(coverage, resolution) {
   return(shortenCodeList(geogCodes))
 }
 
+#' modifyGeography
+#' Takes an existing nomisweb query and modifies the geography parameter according sipplied coverage and resolution
+#'
+#' @param queryUrl a predefined query url
+#' @param coverage a
+#' @param resolution the nomisweb code for a particular area type (e.g. 297 for MSOA)
+#' @return a modified query
+#' @examples
+#' queryUrl = "https://www.nomisweb.co.uk/api/v01/dataset/NM_618_1.data.tsv?CELL=7...13&MEASURES=20100&RURAL_URBAN=0&date=latest&geography=1245710558...1245710660%2C1245714998...1245714998%2C1245715007...1245715007%2C1245715021...1245715022&select=GEOGRAPHY_CODE%2CCELL%2COBS_VALUE"
+#' coverage = c("Leeds","Bradford")
+#' resolution = 299
+#' newQueryUrl = modifyGeography(queryUrl, coverage, resolution)
+#' @export
+modifyGeography = function(queryUrl, coverage, resolution) {
+
+  coverageCodes = readLADCodes(coverage)
+
+  newGeography = geoCodes(coverageCodes, resolution)
+
+  # Hack the url (pending a better (python) solution)
+  # , -> %2C for url encoding
+  newGeography = gsub(",", "%2C", newGeography)
+  # reassemble the query URL
+  # get the position geography param starts
+  gpos = regexpr("geography=", queryUrl) + 9
+  # get the part of the query after the geography param
+  remQuery = substring(substring(queryUrl, gpos), regexpr("\\&", substring(queryUrl, gpos)))
+
+  newQueryUrl = paste0(substring(queryUrl, 1, gpos), newGeography, remQuery)
+
+  return(newQueryUrl)
+}
 
 # not exported...
 # this code orders and shinks the code lists (need to be aware of http header length restrictions)
 shortenCodeList = function(codeList) {
+
+  if (length(codeList) == 0)
+    return("")
+  if (length(codeList) == 1)
+    return(as.character(codeList[1]))
+
   slist = sort(codeList)
   index1=1
   string = ""
