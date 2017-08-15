@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 
-# interactive table query
+# -*- coding: utf-8 -*-
+"""
+interactive census table query
+"""
 
-import ukcensusapi.Nomisweb as Api
+import ukcensusapi.Nomisweb as CensusApi
 import ukcensusapi.Query as Census
 
 # intialise the API using current directory as the cache directory
-api = Api.Nomisweb("./")
+API = CensusApi.Nomisweb("./")
 
 # initialise the census query
-census = Census.Query(api)
+CENSUS = Census.Query(API)
 
 # run the interactive query
-census.table()
-
+CENSUS.table()
