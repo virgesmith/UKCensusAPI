@@ -23,12 +23,15 @@ class Test(TestCase):
     result = self.api.geoCodes([1946157127], Api.Nomisweb.OA)
     self.assertTrue(result ==  '1254151943...1254154269,1254258198...1254258221,1254261711...1254261745,1254261853...1254261870,1254261894...1254261918,1254262125...1254262142,1254262341...1254262353,1254262394...1254262398,1254262498...1254262532,1254262620...1254262658,1254262922...1254262925')
 
+  # TODO
   def test_getUrl(self):
     self.assertTrue(True)
 
+  # TODO
   def test_getData(self):
     self.assertTrue(True)
 
+  # TODO
   def test_getMetadata(self):
     self.assertTrue(True)
 
