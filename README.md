@@ -31,23 +31,26 @@ Since census data is essentially static, it makes little sense to download the d
 
 ## Installation
 
-R:
-```
-> devtools::install_github("virgesmith/UKCensusAPI")
-```
-python (from github)
+### python (from github)
 ```
 user@host:~$ pip install git+https://github.com/virgesmith/UKCensusAPI.git
 ``` 
-python (from local repo):
+### python (from local repo):
 ```
-user@host:~/dev/UKCensusAPI$ ./setup.py sdist
-user@host:~/dev/UKCensusAPI$ pip3 install dist/ukcensusapi-0.1.tar.gz
+user@host:~/dev/UKCensusAPI$ ./setup.py install
 ``` 
+and to test
+```
+user@host:~/dev/UKCensusAPI$ ./setup.py test
+``` 
+### R
+```
+> devtools::install_github("virgesmith/UKCensusAPI")
+```
 
 ## Usage
 
-The general usage model is a two-step process. Firstly users can execute a one-off interactive query where the user specifies:
+The general usage is a two-step process. Firstly users can execute a one-off interactive quey where the user specifies:
 - a census table
 - the fields and categories required in the output
 - (optionally) geographical coverage and resolution
@@ -114,15 +117,6 @@ Nomisweb census data interactive query builder
 See README.md for details on how to use this package
 Census table: <b>KS401EW</b>
 </pre>
-Now select the geographical area(s) you want to cover. This can be a single local authority, multiple local authorities, England, England & Wales, GB or UK.
-<pre>
-Coverage
-E/EW/GB/UK or LA name(s), comma separated: <b>Leeds</b>
-</pre>
-Now select the geographical resolution required. Currently supports local authority, MSOA, LSOA, and OA:
-<pre>
-Resolution (LA/MSOA/LSOA/OA): <b>MSOA</b>
-</pre>
 The table description is displayed. The script then interates through the available fields.
 ```
 KS401EW - Dwellings, household spaces and accommodation type
@@ -173,12 +167,25 @@ RURAL_URBAN:
 Select categories (default 0): <b>&#8629;</b>
 include in output? (y/n) <b>n</b>
 </pre>
-The query builder assembles the query and computes an md5 hash of it. It then checks the cache directory if a file with this name exists and will load the data from the file if so. If not, the query builder downloads the data and save the data in the cache directory. 
+Now you can optionally select the geographical area(s) you want to cover. This can be a single local authority, multiple local authorities, England, England & Wales, GB or UK.
+<pre>
+Add geography? (y/N): <b>y</b>
+
+Geographical coverage
+E/EW/GB/UK or LA name(s), comma separated: <b>Leeds</b>
+</pre>
+Now select the geographical resolution required. Currently supports local authority, MSOA, LSOA, and OA:
+<pre>
+Resolution (LA/MSOA/LSOA/OA): <b>MSOA</b>
+</pre>
+You will then be prompted to choose whether to download the data immediately. If so, the query builder assembles the query and computes an md5 hash of it. It then checks the cache directory if a file with this name exists and will load the data from the file if so. If not, the query builder downloads the data and save the data in the cache directory. 
 
 ```
 Getting data...
 Downloading and cacheing data: ../data/b8b663a9d3fb331a9612aee2d3203c57.tsv
-
+```
+Regardless of whether you selected geography, or downloaded the data, the query builder will generate python and R code snippets for later use:
+```
 Writing python code to KS401EW.py
 
 Writing R code to KS401EW.R

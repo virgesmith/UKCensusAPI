@@ -129,7 +129,6 @@ class Nomisweb:
 
     data = self.__fetch_json(path, query_params)
 
-    print(type(data["structure"]["keyfamilies"]))
     # return empty if no useful metadata returned (likely table doesnt exist)
     if not data["structure"]["keyfamilies"]:
       return
