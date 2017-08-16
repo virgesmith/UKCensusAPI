@@ -35,9 +35,12 @@ R:
 ```
 > devtools::install_github("virgesmith/UKCensusAPI")
 ```
+python (from github)
+```
+user@host:~$ pip install git+https://github.com/virgesmith/UKCensusAPI.git
+``` 
 python (from local repo):
 ```
-?? user@host:~/dev/UKCensusAPI$ ./setup.py build
 user@host:~/dev/UKCensusAPI$ ./setup.py sdist
 user@host:~/dev/UKCensusAPI$ pip3 install dist/ukcensusapi-0.1.tar.gz
 ``` 
@@ -45,17 +48,20 @@ user@host:~/dev/UKCensusAPI$ pip3 install dist/ukcensusapi-0.1.tar.gz
 ## Usage
 
 The general usage model is a two-step process. Firstly users can execute a one-off interactive query where the user specifies:
-- a census table, 
-- geographical coverage and resolution
+- a census table
 - the fields and categories required in the output
+- (optionally) geographical coverage and resolution
+- (optionally, if geography has been selected) whether to immediately download and cache the data
 
 This produces:
-- the data itself in the cache directory
-- python and R code 
+- python and R code snippets that build the query and call this package to download the data 
+- (optionally, depending on above selections) the data itself in the cache directory
 
-This produces reusable code, and second step is to insert the generated code above into models that require the data. 
+The code snippets can be copy/pasted into user code, or the (cached) data can simply be loaded by user code.
 
-Another important usage example is to be able to easily switch a model to a different geographical area and/or a different geographical resolution by modifying an existing query whilst still using the same table data. In this case only the 'geography' element of the query changes. Non-interactive examples are provided for this in `geoquery.py`
+Another important usage example is to be able to easily switch a data query to a different geographical area and/or a different geographical resolution by modifying an existing query on a specific table. 
+
+In this case only the 'geography' element of the query changes. This package provides functionality to easily modify the geographical coverage of existing data queries. Examples are provided in `geoquery.py`.
 
 #### Code
 
