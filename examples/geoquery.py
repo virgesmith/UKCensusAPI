@@ -1,8 +1,12 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
+# Disable "Invalid constant name"
+# pylint: disable=C0103
+
+import pandas as pd
 import ukcensusapi.Nomisweb as Api
 
-api = Api.Nomisweb("./")
+API = Api.Nomisweb("./")
 
 print("Nomisweb census data geographical query example")
 print("See README.md for details on how to use this package")
@@ -23,16 +27,19 @@ coverage = ["Leeds", "Bradford"]
 # Define the new resolution
 resolution = Api.Nomisweb.OA
 # Convert the coverage area into nomis codes
-coverage_codes = api.getLADCodes(coverage)
+coverage_codes = API.get_lad_codes(coverage)
 # replace the geography value in the query
-query_params["geography"] = api.geoCodes(coverage_codes, resolution)
+query_params["geography"] = API.get_geo_codes(coverage_codes, resolution)
 # get the data
-KS401FINE = api.getData(TABLE, query_params)
-head(KS401FINE, 5)
+KS401FINE = API.get_data(TABLE, query_params)
+print(KS401FINE.head(5))
 
 # Now widen the coverage to England & Wales and coarsen the resolution to LA
-query_params["geography"] = api.geoCodes([Api.Nomisweb.EnglandWales], Api.Nomisweb.LAD)
+coverage_codes = [Api.Nomisweb.EnglandWales]
+resolution = Api.Nomisweb.LAD
+query_params["geography"] = API.get_geo_codes(coverage_codes, resolution)
 # get the data
-KS401BROAD = api.getData(TABLE, query_params)
+KS401BROAD = API.get_data(TABLE, query_params)
+print(KS401BROAD.head(5))
 
 

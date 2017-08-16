@@ -1,3 +1,7 @@
+
+# Disable "Invalid constant name"
+# pylint: disable=C0103
+
 import os
 import json
 import hashlib
@@ -35,8 +39,8 @@ class Nomisweb:
   UK = 2092957697
 
   # initialise, supplying a location to cache downloads
-  def __init__(self, cacheDir):
-    self.cacheDir = cacheDir
+  def __init__(self, cache_dir):
+    self.cache_dir = cache_dir
     if Nomisweb.key is None:
       print("Warning - no API key found, downloads may be truncated.\n"
             "Set the key value in the environment variable NOMIS_API_KEY.\n"
@@ -44,68 +48,69 @@ class Nomisweb:
 
     #self.mappingFile = os.path.dirname(__file__) + "/../data/laMapping.csv"
     print("Cacheing local authority codes")
-    self.cachedLADCodes = self.__cacheLADCodes()
+    self.cached_lad_codes = self.__cache_lad_codes()
 
-  def geoCodes(self, laCodes, type):
+  def get_geo_codes(self, la_codes, code_type):
 
-    geoCodes = []
-    for i in range(0, len(laCodes)):
-      path = "api/v01/dataset/NM_144_1/geography/" + str(laCodes[i]) + "TYPE" + str(type) + ".def.sdmx.json?"
+    geo_codes = []
+    for i in range(0, len(la_codes)):
+      path = "api/v01/dataset/NM_144_1/geography/" + str(la_codes[i]) + "TYPE" \
+           + str(code_type) + ".def.sdmx.json?"
 
-      rawdata = self.__fetchJSON(path, { })
+      rawdata = self.__fetch_json(path, {})
 
-      nResults = len(rawdata["structure"]["codelists"]["codelist"][0]["code"])
+      n_results = len(rawdata["structure"]["codelists"]["codelist"][0]["code"])
       # seems a bit daft not to take advantage of the fact we know the length
-      for j in range(0,nResults):
-        geoCodes.append(rawdata["structure"]["codelists"]["codelist"][0]["code"][j]["value"])
-    return self.__shorten(geoCodes)
+      for j in range(0, n_results):
+        geo_codes.append(rawdata["structure"]["codelists"]["codelist"][0]["code"][j]["value"])
+    return self.__shorten(geo_codes)
 
   # Deprecated - use getLADCodes instead
-#  def readLADCodes(self, laNames):
+#  def readLADCodes(self, la_names):
 #    # if single valued arg, convert to a list
-#    if type(laNames) is not list:
-#      laNames = [ laNames ]
+#    if type(la_names) is not list:
+#      la_names = [ la_names ]
 #    # TODO error handling on file load
-#    geoCodes = pd.read_csv(self.mappingFile, delimiter=';')
+#    geo_codes = pd.read_csv(self.mappingFile, delimiter=';')
 #    codes = []
-#    for i in range(0,len(laNames)):
+#    for i in range(0,len(la_names)):
 #      # This throws for "Leeds" for some reason
-#      #if not laNames[i] in geoCodes.name:
-#      #  raise ValueError("ERROR: " + laNames[i] + " is not a valid local authority name")
-#      codes.append(geoCodes[geoCodes["name"] == laNames[i]]["nomiscode"].tolist()[0])
+#      #if not la_names[i] in geo_codes.name:
+#      #  raise ValueError("ERROR: " + la_names[i] + " is not a valid local authority name")
+#      codes.append(geo_codes[geo_codes["name"] == la_names[i]]["nomiscode"].tolist()[0])
 #    return codes
 
-  def getLADCodes(self, laNames):
-    if type(laNames) is not list:
-      laNames = [laNames]
+  def get_lad_codes(self, la_names):
+    if not isinstance(la_names, list):
+      la_names = [la_names]
     codes = []
-    for laName in laNames:
-      if laName in self.cachedLADCodes:
-        codes.append(self.cachedLADCodes[laName])
+    for la_name in la_names:
+      if la_name in self.cached_lad_codes:
+        codes.append(self.cached_lad_codes[la_name])
     return codes
 
-  def getUrl(self, table, queryParams):
+  def get_url(self, table, query_params):
 
-    # python dicts have nondeterministic order 
-    # (see https://stackoverflow.com/questions/14956313/why-is-dictionary-ordering-non-deterministic)
-    # this is problematic for the cacheing, so we insert alphabetically into an OrderedDict 
+    # python dicts have nondeterministic order, see
+    # https://stackoverflow.com/questions/14956313/why-is-dictionary-ordering-non-deterministic
+    # this is problematic for the cacheing, so we insert alphabetically into an OrderedDict
     # (which preserves insertion order)
     ordered = OrderedDict()
-    for key in sorted(queryParams):
-      ordered[key] = queryParams[key]
+    for key in sorted(query_params):
+      ordered[key] = query_params[key]
 
     return Nomisweb.url + "api/v01/dataset/" + table + ".data.tsv?" + str(urlencode(ordered))
 
-  def getData(self, table, queryParams):
-    queryParams["uid"] = Nomisweb.key
-    queryString = self.getUrl(table, queryParams)
+  def get_data(self, table, query_params):
+    query_params["uid"] = Nomisweb.key
+    query_string = self.get_url(table, query_params)
 
-    filename = self.cacheDir + hashlib.md5(queryString.encode()).hexdigest()+".tsv"
+    filename = self.cache_dir + hashlib.md5(query_string.encode()).hexdigest()+".tsv"
 
     # retrieve if not in cache
-    if not os.path.isfile(self.cacheDir + filename):
+    if not os.path.isfile(self.cache_dir + filename):
       print("Downloading and cacheing data: " + filename)
-      request.urlretrieve(queryString, filename) #, timeout = Nomisweb.Timeout)
+      request.urlretrieve(query_string, filename) #, timeout = Nomisweb.Timeout)
 
       # check for empty file, if so delete it and report error
       if os.stat(filename).st_size == 0:
@@ -119,11 +124,11 @@ class Nomisweb:
     # now load from cache and return
     return pd.read_csv(filename, delimiter='\t')
 
-  def getMetadata(self, tableName):
+  def get_metadata(self, table_name):
     path = "api/v01/dataset/def.sdmx.json?"
-    queryParams = {"search": "*"+tableName+"*"}
+    query_params = {"search": "*"+table_name+"*"}
 
-    data = self.__fetchJSON(path, queryParams)
+    data = self.__fetch_json(path, query_params)
 
     #print(data)
     # this is the nomis internal table name
@@ -139,12 +144,12 @@ class Nomisweb:
       #print(path)
 
       try:
-        fdata = self.__fetchJSON(path, {})
+        fdata = self.__fetch_json(path, {})
       except timeout:
-        print("HTTP timeout requesting metadata for " + tableName)
+        print("HTTP timeout requesting metadata for " + table_name)
         return {}
-      except: # (HTTPError, URLError) as error:
-        print("HTTP error requesting metadata for " + tableName)
+      except (HTTPError, URLError):
+        print("HTTP error requesting metadata for " + table_name)
         return {}
       else:
         values = fdata["structure"]["codelists"]["codelist"][0]["code"]
@@ -161,9 +166,9 @@ class Nomisweb:
 # private
 
   # download and cache the nomis codes for local authorities
-  def __cacheLADCodes(self):
+  def __cache_lad_codes(self):
 
-    data = self.__fetchJSON("api/v01/dataset/NM_144_1/geography/" 
+    data = self.__fetch_json("api/v01/dataset/NM_144_1/geography/" \
          + str(Nomisweb.EnglandWales) + "TYPE" + str(Nomisweb.LAD) + ".def.sdmx.json?", {})
     if data == {}:
       return []
@@ -176,44 +181,45 @@ class Nomisweb:
 
   # given a list of integer codes, generates a string using the nomisweb shortened form
   # (consecutive numbers represented by a range, non-consecutive are comma separated
-  def __shorten(self, codeList):
+  def __shorten(self, code_list):
 
-    if (len(codeList) == 0):
+    # empty evals to False
+    if not code_list:
       return ""
-    if (len(codeList) == 1):
-      return str(codeList)
+    if len(code_list) == 1:
+      return str(code_list)
 
-    codeList.sort() # assume this is a modifying operation
-    shortString = ""
-    i0 = 0
-    for i1 in range(1,len(codeList)):
-      if codeList[i1] != (codeList[i1-1] + 1):
-        if i0 == i1:
-          shortString += str(codeList[i0]) + ","
+    code_list.sort() # assume this is a modifying operation
+    short_string = ""
+    index0 = 0
+    index1 = 0 # appease lint
+    for index1 in range(1, len(code_list)):
+      if code_list[index1] != (code_list[index1-1] + 1):
+        if index0 == index1:
+          short_string += str(code_list[index0]) + ","
         else:
-          shortString += str(codeList[i0]) + "..." + str(codeList[i1-1]) + ","
-        i0 = i1
-    if (i0 == i1):
-      shortString += str(codeList[i0])
+          short_string += str(code_list[index0]) + "..." + str(code_list[index1-1]) + ","
+        index0 = index1
+    if index0 == index1:
+      short_string += str(code_list[index0])
     else:
-      shortString += str(codeList[i0]) + "..." + str(codeList[i1])
-    return shortString
+      short_string += str(code_list[index0]) + "..." + str(code_list[index1])
+    return short_string
 
-  def __fetchJSON(self, path, queryParams):
+  def __fetch_json(self, path, query_params):
     # add API key to params
-    queryParams["uid"] = Nomisweb.key
+    query_params["uid"] = Nomisweb.key
 
-    queryString = Nomisweb.url + path + str(urlencode(queryParams))
+    query_string = Nomisweb.url + path + str(urlencode(query_params))
 
-    #print(queryString)
+    #print(query_string)
     reply = {}
     try:
-      response = request.urlopen(queryString, timeout = Nomisweb.Timeout)
+      response = request.urlopen(query_string, timeout=Nomisweb.Timeout)
     except (HTTPError, URLError) as error:
-      print('ERROR: ' + error + '\n' + queryString)
+      print('ERROR: ' + error + '\n' + query_string)
     except timeout:
-      print('ERROR: request timed out\n' + queryString)
+      print('ERROR: request timed out\n' + query_string)
     else:
       reply = json.loads(response.read().decode("utf-8"))
     return reply
-

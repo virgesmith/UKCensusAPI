@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Disable "Invalid constant name"
+# pylint: disable=C0103
+
 # -*- coding: utf-8 -*-
 """
 interactive census table query
@@ -9,10 +12,10 @@ import ukcensusapi.Nomisweb as CensusApi
 import ukcensusapi.Query as Census
 
 # intialise the API using current directory as the cache directory
-API = CensusApi.Nomisweb("./")
+api = CensusApi.Nomisweb("./")
 
 # initialise the census query
-CENSUS = Census.Query(API)
+census = Census.Query(api)
 
 # run the interactive query
-CENSUS.table()
+census.table()
