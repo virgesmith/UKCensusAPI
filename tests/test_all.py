@@ -1,6 +1,6 @@
 
 # Disable "Invalid constant name", "Line too long"
-# pylint: disable=C0103,C0301
+# pylint: disable=C0301
 
 from unittest import TestCase
 
@@ -9,7 +9,7 @@ import ukcensusapi.Query as Census
 
 # test methods only run if prefixed with "test"
 class Test(TestCase):
-  api = Api.Nomisweb("/tmp")
+  api = Api.Nomisweb("/tmp/")
   query = Census.Query(api)
 
   def test_get_lad_codes(self):
@@ -20,32 +20,51 @@ class Test(TestCase):
   # This overlaps test_getGeographyFromCodes
   def test_geo_codes(self):
     result = self.api.get_geo_codes([Api.Nomisweb.EnglandWales], Api.Nomisweb.LAD)
-    self.assertTrue(result == '1946157057...1946157404')
+    self.assertEqual(result, '1946157057...1946157404')
     result = self.api.get_geo_codes([1946157127], Api.Nomisweb.OA)
-    self.assertTrue(result == '1254151943...1254154269,1254258198...1254258221,1254261711...1254261745,1254261853...1254261870,1254261894...1254261918,1254262125...1254262142,1254262341...1254262353,1254262394...1254262398,1254262498...1254262532,1254262620...1254262658,1254262922...1254262925')
+    self.assertEqual(result, '1254151943...1254154269,1254258198...1254258221,1254261711...1254261745,1254261853...1254261870,1254261894...1254261918,1254262125...1254262142,1254262341...1254262353,1254262394...1254262398,1254262498...1254262532,1254262620...1254262658,1254262922...1254262925')
 
-#  # TODO
-#  def test_get_url(self):
-#    self.assertTrue(True)
+  def test_get_metadata(self):
+    meta = self.api.get_metadata("NONEXISTENT")
+    self.assertFalse(meta)
+    meta = self.api.get_metadata("KS401EW")
+    self.assertEqual(meta["description"], 'KS401EW - Dwellings, household spaces and accommodation type')
+    self.assertEqual(meta["nomis_table"], 'NM_618_1')
 
-#  # TODO
-#  def test_get_data(self):
-#    self.assertTrue(True)
+  def test_get_url(self):
+    table = "NM_618_1"
+    query_params = {}
+    query_params["CELL"] = "7...13"
+    query_params["date"] = "latest"
+    query_params["RURAL_URBAN"] = "0"
+    query_params["select"] = "GEOGRAPHY_CODE,CELL,OBS_VALUE"
+    query_params["geography"] = "1245710558...1245710660,1245714998...1245714998,1245715007...1245715007,1245715021...1245715022"
+    query_params["MEASURES"] = "20100"
+    self.assertEqual(self.api.get_url(table, query_params), "https://www.nomisweb.co.uk/api/v01/dataset/NM_618_1.data.tsv?CELL=7...13&MEASURES=20100&RURAL_URBAN=0&date=latest&geography=1245710558...1245710660%2C1245714998...1245714998%2C1245715007...1245715007%2C1245715021...1245715022&select=GEOGRAPHY_CODE%2CCELL%2COBS_VALUE")
 
-#  # TODO
-#  def test_get_metadata(self):
-#    self.assertTrue(True)
+  def test_get_data(self):
+    table = "NM_618_1"
+    query_params = {}
+    query_params["CELL"] = "7...13"
+    query_params["date"] = "latest"
+    query_params["RURAL_URBAN"] = "0"
+    query_params["select"] = "GEOGRAPHY_CODE,CELL,OBS_VALUE"
+    query_params["geography"] = "1245710558...1245710560"
+    query_params["MEASURES"] = "20100"
+    table = self.api.get_data(table, query_params)
+    self.assertEqual(table.shape, (21, 3))
+    self.assertEqual(sum(table.OBS_VALUE), 8214)
 
   def test_get_geog_from_names(self):
     result = self.query.get_geog_from_names(["Leeds"], Api.Nomisweb.OA)
-    self.assertTrue(result == '1254151943...1254154269,1254258198...1254258221,1254261711...1254261745,1254261853...1254261870,1254261894...1254261918,1254262125...1254262142,1254262341...1254262353,1254262394...1254262398,1254262498...1254262532,1254262620...1254262658,1254262922...1254262925')
+    self.assertEqual(result, '1254151943...1254154269,1254258198...1254258221,1254261711...1254261745,1254261853...1254261870,1254261894...1254261918,1254262125...1254262142,1254262341...1254262353,1254262394...1254262398,1254262498...1254262532,1254262620...1254262658,1254262922...1254262925')
 
     result = self.query.get_geog_from_names(["Newcastle upon Tyne"], Api.Nomisweb.LSOA)
-    self.assertTrue(result == '1249910667...1249910832,1249935220...1249935228')
+    self.assertEqual(result, '1249910667...1249910832,1249935220...1249935228')
 
     result = self.query.get_geog_from_names(["Leeds", "Bradford"], Api.Nomisweb.MSOA)
-    self.assertTrue(result == '1245710411...1245710471,1245710558...1245710660,1245714998...1245714998,1245715007...1245715007,1245715021...1245715022')
+    self.assertEqual(result, '1245710411...1245710471,1245710558...1245710660,1245714998...1245714998,1245715007...1245715007,1245715021...1245715022')
 
   def test_get_geog_from_codes(self):
     result = self.query.get_geog_from_codes([Api.Nomisweb.EnglandWales], Api.Nomisweb.LAD)
-    self.assertTrue(result == '1946157057...1946157404')
+    self.assertEqual(result, '1946157057...1946157404')

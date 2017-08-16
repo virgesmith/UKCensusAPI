@@ -1,6 +1,5 @@
 
 # Disable "Invalid constant name"
-# pylint: disable=C0103
 
 import os
 import json
@@ -130,7 +129,11 @@ class Nomisweb:
 
     data = self.__fetch_json(path, query_params)
 
-    #print(data)
+    print(type(data["structure"]["keyfamilies"]))
+    # return empty if no useful metadata returned (likely table doesnt exist)
+    if not data["structure"]["keyfamilies"]:
+      return
+
     # this is the nomis internal table name
     table = data["structure"]["keyfamilies"]["keyfamily"][0]["id"]
 
