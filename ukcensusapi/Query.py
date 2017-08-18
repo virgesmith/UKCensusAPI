@@ -1,5 +1,6 @@
 
 import sys
+import json
 import ukcensusapi.Nomisweb as Api
 
 class Query:
@@ -52,6 +53,7 @@ class Query:
     if "uid" in query_params:
       del query_params["uid"]
 
+    self.__write_metadata(table, meta)
     self.__write_code_snippets(table, meta, query_params)
 
   # returns a geography string that can be inserted into an existing query
@@ -96,6 +98,14 @@ class Query:
 
     query_params["geography"] = area_codes
     return query_params
+    
+  # save metadata as JSON for future reference
+  def __write_metadata(self, table, meta):
+
+    filename = self.api.cache_dir + table + "_metadata.json" 
+    print("Writing metadata to ", filename)
+    with open(filename, "w") as metafile:
+      json.dump(meta, metafile, indent=2)
 
   def __write_code_snippets(self, table, meta, query_params):
     print("\nWriting python code to " + table + ".py")

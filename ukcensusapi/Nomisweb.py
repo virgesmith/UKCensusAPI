@@ -40,12 +40,15 @@ class Nomisweb:
   # initialise, supplying a location to cache downloads
   def __init__(self, cache_dir):
     self.cache_dir = cache_dir
+    # ensure cache_dir is interpreted as a directory
+    if not self.cache_dir.endswith("/"):
+      self.cache_dir += "/"
     if Nomisweb.key is None:
       print("Warning - no API key found, downloads may be truncated.\n"
             "Set the key value in the environment variable NOMIS_API_KEY.\n"
             "Register at www.nomisweb.co.uk to obtain a key")
 
-    #self.mappingFile = os.path.dirname(__file__) + "/../data/laMapping.csv"
+    print("Cache directory: ", self.cache_dir)
     print("Cacheing local authority codes")
     self.cached_lad_codes = self.__cache_lad_codes()
 
@@ -163,6 +166,7 @@ class Nomisweb:
     result = {"nomis_table": table,
               "description": data["structure"]["keyfamilies"]["keyfamily"][0]["name"]["value"],
               "fields": fields}
+
     return result
 
 # private
