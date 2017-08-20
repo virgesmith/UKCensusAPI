@@ -18,6 +18,8 @@ library(reticulate)
 #' @examples
 #' api = UKCensusAPI::instance("./")
 instance = function(cacheDir) {
+  # hack to ensure python module is installed
+  system("./setup.py install")
   Api = reticulate::import("ukcensusapi.Nomisweb")
   api = Api$Nomisweb(cacheDir)
   return(api)
