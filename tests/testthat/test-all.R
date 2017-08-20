@@ -1,6 +1,7 @@
 #  see http://kbroman.org/pkg_primer/pages/tests.html
 
 context("UKCensusAPI")
+library(reticulate)
 
 # Regression tests
 
@@ -47,6 +48,27 @@ test_that("readLADCodes multi all invalid", {
   # == returns a bool vector, so check that its sum is its length
   expect_true(length(codes) == 0)
 })
+
+test_that("getLADCodes python", {
+  api = UKCensusAPI::instance("./")
+  expect_true(length(getLADCodes(api, c())) == 0)
+  expect_true(length(getLADCodes(api, c("Framley"))) == 0)
+  expect_true(getLADCodes(api, c("Leeds")) == 1946157127)
+  expect_true(getLADCodes(api, c("Leeds")) == c(1946157127))
+
+  codes = getLADCodes(api, c("Leeds", "Bradford", "Kirklees", "Wakefield", "Calderdale"))
+  # == returns a bool vector, so check that its sum is its length
+  expect_true(sum(codes == c(1946157127, 1946157124, 1946157126, 1946157128, 1946157125)) == length(codes))
+
+  codes = getLADCodes(api, c("Leeds", "Bradford", "Skipdale", "Wakefield", "Calderdale"))
+  # == returns a bool vector, so check that its sum is its length
+  expect_true(sum(codes == c(1946157127, 1946157124, 1946157128, 1946157125)) == length(codes))
+
+  codes = getLADCodes(api, c("Trumpton", "Camberwick Green", "Chigley"))
+  # == returns a bool vector, so check that its sum is its length
+  expect_true(length(codes) == 0)
+})
+
 
 test_that("geoCodes empty", {
   expect_true(geoCodes(c(), 999) == "")

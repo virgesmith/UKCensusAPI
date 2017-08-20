@@ -50,6 +50,14 @@ class Nomisweb:
 
     print("Cache directory: ", self.cache_dir)
     print("Cacheing local authority codes")
+
+    # TODO how best to deal with site unavailable...
+    try:
+      response = request.urlopen(self.url, timeout=Nomisweb.Timeout)
+    except (HTTPError, URLError, timeout) as error:
+      print('ERROR: ', error, '\n', query_string)
+
+    # TODO check site is available
     self.cached_lad_codes = self.__cache_lad_codes()
 
   def get_geo_codes(self, la_codes, code_type):
@@ -237,9 +245,9 @@ class Nomisweb:
     try:
       response = request.urlopen(query_string, timeout=Nomisweb.Timeout)
     except (HTTPError, URLError) as error:
-      print('ERROR: ' + error + '\n' + query_string)
+      print('ERROR: ', error, '\n', query_string)
     except timeout:
-      print('ERROR: request timed out\n' + query_string)
+      print('ERROR: request timed out\n', query_string)
     else:
       reply = json.loads(response.read().decode("utf-8"))
     return reply

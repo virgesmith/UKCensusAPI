@@ -1,15 +1,28 @@
 # nomisweb.co.uk RESTful API interface
 
-# AVOID ADDING GLOBAL VARIABLE DEFINITIONS IN THIS FILE
-# THEY SHOULD BE DEFINED IN THE CALLING SCRIPT
-# IF ABSOLUTELY NECESSARY, PREFIX THE VARIABLE NAME WITH THE NAME OF THIS SOURCE FILE
+# TODO remove these
 NomiswebApi.url <- "https://www.nomisweb.co.uk/"
 NomiswebApi.key = Sys.getenv("NOMIS_API_KEY")
 
-
+# TODO should these be removed?
 library(digest)
 library(rjson)
 library(data.table)
+library(reticulate)
+
+#' get an instance of the python API (required to call any of the functions)
+#'
+#' @param cacheDir directory to cache data
+#' @return an instance of the ukcensusweb api
+#' @export
+#' @examples
+#' api = UKCensusAPI::instance("./")
+instance = function(cacheDir) {
+  Api = reticulate::import("ukcensusapi.Nomisweb")
+  api = Api$Nomisweb(cacheDir)
+  return(api)
+}
+
 
 # Store your api key in .Renviron for access via Sys.getenv("NOMIS_API_KEY")
 
@@ -68,6 +81,16 @@ readLADCodes = function(laNames) {
     codes = append(codes, laMapping[laMapping$name == laName,]$nomiscode)
   }
   return(codes)
+}
+
+#' Map local authority names to nomisweb codes (python)
+#'
+#' @param api an instance of the UKCensusData API.
+#' @param laNames a string vector of local authority names.
+#' @return an integer vector of nomisweb local authority codes
+#' @export
+getLADCodes = function(api, laNames) {
+  return(api$get_lad_codes(laNames))
 }
 
 #' geoCodes

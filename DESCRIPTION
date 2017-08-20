@@ -6,6 +6,7 @@ Description: What the package does (one paragraph).
 Depends: R (>= 3.3.3)
 Imports:
   data.table,
+  reticulate,
   rjson,
   digest,
   testthat,
