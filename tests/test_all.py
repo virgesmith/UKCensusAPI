@@ -1,5 +1,5 @@
 
-# Disable "Invalid constant name", "Line too long"
+# Disable "Line too long"
 # pylint: disable=C0301
 
 from unittest import TestCase
@@ -9,7 +9,7 @@ import ukcensusapi.Query as Census
 
 # test methods only run if prefixed with "test"
 class Test(TestCase):
-  api = Api.Nomisweb("/tmp/")
+  api = Api.Nomisweb("/tmp")
   query = Census.Query(api)
 
   def test_get_lad_codes(self):
@@ -54,6 +54,38 @@ class Test(TestCase):
     table = self.api.get_data(table, query_params)
     self.assertEqual(table.shape, (21, 3))
     self.assertEqual(sum(table.OBS_VALUE), 8214)
+    
+  def test_get_and_add_descriptive_column(self):
+
+    table_name = "KS401EW"
+    # try to load locally first
+    meta = self.api.load_metadata(table_name)
+
+    query_params = {}
+    query_params["CELL"] = "7...13"
+    query_params["date"] = "latest"
+    query_params["RURAL_URBAN"] = "0"
+    query_params["select"] = "GEOGRAPHY_CODE,CELL,OBS_VALUE"
+    query_params["geography"] = "1245710558...1245710560"
+    query_params["MEASURES"] = "20100"
+    table = self.api.get_data(meta["nomis_table"], query_params)
+    self.assertEqual(table.shape, (21, 3))
+    self.assertEqual(sum(table.OBS_VALUE), 8214)
+    
+    # first ensure table is unmodified if column doesnt exist
+    old_cols = len(table.columns)
+    self.api.convert_code(table, "NOT_THERE", meta)
+    self.assertTrue(len(table.columns) == old_cols)
+    
+    self.api.convert_code(table, "CELL", meta)
+    
+    self.assertTrue(table.at[0,"CELL_NAME"] == "Whole house or bungalow: Detached")
+    self.assertTrue(table.at[1,"CELL_NAME"] == "Whole house or bungalow: Semi-detached")
+    self.assertTrue(table.at[2,"CELL_NAME"] == "Whole house or bungalow: Terraced (including end-terrace)")
+    self.assertTrue(table.at[3,"CELL_NAME"] == "Flat, maisonette or apartment: Purpose-built block of flats or tenement")
+    self.assertTrue(table.at[4,"CELL_NAME"] == "Flat, maisonette or apartment: Part of a converted or shared house (including bed-sits)")
+    self.assertTrue(table.at[5,"CELL_NAME"] == "Flat, maisonette or apartment: In a commercial building")
+    self.assertTrue(table.at[6,"CELL_NAME"] == "Caravan or other mobile or temporary structure")
 
   def test_get_geog_from_names(self):
     result = self.query.get_geog_from_names(["Leeds"], Api.Nomisweb.OA)

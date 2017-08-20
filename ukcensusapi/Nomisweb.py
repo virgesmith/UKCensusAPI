@@ -160,7 +160,7 @@ class Nomisweb:
         values = fdata["structure"]["codelists"]["codelist"][0]["code"]
         #print(field+":")
         for value in values:
-          #print("  " + str(value["value"]) + " (" + value["description"]["value"] + ")")
+          # keys are stored as strings for json compatibility
           fields[field][value["value"]] = value["description"]["value"]
 
     result = {"nomis_table": table,
@@ -168,6 +168,20 @@ class Nomisweb:
               "fields": fields}
 
     return result
+
+  # loads metadata from cached json if available, otherwises downloads from nomisweb.
+  # NB category keys need to be converted from string to integer for this data to work properly, see convert_code
+  def load_metadata(self, table_name):
+    filename = self.cache_dir + table_name + "_metadata.json"
+    # if file not there, get from nomisweb
+    if not os.path.isfile(filename):
+      print(filename, " not found, downloading...")
+      return self.get_metadata(table_name)
+    else:
+      with open(filename) as metafile:
+        meta = json.load(metafile)
+
+    return meta
 
 # private
 
@@ -229,3 +243,19 @@ class Nomisweb:
     else:
       reply = json.loads(response.read().decode("utf-8"))
     return reply
+
+  # append <column> numeric values with the string values from the metadata
+  # NB the "numeric" values are stored as strings in both the table and the metadata
+  # this doesnt need to be a member
+  def convert_code(self, table, column, metadata):
+
+    if not column in metadata["fields"]:
+      print(column, " is not in metadata")
+      return
+    if not column in table.columns:
+      print(column, " is not in table")
+      return
+
+    # convert keys on the fly to integers (if they've been loaded from json they will be strings)
+    lookup = {int(k):v for k, v in metadata["fields"][column].items()}
+    table[column + "_NAME"] = table[column].map(lookup)
