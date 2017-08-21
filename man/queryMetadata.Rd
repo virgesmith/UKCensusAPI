@@ -10,6 +10,3 @@ queryMetadata()
 This function calls an interactive script where the user selects a table, a geography, and selects fields, optionally filtering by value.
 This script will not run in RStudio due to the way it handles standard input. Please run in a standalone R session (or call the python script directly)
 }
-\examples{
-queryMetadata()
-}

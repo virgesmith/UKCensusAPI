@@ -15,6 +15,9 @@ matrix:
 
     - language: r
       r: release
+      # install the python package first
+      before_install:
+        - ./setup.py install
       cache: packages
       dist: trusty
 #      r_packages:
@@ -32,26 +35,26 @@ matrix:
 #        - rjson
 
     - language: python
-      python: 3.4 
+      python: 3.4
       install:
         - pip install -r requirements.txt
       script:
         - python setup.py test
 
     - language: python
-      python: 3.5 
+      python: 3.5
       install:
         - pip install -r requirements.txt
       script:
         - python setup.py test
-      
+
     - language: python
-      python: 3.6 
+      python: 3.6
       install:
         - pip install -r requirements.txt
       script:
         - python setup.py test
-      
+
 warnings_are_errors: false
 
 notifications:
