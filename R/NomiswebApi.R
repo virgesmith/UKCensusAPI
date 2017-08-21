@@ -15,8 +15,8 @@ library(reticulate)
 #' @param cacheDir directory to cache data
 #' @return an instance of the ukcensusweb api
 #' @export
-#' @examples
-#' api = UKCensusAPI::instance("./")
+##' @examples
+##' api = UKCensusAPI::instance("./")
 instance = function(cacheDir) {
   #Api = reticulate::import("ukcensusapi.Nomisweb")
   api = Api$Nomisweb(cacheDir)
