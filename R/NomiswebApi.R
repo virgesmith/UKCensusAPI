@@ -16,10 +16,11 @@ library(reticulate)
 #' @return an instance of the ukcensusweb api
 #' @export
 #' @examples
+#'system("./setup.py install")
 #' api = UKCensusAPI::instance("./")
 instance = function(cacheDir) {
   # hack to ensure python module is installed
-  system("./setup.py install")
+  # py_run_file("script.py") see https://cran.r-project.org/web/packages/reticulate/vignettes/introduction.html
   Api = reticulate::import("ukcensusapi.Nomisweb")
   api = Api$Nomisweb(cacheDir)
   return(api)
