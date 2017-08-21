@@ -43,7 +43,8 @@ class Test(TestCase):
     self.assertEqual(self.api.get_url(table, query_params), "https://www.nomisweb.co.uk/api/v01/dataset/NM_618_1.data.tsv?CELL=7...13&MEASURES=20100&RURAL_URBAN=0&date=latest&geography=1245710558...1245710660%2C1245714998...1245714998%2C1245715007...1245715007%2C1245715021...1245715022&select=GEOGRAPHY_CODE%2CCELL%2COBS_VALUE")
 
   def test_get_data(self):
-    table = "NM_618_1"
+    table = "KS401EW"
+    table_internal = "NM_618_1"
     query_params = {}
     query_params["CELL"] = "7...13"
     query_params["date"] = "latest"
@@ -51,7 +52,7 @@ class Test(TestCase):
     query_params["select"] = "GEOGRAPHY_CODE,CELL,OBS_VALUE"
     query_params["geography"] = "1245710558...1245710560"
     query_params["MEASURES"] = "20100"
-    table = self.api.get_data(table, query_params)
+    table = self.api.get_data(table, table_internal, query_params)
     self.assertEqual(table.shape, (21, 3))
     self.assertEqual(sum(table.OBS_VALUE), 8214)
     
@@ -68,7 +69,7 @@ class Test(TestCase):
     query_params["select"] = "GEOGRAPHY_CODE,CELL,OBS_VALUE"
     query_params["geography"] = "1245710558...1245710560"
     query_params["MEASURES"] = "20100"
-    table = self.api.get_data(meta["nomis_table"], query_params)
+    table = self.api.get_data(table_name, meta["nomis_table"], query_params)
     self.assertEqual(table.shape, (21, 3))
     self.assertEqual(sum(table.OBS_VALUE), 8214)
     

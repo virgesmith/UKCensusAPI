@@ -1,6 +1,4 @@
 
-# Disable "Invalid constant name"
-
 import os
 import json
 import hashlib
@@ -17,9 +15,9 @@ import pandas as pd
 # The core functionality for accessing the www.nomisweb.co.uk API
 class Nomisweb:
 
-  # static variables
-  url = "https://www.nomisweb.co.uk/"
-  key = os.environ.get("NOMIS_API_KEY")
+  # static constants
+  URL = "https://www.nomisweb.co.uk/"
+  KEY = os.environ.get("NOMIS_API_KEY")
 
   # timeout for http requests
   Timeout = 15
@@ -43,22 +41,25 @@ class Nomisweb:
     # ensure cache_dir is interpreted as a directory
     if not self.cache_dir.endswith("/"):
       self.cache_dir += "/"
-    if Nomisweb.key is None:
+    if not os.path.exists(self.cache_dir):
+      os.mkdir(self.cache_dir)
+      # TODO check dir created
+    if Nomisweb.KEY is None:
       print("Warning - no API key found, downloads may be truncated.\n"
-            "Set the key value in the environment variable NOMIS_API_KEY.\n"
-            "Register at www.nomisweb.co.uk to obtain a key")
+            "Set the KEY value in the environment variable NOMIS_API_KEY.\n"
+            "Register at www.nomisweb.co.uk to obtain a KEY")
 
     print("Cache directory: ", self.cache_dir)
     print("Cacheing local authority codes")
 
     # TODO how best to deal with site unavailable...
     try:
-      response = request.urlopen(self.url, timeout=Nomisweb.Timeout)
+      response = request.urlopen(self.URL, timeout=Nomisweb.Timeout)
     except (HTTPError, URLError, timeout) as error:
-      print('ERROR: ', error, '\n', query_string)
+      print('ERROR: ', error, ' accessing', self.URL)
 
-    # TODO check site is available
-    self.cached_lad_codes = self.__cache_lad_codes()
+    # static member
+    Nomisweb.cached_lad_codes = self.__cache_lad_codes()
 
   def get_geo_codes(self, la_codes, code_type):
 
@@ -95,11 +96,11 @@ class Nomisweb:
       la_names = [la_names]
     codes = []
     for la_name in la_names:
-      if la_name in self.cached_lad_codes:
-        codes.append(self.cached_lad_codes[la_name])
+      if la_name in Nomisweb.cached_lad_codes:
+        codes.append(Nomisweb.cached_lad_codes[la_name])
     return codes
 
-  def get_url(self, table, query_params):
+  def get_url(self, table_internal, query_params):
 
     # python dicts have nondeterministic order, see
     # https://stackoverflow.com/questions/14956313/why-is-dictionary-ordering-non-deterministic
@@ -109,16 +110,16 @@ class Nomisweb:
     for key in sorted(query_params):
       ordered[key] = query_params[key]
 
-    return Nomisweb.url + "api/v01/dataset/" + table + ".data.tsv?" + str(urlencode(ordered))
+    return Nomisweb.URL + "api/v01/dataset/" + table_internal + ".data.tsv?" + str(urlencode(ordered))
 
-  def get_data(self, table, query_params):
-    query_params["uid"] = Nomisweb.key
-    query_string = self.get_url(table, query_params)
+  def get_data(self, table, table_internal, query_params):
+    query_params["uid"] = Nomisweb.KEY
+    query_string = self.get_url(table_internal, query_params)
 
-    filename = self.cache_dir + hashlib.md5(query_string.encode()).hexdigest()+".tsv"
+    filename = self.cache_dir + table + "_" + hashlib.md5(query_string.encode()).hexdigest()+".tsv"
 
     # retrieve if not in cache
-    if not os.path.isfile(self.cache_dir + filename):
+    if not os.path.isfile(filename):
       print("Downloading and cacheing data: " + filename)
       request.urlretrieve(query_string, filename) #, timeout = Nomisweb.Timeout)
 
@@ -168,7 +169,7 @@ class Nomisweb:
         values = fdata["structure"]["codelists"]["codelist"][0]["code"]
         #print(field+":")
         for value in values:
-          # keys are stored as strings for json compatibility
+          # KEYs are stored as strings for json compatibility
           fields[field][value["value"]] = value["description"]["value"]
 
     result = {"nomis_table": table,
@@ -178,7 +179,7 @@ class Nomisweb:
     return result
 
   # loads metadata from cached json if available, otherwises downloads from nomisweb.
-  # NB category keys need to be converted from string to integer for this data to work properly, see convert_code
+  # NB category KEYs need to be converted from string to integer for this data to work properly, see convert_code
   def load_metadata(self, table_name):
     filename = self.cache_dir + table_name + "_metadata.json"
     # if file not there, get from nomisweb
@@ -235,10 +236,10 @@ class Nomisweb:
     return short_string
 
   def __fetch_json(self, path, query_params):
-    # add API key to params
-    query_params["uid"] = Nomisweb.key
+    # add API KEY to params
+    query_params["uid"] = Nomisweb.KEY
 
-    query_string = Nomisweb.url + path + str(urlencode(query_params))
+    query_string = Nomisweb.URL + path + str(urlencode(query_params))
 
     #print(query_string)
     reply = {}
@@ -264,6 +265,6 @@ class Nomisweb:
       print(column, " is not in table")
       return
 
-    # convert keys on the fly to integers (if they've been loaded from json they will be strings)
+    # convert KEYs on the fly to integers (if they've been loaded from json they will be strings)
     lookup = {int(k):v for k, v in metadata["fields"][column].items()}
     table[column + "_NAME"] = table[column].map(lookup)
