@@ -15,6 +15,3 @@ an instance of the ukcensusweb api
 \description{
 get an instance of the python API (required to call any of the functions)
 }
-\examples{
-api = UKCensusAPI::instance("./")
-}
