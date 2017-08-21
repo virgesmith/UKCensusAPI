@@ -16,11 +16,8 @@ library(reticulate)
 #' @return an instance of the ukcensusweb api
 #' @export
 #' @examples
-#' system("./setup.py install")
 #' api = UKCensusAPI::instance("./")
 instance = function(cacheDir) {
-  # hack to ensure python module is installed
-  # py_run_file("script.py") see https://cran.r-project.org/web/packages/reticulate/vignettes/introduction.html
   Api = reticulate::import("ukcensusapi.Nomisweb")
   api = Api$Nomisweb(cacheDir)
   return(api)
@@ -40,6 +37,7 @@ queryMetadata = function() {
     cat("This interactive code cannot be run from within RStudio due to the way RStudio handles stdin.\n")
     cat("Please either run it from a standalone R session, or call the python code (interactive.py) directly\n")
   } else {
+    # TODO use reticulate...
     system("./interactive.py")
   }
 }
