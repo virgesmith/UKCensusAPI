@@ -2,6 +2,8 @@
 
 context("UKCensusAPI")
 library(reticulate)
+# ensure python module is installed
+system("./setup.py install")
 
 # Regression tests
 

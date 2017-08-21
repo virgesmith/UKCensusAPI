@@ -16,7 +16,7 @@ library(reticulate)
 #' @return an instance of the ukcensusweb api
 #' @export
 #' @examples
-#'system("./setup.py install")
+#' system("./setup.py install")
 #' api = UKCensusAPI::instance("./")
 instance = function(cacheDir) {
   # hack to ensure python module is installed
@@ -34,8 +34,6 @@ instance = function(cacheDir) {
 #' This function calls an interactive script where the user selects a table, a geography, and selects fields, optionally filtering by value.
 #' This script will not run in RStudio due to the way it handles standard input. Please run in a standalone R session (or call the python script directly)
 #' @export
-#' @examples
-#' queryMetadata()
 queryMetadata = function() {
   # first check we are not running in RStudio (in which can we cannot run interatively, since RStudio redirects stdin from /dev/null)
   if (.Platform$GUI == "RStudio") {
