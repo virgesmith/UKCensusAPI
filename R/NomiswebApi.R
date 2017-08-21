@@ -16,7 +16,6 @@ library(reticulate)
 #' @return an instance of the ukcensusweb api
 #' @export
 instance = function(cacheDir) {
-  #Api = reticulate::import("ukcensusapi.Nomisweb")
   api = Api$Nomisweb(cacheDir)
   return(api)
 }

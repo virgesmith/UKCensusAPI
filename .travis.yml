@@ -8,32 +8,20 @@ matrix:
       r: oldrel
       cache: packages
       dist: trusty
-#      r_packages:
-#        - data.table
-#        - digest
-#        - rjson
 
     - language: r
       r: release
       # install the python package first
-      before_install:
-        - pip install numpy pandas
-        - ./setup.py install
+#      before_install:
+#        - pip install numpy pandas
+#        - ./setup.py install
       cache: packages
       dist: trusty
-#      r_packages:
-#        - data.table
-#        - digest
-#        - rjson
 
     - language: r
       r: devel
       cache: packages
       dist: trusty
-#      r_packages:
-#        - data.table
-#        - digest
-#        - rjson
 
     - language: python
       python: 3.4
