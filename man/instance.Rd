@@ -16,6 +16,5 @@ an instance of the ukcensusweb api
 get an instance of the python API (required to call any of the functions)
 }
 \examples{
-system("./setup.py install")
 api = UKCensusAPI::instance("./")
 }
