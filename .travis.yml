@@ -17,6 +17,7 @@ matrix:
       r: release
       # install the python package first
       before_install:
+        - pip install numpy pandas
         - ./setup.py install
       cache: packages
       dist: trusty
