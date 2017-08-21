@@ -18,7 +18,7 @@ library(reticulate)
 #' @examples
 #' api = UKCensusAPI::instance("./")
 instance = function(cacheDir) {
-  Api = reticulate::import("ukcensusapi.Nomisweb")
+  #Api = reticulate::import("ukcensusapi.Nomisweb")
   api = Api$Nomisweb(cacheDir)
   return(api)
 }
