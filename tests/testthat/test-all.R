@@ -25,7 +25,7 @@ test_that("getData valid cache", {
 })
 
 test_that("readLADCodes empty", {
-  expect_true(length(readLADCodes(c())) == 1)
+  expect_true(length(readLADCodes(c())) == 0)
 })
 
 test_that("readLADCodes invalid", {
