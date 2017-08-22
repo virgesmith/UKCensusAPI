@@ -2,6 +2,7 @@
 # Disable "Line too long"
 # pylint: disable=C0301
 
+import os
 from unittest import TestCase
 
 import ukcensusapi.Nomisweb as Api
@@ -101,3 +102,7 @@ class Test(TestCase):
   def test_get_geog_from_codes(self):
     result = self.query.api.get_geo_codes([Api.Nomisweb.EnglandWales], Api.Nomisweb.LAD)
     self.assertEqual(result, '1946157057...1946157404')
+    
+  def test_geoquery(self):
+    import examples.geoquery as eg_geo
+    eg_geo.main()

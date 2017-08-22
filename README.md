@@ -2,27 +2,25 @@
 
 [![Build Status](https://travis-ci.org/virgesmith/UKCensusAPI.png?branch=master)](https://travis-ci.org/virgesmith/UKCensusAPI) [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
 
-This package provides a wrapper around the nomisweb census data API, enabling automated downloads of data.
+This package provides both a `python` and an `R` wrapper around the nomisweb census data API, enabling:
 
-The code is primarily written in python, but we also supply an R interface for convenience. 
+- querying table metadata
+- autogenerating customised python and R query code for future use
+- automated cached data downloads
+- modifying the geography of queries
+- adding descriptive information to tables (from metadata)
+
+The code is primarily written in python, but we also supply an R interface (using the `reticulate` package for convenience.
 
 It is recommended that you register with [nomisweb](https://www.nomisweb.co.uk) before using this package and use the API key the supply you in all queries. Without a key, queries may be truncated.
 
 Once registered, you will find your API key on [this page](https://www.nomisweb.co.uk/myaccount/webservice.asp). You should not divulge this key to others.
 
-The python code expects the key to be defined in an environment variable, like so:
-
+The key should be defined in an environment variable, like so:
 ```
 user@host:~$ echo $NOMIS_API_KEY
 0x0000000000000000000000000000000000000000
 ```
-where as for R, as is standard practice, the key is stored in the user's environment:
-
-```
-user@host:~$ grep NOMIS_API_KEY ~/.Renviron 
-NOMIS_API_KEY=0x0000000000000000000000000000000000000000
-```
-
 This avoids hard-coding the API key into code, which could easily end up in a publically accessible repo.
 
 Queries can be customised on geographical coverage, geographical resolution, and table fields, the latter can be filtered to include only the category values you require.
@@ -50,7 +48,7 @@ user@host:~/dev/UKCensusAPI$ ./setup.py test
 
 ## Usage
 
-The general usage is a two-step process. Firstly users can execute a one-off interactive quey where the user specifies:
+Firstly users can execute a one-off interactive query where the user specifies:
 - a census table
 - the fields and categories required in the output
 - (optionally) geographical coverage and resolution
@@ -58,13 +56,13 @@ The general usage is a two-step process. Firstly users can execute a one-off int
 
 This produces:
 - python and R code snippets that build the query and call this package to download the data 
-- (optionally, depending on above selections) the data itself in the cache directory
+- (optionally, depending on above selections) the data itself (which is cached)
 
-The code snippets can be copy/pasted into user code, or the (cached) data can simply be loaded by user code.
+The code snippets are designed to be copy/pasted into user code, or the (cached) data can simply be loaded by user code.
 
-Another important usage example is to be able to easily switch a data query to a different geographical area and/or a different geographical resolution by modifying an existing query on a specific table. 
+Note for R users - the interactive query functionality does not work within RStudio (due to its redirection of stdin), use a standalone R session.
 
-In this case only the 'geography' element of the query changes. This package provides functionality to easily modify the geographical coverage of existing data queries. Examples are provided in `geoquery.py`.
+Existing queries can easily be modified to switch to a different geographical area and/or a different geographical resolution. Examples are provided in [`geoquery.py`](examples/geoquery.py) and [`geoquery.R`](examples/geoquery.R).
 
 #### Code
 

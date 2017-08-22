@@ -87,4 +87,9 @@ test_that("geoCodes single OA", {
   expect_true(geoCodes(api, 1946157124, 299) == "1254148629...1254150034,1254267588...1254267709")
 })
 
+test_that("geoquery example", {
+  skip_if_no_python_api()
+  source("../../examples/geoquery.R")
+})
+
 
