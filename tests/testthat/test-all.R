@@ -16,7 +16,7 @@ skip_if_no_python_api = function() {
 test_that("getMetadata", {
   skip_if_no_python_api()
   table = "KS401EW"
-  expect_true(class(UKCensusAPI::getMetadata(api, table)) == "list")
+  expect_false(class(UKCensusAPI::getMetadata(api, table)) == "list")
 })
 
 # simply checks we get a data frame back

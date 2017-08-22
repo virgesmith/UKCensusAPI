@@ -2,17 +2,22 @@
 cache: packages
 sudo: false
 
-env:
-  - RETICULATE_PYTHON=$(which python3)
-
 matrix:
   include:
     - language: r
       r: oldrel
+      env:
+        - RETICULATE_PYTHON=$(which python3)
+      # install the python package first
+      before_install:
+        - pip3 install numpy pandas
+        - ./setup.py install
       dist: trusty
 
     - language: r
       r: release
+      env:
+        - RETICULATE_PYTHON=$(which python3)
       # install the python package first
       before_install:
         - pip3 install numpy pandas
@@ -21,6 +26,12 @@ matrix:
 
     - language: r
       r: devel
+      env:
+        - RETICULATE_PYTHON=$(which python3)
+      # install the python package first
+      before_install:
+        - pip3 install numpy pandas
+        - ./setup.py install
       dist: trusty
 
     - language: python
