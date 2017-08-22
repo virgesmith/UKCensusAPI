@@ -4,9 +4,7 @@ context("UKCensusAPI")
 library(reticulate)
 
 # TODO How do we get these tests to run on travis???
-
-# Regression tests
-api = UKCensusAPI::instance("./")
+api = tryCatch( { UKCensusAPI::instance("./") }, finally = { NULL })
 
 # helper function to skip tests if we don't have the 'foo' module
 skip_if_no_python_api = function() {
