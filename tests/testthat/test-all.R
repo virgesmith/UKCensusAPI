@@ -3,10 +3,9 @@
 context("UKCensusAPI")
 library(reticulate)
 
-# TODO How do we get these tests to run on travis???
-api = tryCatch( { UKCensusAPI::instance("./") }, finally = { NULL })
+api = UKCensusAPI::instance("./")
 
-# helper function to skip tests if we don't have the 'foo' module
+# helper function to skip tests if we don't have the python module
 skip_if_no_python_api = function() {
   if (!py_module_available("ukcensusapi.Nomisweb"))
     skip("python module ukcensusapi.Nomisweb not available, skipping test")
@@ -16,7 +15,7 @@ skip_if_no_python_api = function() {
 test_that("getMetadata", {
   skip_if_no_python_api()
   table = "KS401EW"
-  expect_false(class(UKCensusAPI::getMetadata(api, table)) == "list")
+  expect_true(class(UKCensusAPI::getMetadata(api, table)) == "list")
 })
 
 # simply checks we get a data frame back
