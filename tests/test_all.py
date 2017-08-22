@@ -99,5 +99,5 @@ class Test(TestCase):
     self.assertEqual(result, '1245710411...1245710471,1245710558...1245710660,1245714998...1245714998,1245715007...1245715007,1245715021...1245715022')
 
   def test_get_geog_from_codes(self):
-    result = self.query.get_geog_from_codes([Api.Nomisweb.EnglandWales], Api.Nomisweb.LAD)
+    result = self.query.api.get_geo_codes([Api.Nomisweb.EnglandWales], Api.Nomisweb.LAD)
     self.assertEqual(result, '1946157057...1946157404')

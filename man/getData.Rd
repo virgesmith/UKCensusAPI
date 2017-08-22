@@ -5,18 +5,18 @@
 \title{getData()
 Fetch and cache census data using a predefined query}
 \usage{
-getData(queryUrl, cacheDir)
+getData(api, tableName, internalName, query)
 }
 \arguments{
-\item{queryUrl}{a predefined query}
+\item{api}{a predefined query}
 
-\item{cacheDir}{directory to cache the tables in}
+\item{tableName}{name of census table (e.g KS401EW)}
+
+\item{internalName}{internal name of census table (e.g NM_618_1)}
+
+\item{query}{query parameters}
 }
 \description{
-getData()
-Fetch and cache census data using a predefined query
-}
-\examples{
-queryUrl = "https://www.nomisweb.co.uk/api/v01/dataset/NM_618_1.data.tsv?CELL=7...13&MEASURES=20100&RURAL_URBAN=0&date=latest&geography=1245710558...1245710660\%2C1245714998...1245714998\%2C1245715007...1245715007\%2C1245715021...1245715022&select=GEOGRAPHY_CODE\%2CCELL\%2COBS_VALUE"
-getData(queryUrl, "./")
+Ensure all query numeric parameters are passed as strings (e.g. "0" not 0)
+This prevents conversion to floating-point which can makie queries fail
 }

@@ -40,7 +40,8 @@ class Query:
 
     add_geog = input("Add geography? (y/N): ") == "y"
     if add_geog:
-      query_params = self.__add_geog(query_params)
+      query_params["geography"] = self.__add_geog()
+      print(query_params)
 
       get_data = input("Get data now? (y/N): ") == "y"
       if get_data:
@@ -61,12 +62,12 @@ class Query:
 
     # Convert the coverage area into nomis codes
     coverage_codes = self.api.get_lad_codes(coverage)
-    return self.get_geog_from_codes(coverage_codes, resolution)
+    return self.api.get_geo_codes(coverage_codes, resolution)
 
-  def get_geog_from_codes(self, coverage, resolution):
-    return self.api.get_geo_codes(coverage, resolution)
+#  def get_geog_from_codes(self, coverage, resolution):
+#    return self.api.get_geo_codes(coverage, resolution)
 
-  def __add_geog(self, query_params):
+  def __add_geog(self):
 
     coverage = input("\nGeographical coverage\nE/EW/GB/UK or LA name(s), comma separated: ")
     resolution = input("Resolution (LA/MSOA/LSOA/OA): ")
@@ -95,9 +96,7 @@ class Query:
       coverage_codes = self.api.get_lad_codes(coverage.split(","))
 
     area_codes = self.api.get_geo_codes(coverage_codes, resolution)
-
-    query_params["geography"] = area_codes
-    return query_params
+    return area_codes
     
   # save metadata as JSON for future reference
   def __write_metadata(self, table, meta):
@@ -124,6 +123,7 @@ class Query:
       if not "geography" in query_params:
         py_file.write("\n# TODO query_params[\"geography\"] = ...")
 
+    # TODO dump query params not url 
     print("\nWriting R code snippet to " + self.api.cache_dir + table + ".R")
     with open(self.api.cache_dir + table + ".R", "w") as r_file:
       r_file.write("# " + meta["description"])
@@ -136,3 +136,5 @@ class Query:
       if not "geography" in query_params:
         r_file.write("\n# TODO add geography parameter to this query...")
       r_file.write("\n" + table + " = UKCensusAPI::getData(queryUrl, cacheDir)\n")
+      
+

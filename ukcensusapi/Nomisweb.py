@@ -61,11 +61,6 @@ class Nomisweb:
     # static member
     Nomisweb.cached_lad_codes = self.__cache_lad_codes()
     
-  def test_reticulate(self, x):
-    print(x)
-    print(type(x))
-    return type(x)
-
   def get_geo_codes(self, la_codes, code_type):
 
     # force input to be a list
@@ -89,21 +84,6 @@ class Nomisweb:
         print(la_codes[i], " does not appear to be a valid LA code")
     return self.__shorten(geo_codes)
 
-  # Deprecated - use getLADCodes instead
-#  def readLADCodes(self, la_names):
-#    # if single valued arg, convert to a list
-#    if type(la_names) is not list:
-#      la_names = [ la_names ]
-#    # TODO error handling on file load
-#    geo_codes = pd.read_csv(self.mappingFile, delimiter=';')
-#    codes = []
-#    for i in range(0,len(la_names)):
-#      # This throws for "Leeds" for some reason
-#      #if not la_names[i] in geo_codes.name:
-#      #  raise ValueError("ERROR: " + la_names[i] + " is not a valid local authority name")
-#      codes.append(geo_codes[geo_codes["name"] == la_names[i]]["nomiscode"].tolist()[0])
-#    return codes
-
   def get_lad_codes(self, la_names):
     if not isinstance(la_names, list):
       la_names = [la_names]
@@ -125,7 +105,11 @@ class Nomisweb:
 
     return Nomisweb.URL + "api/v01/dataset/" + table_internal + ".data.tsv?" + str(urlencode(ordered))
 
-  def get_data(self, table, table_internal, query_params):
+  # r_compat forces function to return strings (either cached filename, or error msg)
+  # Two reasons for this:
+  # - pandas/R dataframes conversion is done via matrix (which drops col names)
+  # - reporting errors to R is useful (print statements aren't displayed in R(Studio))
+  def get_data(self, table, table_internal, query_params, r_compat = False):
     query_params["uid"] = Nomisweb.KEY
     query_string = self.get_url(table_internal, query_params)
 
@@ -139,14 +123,21 @@ class Nomisweb:
       # check for empty file, if so delete it and report error
       if os.stat(filename).st_size == 0:
         os.remove(filename)
-        print("ERROR: Query returned no data. Check table and query parameters")
-        return
+        errormsg = "ERROR: Query returned no data. Check table and query parameters"
+        if r_compat:
+          return errormsg
+        else:
+          print(errormsg)
+          return
     else:
       print("Using cached data: " + filename)
 
 
     # now load from cache and return
-    return pd.read_csv(filename, delimiter='\t')
+    if r_compat:
+      return filename
+    else:
+      return pd.read_csv(filename, delimiter='\t')
 
   def get_metadata(self, table_name):
     path = "api/v01/dataset/def.sdmx.json?"

@@ -5,9 +5,11 @@
 \title{geoCodes
 Get nomisweb geographical codes for a region}
 \usage{
-geoCodes(coverage, resolution)
+geoCodes(api, coverage, resolution)
 }
 \arguments{
+\item{api}{the instance of the an integer vector of nomisweb geographical codes}
+
 \item{coverage}{an integer vector of nomisweb geographical codes}
 
 \item{resolution}{the nomisweb code for a particular area type (e.g. 297 for MSOA)}

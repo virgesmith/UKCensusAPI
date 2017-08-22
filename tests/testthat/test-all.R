@@ -12,51 +12,30 @@ skip_if_no_python_api = function() {
     skip("python module ukcensusapi.Nomisweb not available, skipping test")
 }
 
-test_that("getData invalid cache", {
-  cacheDir = "/"
-  queryUrl = "https://www.nomisweb.co.uk/api/v01/dataset/NM_618_1.data.tsv?CELL=7...13&MEASURES=20100&RURAL_URBAN=0&date=latest&geography=1245710558...1245710660%2C1245714998...1245714998%2C1245715007...1245715007%2C1245715021...1245715022&select=GEOGRAPHY_CODE%2CCELL%2COBS_VALUE"
-  expect_error(UKCensusAPI::getData(queryUrl, cacheDir))
+# simply checks we get data back
+test_that("getMetadata", {
+  skip_if_no_python_api()
+  table = "KS401EW"
+  expect_true(class(UKCensusAPI::getMetadata(api, table)) == "list")
 })
 
-# simple checks we get a data frame back
-test_that("getData valid cache", {
-  cacheDir = "./"
-  queryUrl = "https://www.nomisweb.co.uk/api/v01/dataset/NM_618_1.data.tsv?CELL=7...13&MEASURES=20100&RURAL_URBAN=0&date=latest&geography=1245710558...1245710660%2C1245714998...1245714998%2C1245715007...1245715007%2C1245715021...1245715022&select=GEOGRAPHY_CODE%2CCELL%2COBS_VALUE"
-  expect_true(class(UKCensusAPI::getData(queryUrl, cacheDir)) == "data.frame")
+# simply checks we get a data frame back
+test_that("getData", {
+  skip_if_no_python_api()
+  table = "KS401EW"
+  table_internal = "NM_618_1"
+  query = list(date = "latest",
+               geography = "1245714681...1245714688",
+               CELL = "7...13",
+               RURAL_URBAN="0",
+               measures = "20100",
+               select = "GEOGRAPHY_CODE,CELL,OBS_VALUE")
+  expect_true(class(UKCensusAPI::getData(api, table, table_internal, query)) == "data.frame")
+
 })
 
-test_that("readLADCodes empty", {
-  expect_true(length(readLADCodes(c())) == 0)
-})
 
-test_that("readLADCodes invalid", {
-  expect_true(length(readLADCodes(c("Framley"))) == 0)
-})
-
-test_that("readLADCodes single", {
-  expect_true(readLADCodes(c("Leeds")) == 1946157127)
-  expect_true(readLADCodes(c("Leeds")) == c(1946157127))
-})
-
-test_that("readLADCodes multi", {
-  codes = readLADCodes(c("Leeds", "Bradford", "Kirklees", "Wakefield", "Calderdale"))
-  # == returns a bool vector, so check that its sum is its length
-  expect_true(sum(codes == c(1946157127, 1946157124, 1946157126, 1946157128, 1946157125)) == length(codes))
-})
-
-test_that("readLADCodes multi with invalid", {
-  codes = readLADCodes(c("Leeds", "Bradford", "Skipdale", "Wakefield", "Calderdale"))
-  # == returns a bool vector, so check that its sum is its length
-  expect_true(sum(codes == c(1946157127, 1946157124, 1946157128, 1946157125)) == length(codes))
-})
-
-test_that("readLADCodes multi all invalid", {
-  codes = readLADCodes(c("Trumpton", "Camberwick Green", "Chigley"))
-  # == returns a bool vector, so check that its sum is its length
-  expect_true(length(codes) == 0)
-})
-
-test_that("getLADCodes python", {
+test_that("getLADCodes", {
   skip_if_no_python_api()
   # TODO made global...
   #api = UKCensusAPI::instance("./")
@@ -103,9 +82,4 @@ test_that("geoCodes single OA", {
   expect_true(geoCodes(api, 1946157124, 299) == "1254148629...1254150034,1254267588...1254267709")
 })
 
-test_that("change coverage", {
-  queryUrl = "https://www.nomisweb.co.uk/api/v01/dataset/NM_618_1.data.tsv?CELL=7...13&MEASURES=20100&RURAL_URBAN=0&date=latest&geography=1245710558...1245710660%2C1245714998...1245714998%2C1245715007...1245715007%2C1245715021...1245715022&select=GEOGRAPHY_CODE%2CCELL%2COBS_VALUE"
-  newQueryUrl = modifyGeography(queryUrl, c("Newcastle upon Tyne"), 298)
-  expect_true(newQueryUrl == "https://www.nomisweb.co.uk/api/v01/dataset/NM_618_1.data.tsv?CELL=7...13&MEASURES=20100&RURAL_URBAN=0&date=latest&geography=1249910667...1249910832%2C1249935220...1249935228&select=GEOGRAPHY_CODE%2CCELL%2COBS_VALUE")
-})
 
