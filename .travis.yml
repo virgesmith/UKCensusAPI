@@ -2,6 +2,9 @@
 cache: packages
 sudo: false
 
+env:
+  - RETICULATE_PYTHON=$(which python3)
+
 matrix:
   include:
     - language: r
