@@ -89,7 +89,13 @@ test_that("geoCodes single OA", {
 
 test_that("geoquery example", {
   skip_if_no_python_api()
-  source("../../examples/geoquery.R")
+  # hack to get test to run as part of checks
+  if (dir.exists("../../inst/examples")) {
+    path = "../../inst/examples/"
+  } else {
+    path = "../../UKCensusAPI/examples/"
+  }
+  source(paste0(path, "geoquery.R"))
 })
 
 
