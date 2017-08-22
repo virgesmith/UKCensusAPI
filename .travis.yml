@@ -6,21 +6,18 @@ matrix:
   include:
     - language: r
       r: oldrel
-      cache: packages
       dist: trusty
 
     - language: r
       r: release
       # install the python package first
-#      before_install:
-#        - pip install numpy pandas
-#        - ./setup.py install
-      cache: packages
+      before_install:
+        - pip3 install numpy pandas
+        - ./setup.py install
       dist: trusty
 
     - language: r
       r: devel
-      cache: packages
       dist: trusty
 
     - language: python
