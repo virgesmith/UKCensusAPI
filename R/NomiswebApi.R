@@ -16,6 +16,7 @@ library(reticulate)
 #' @return an instance of the ukcensusweb api
 #' @export
 instance = function(cacheDir) {
+  # TODO can we have a function-static variable here?
   api = Api$Nomisweb(cacheDir)
   return(api)
 }
@@ -92,34 +93,39 @@ getLADCodes = function(api, laNames) {
 #' geoCodes
 #' Get nomisweb geographical codes for a region
 #'
+#' @param api the instance of the an integer vector of nomisweb geographical codes
 #' @param coverage an integer vector of nomisweb geographical codes
 #' @param resolution the nomisweb code for a particular area type (e.g. 297 for MSOA)
 #' @export
-geoCodes = function(coverage, resolution) {
-
-  if (NomiswebApi.key == "") {
-    warning("Warning, no API key specified. Download will be limited to 25000 rows. Register at https://www.nomisweb.co.uk to get an API key and add NOMIS_API_KEY=<key> to your .Renviron")
-  }
-  # see https://www.nomisweb.co.uk/forum/posts.aspx?tID=555&fID=2
-
-  geogCodes = c()
-  for (c in coverage) {
-    queryUrl = httr::modify_url(NomiswebApi.url, path = paste0("/api/v01/dataset/NM_144_1/geography/", c, "TYPE", resolution,".def.sdmx.json"))#, query = list))
-
-    #print(queryUrl)
-
-    result <- fromJSON(file=paste0(queryUrl))
-    nResults = length(result$structure$codelists$codelist[[1]]$code)
-    #print(paste(nResults, "results"))
-
-    if (nResults > 0) {
-      for (i in 1:length(result$structure$codelists$codelist[[1]]$code)) {
-        geogCodes = append(geogCodes, result$structure$codelists$codelist[[1]]$code[[i]]$value)
-      }
-    }
-  }
-  return(shortenCodeList(geogCodes))
+geoCodes = function(api, coverage, resolution) {
+  # force correct types
+  return(api$get_geo_codes(as.integer(coverage), as.integer(resolution)))
 }
+#
+#   if (NomiswebApi.key == "") {
+#     warning("Warning, no API key specified. Download will be limited to 25000 rows. Register at https://www.nomisweb.co.uk to get an API key and add NOMIS_API_KEY=<key> to your .Renviron")
+#   }
+#   # see https://www.nomisweb.co.uk/forum/posts.aspx?tID=555&fID=2
+#
+#   geogCodes = c()
+#   for (c in coverage) {
+#     queryUrl = httr::modify_url(NomiswebApi.url, path = paste0("/api/v01/dataset/NM_144_1/geography/", c, "TYPE", resolution,".def.sdmx.json"))#, query = list))
+#
+#     #print(queryUrl)
+#
+#     result <- fromJSON(file=paste0(queryUrl))
+#     nResults = length(result$structure$codelists$codelist[[1]]$code)
+#     #print(paste(nResults, "results"))
+#
+#     if (nResults > 0) {
+#       for (i in 1:length(result$structure$codelists$codelist[[1]]$code)) {
+#         geogCodes = append(geogCodes, result$structure$codelists$codelist[[1]]$code[[i]]$value)
+#       }
+#     }
+#   }
+#   return(shortenCodeList(geogCodes))
+# }
+
 
 #' modifyGeography
 #' Takes an existing nomisweb query and modifies the geography parameter according sipplied coverage and resolution

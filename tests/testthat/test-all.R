@@ -4,6 +4,7 @@ context("UKCensusAPI")
 library(reticulate)
 
 # Regression tests
+api = UKCensusAPI::instance("./")
 
 # helper function to skip tests if we don't have the 'foo' module
 skip_if_no_python_api = function() {
@@ -58,7 +59,7 @@ test_that("readLADCodes multi all invalid", {
 test_that("getLADCodes python", {
   skip_if_no_python_api()
   # TODO made global...
-  api = UKCensusAPI::instance("./")
+  #api = UKCensusAPI::instance("./")
   expect_true(length(getLADCodes(api, c())) == 0)
   expect_true(length(getLADCodes(api, c("Framley"))) == 0)
   expect_true(getLADCodes(api, c("Leeds")) == 1946157127)
@@ -79,27 +80,27 @@ test_that("getLADCodes python", {
 
 
 test_that("geoCodes empty", {
-  expect_true(geoCodes(c(), 999) == "")
+  expect_true(geoCodes(api, c(), 999) == "")
 })
 
 test_that("geoCodes invalid", {
-  expect_true(geoCodes(c(999), 999) == "")
+  expect_true(geoCodes(api, c(999), 999) == "")
 })
 
 test_that("geoCodes single LA", {
-  expect_true(geoCodes(1946157124, 464) == "1946157124")
+  expect_true(geoCodes(api, 1946157124, 464) == "1946157124")
 })
 
 test_that("geoCodes multi MSOA", {
-  expect_true(geoCodes(c(1946157124, 1946157128), 297) == "1245710411...1245710471,1245710661...1245710705")
+  expect_true(geoCodes(api, c(1946157124, 1946157128), 297) == "1245710411...1245710471,1245710661...1245710705")
 })
 
 test_that("geoCodes multi LSOA", {
-  expect_true(geoCodes(c(1946157124, 1946157128), 298) == "1249912854...1249913154,1249913980...1249914188,1249935357...1249935365")
+  expect_true(geoCodes(api, c(1946157124, 1946157128), 298) == "1249912854...1249913154,1249913980...1249914188,1249935357...1249935365")
 })
 
 test_that("geoCodes single OA", {
-  expect_true(geoCodes(1946157124, 299) == "1254148629...1254150034,1254267588...1254267709")
+  expect_true(geoCodes(api, 1946157124, 299) == "1254148629...1254150034,1254267588...1254267709")
 })
 
 test_that("change coverage", {

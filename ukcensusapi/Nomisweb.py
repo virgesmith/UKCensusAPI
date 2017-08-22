@@ -60,20 +60,33 @@ class Nomisweb:
 
     # static member
     Nomisweb.cached_lad_codes = self.__cache_lad_codes()
+    
+  def test_reticulate(self, x):
+    print(x)
+    print(type(x))
+    return type(x)
 
   def get_geo_codes(self, la_codes, code_type):
+
+    # force input to be a list
+    if not isinstance(la_codes, list):
+      la_codes = [la_codes]
 
     geo_codes = []
     for i in range(0, len(la_codes)):
       path = "api/v01/dataset/NM_144_1/geography/" + str(la_codes[i]) + "TYPE" \
            + str(code_type) + ".def.sdmx.json?"
-
       rawdata = self.__fetch_json(path, {})
 
-      n_results = len(rawdata["structure"]["codelists"]["codelist"][0]["code"])
-      # seems a bit daft not to take advantage of the fact we know the length
-      for j in range(0, n_results):
-        geo_codes.append(rawdata["structure"]["codelists"]["codelist"][0]["code"][j]["value"])
+      # use try-catch block to deal with any issues arising from the returned json
+      # which are likely due to invalid/empty LA codes
+      try:  
+        n_results = len(rawdata["structure"]["codelists"]["codelist"][0]["code"])
+        # seems a bit daft not to take advantage of the fact we know the length
+        for j in range(0, n_results):
+          geo_codes.append(rawdata["structure"]["codelists"]["codelist"][0]["code"][j]["value"])
+      except (KeyError, ValueError):
+        print(la_codes[i], " does not appear to be a valid LA code")
     return self.__shorten(geo_codes)
 
   # Deprecated - use getLADCodes instead
@@ -216,7 +229,7 @@ class Nomisweb:
     if not code_list:
       return ""
     if len(code_list) == 1:
-      return str(code_list)
+      return str(code_list[0])
 
     code_list.sort() # assume this is a modifying operation
     short_string = ""
