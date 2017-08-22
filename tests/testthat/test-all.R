@@ -3,6 +3,8 @@
 context("UKCensusAPI")
 library(reticulate)
 
+# TODO How do we get these tests to run on travis???
+
 # Regression tests
 api = UKCensusAPI::instance("./")
 
@@ -59,26 +61,32 @@ test_that("getLADCodes", {
 
 
 test_that("geoCodes empty", {
+  skip_if_no_python_api()
   expect_true(geoCodes(api, c(), 999) == "")
 })
 
 test_that("geoCodes invalid", {
+  skip_if_no_python_api()
   expect_true(geoCodes(api, c(999), 999) == "")
 })
 
 test_that("geoCodes single LA", {
+  skip_if_no_python_api()
   expect_true(geoCodes(api, 1946157124, 464) == "1946157124")
 })
 
 test_that("geoCodes multi MSOA", {
+  skip_if_no_python_api()
   expect_true(geoCodes(api, c(1946157124, 1946157128), 297) == "1245710411...1245710471,1245710661...1245710705")
 })
 
 test_that("geoCodes multi LSOA", {
+  skip_if_no_python_api()
   expect_true(geoCodes(api, c(1946157124, 1946157128), 298) == "1249912854...1249913154,1249913980...1249914188,1249935357...1249935365")
 })
 
 test_that("geoCodes single OA", {
+  skip_if_no_python_api()
   expect_true(geoCodes(api, 1946157124, 299) == "1254148629...1254150034,1254267588...1254267709")
 })
 
