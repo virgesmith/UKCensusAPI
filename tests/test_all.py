@@ -104,5 +104,5 @@ class Test(TestCase):
     self.assertEqual(result, '1946157057...1946157404')
     
   def test_geoquery(self):
-    import examples.geoquery as eg_geo
+    import inst.examples.geoquery as eg_geo
     eg_geo.main()
