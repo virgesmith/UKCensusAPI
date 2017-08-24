@@ -54,9 +54,9 @@ class Query:
     if "uid" in query_params:
       del query_params["uid"]
 
-    self.__write_metadata(table, meta)
+    self.api.write_metadata(table, meta)
 
-    self.__write_code_snippets(table, meta, query_params)
+    self.write_code_snippets(table, meta, query_params)
 
   # returns a geography string that can be inserted into an existing query
   def get_geog_from_names(self, coverage, resolution):
@@ -99,15 +99,7 @@ class Query:
     area_codes = self.api.get_geo_codes(coverage_codes, resolution)
     return area_codes
     
-  # save metadata as JSON for future reference
-  def __write_metadata(self, table, meta):
-
-    filename = self.api.cache_dir + table + "_metadata.json" 
-    print("Writing metadata to ", filename)
-    with open(filename, "w") as metafile:
-      json.dump(meta, metafile, indent=2)
-
-  def __write_code_snippets(self, table, meta, query_params):
+  def write_code_snippets(self, table, meta, query_params):
     print("\nWriting python code snippet to " + self.api.cache_dir + table + ".py")
     with open(self.api.cache_dir + table + ".py", "w") as py_file:
       py_file.write("\"\"\"\n" + meta["description"])
@@ -116,13 +108,15 @@ class Query:
       py_file.write("\n\n# This code requires an API key, see the README.md for details")
       py_file.write("\n\n# Query url:\n# " + self.api.get_url(meta["nomis_table"], query_params))
       py_file.write("\n\nimport ukcensusapi.Nomisweb as CensusApi")
-      py_file.write("\n\nAPI = CensusApi.Nomisweb(\"./\")")
-      py_file.write("\nTABLE = \"" + meta["nomis_table"] + "\"")
+      py_file.write("\n\napi = CensusApi.Nomisweb(\"/tmp/UKCensusData\")")
+      py_file.write("\ntable = \"" + table + "\"")
+      py_file.write("\ntable_internal = \"" + meta["nomis_table"] + "\"")
       py_file.write("\nquery_params = {}")
       for key in query_params:
         py_file.write("\nquery_params[\""+key+"\"] = \""+query_params[key]+"\"")
       if not "geography" in query_params:
         py_file.write("\n# TODO query_params[\"geography\"] = ...")
+      py_file.write("\n" + table + " = api.get_data(table, table_internal, query_params)\n")
 
     # TODO dump query params not url 
     print("\nWriting R code snippet to " + self.api.cache_dir + table + ".R")

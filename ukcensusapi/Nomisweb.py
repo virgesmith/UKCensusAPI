@@ -47,7 +47,7 @@ class Nomisweb:
     if Nomisweb.KEY is None:
       print("Warning - no API key found, downloads may be truncated.\n"
             "Set the KEY value in the environment variable NOMIS_API_KEY.\n"
-            "Register at www.nomisweb.co.uk to obtain a KEY")
+            "Register at www.nomisweb.co.uk to obtain a key")
 
     print("Cache directory: ", self.cache_dir)
     print("Cacheing local authority codes")
@@ -117,6 +117,8 @@ class Nomisweb:
 
     # retrieve if not in cache
     if not os.path.isfile(filename):
+      meta = self.get_metadata(table)
+      self.write_metadata(table, meta)
       print("Downloading and cacheing data: " + filename)
       request.urlretrieve(query_string, filename) #, timeout = Nomisweb.Timeout)
 
@@ -131,7 +133,6 @@ class Nomisweb:
           return
     else:
       print("Using cached data: " + filename)
-
 
     # now load from cache and return
     if r_compat:
@@ -256,6 +257,14 @@ class Nomisweb:
     else:
       reply = json.loads(response.read().decode("utf-8"))
     return reply
+
+  # save metadata as JSON for future reference
+  def write_metadata(self, table, meta):
+
+    filename = self.cache_dir + table + "_metadata.json" 
+    print("Writing metadata to ", filename)
+    with open(filename, "w") as metafile:
+      json.dump(meta, metafile, indent=2)
 
   # append <column> numeric values with the string values from the metadata
   # NB the "numeric" values are stored as strings in both the table and the metadata

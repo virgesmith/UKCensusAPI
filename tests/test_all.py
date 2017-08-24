@@ -10,7 +10,7 @@ import ukcensusapi.Query as Census
 
 # test methods only run if prefixed with "test"
 class Test(TestCase):
-  api = Api.Nomisweb("/tmp")
+  api = Api.Nomisweb("/tmp/UKCensusAPI")
   query = Census.Query(api)
 
   def test_get_lad_codes(self):
@@ -106,3 +106,18 @@ class Test(TestCase):
   def test_geoquery(self):
     import inst.examples.geoquery as eg_geo
     eg_geo.main()
+
+  # just checks code snippet runs ok (i.e. returns 0)
+  def test_code_snippet(self):
+    table = "KS401EW" 
+    meta = self.api.get_metadata(table)
+    query_params = {}
+    query_params["CELL"] = "7...13"
+    query_params["date"] = "latest"
+    query_params["RURAL_URBAN"] = "0"
+    query_params["select"] = "GEOGRAPHY_CODE,CELL,OBS_VALUE"
+    query_params["geography"] = "1245710558...1245710560"
+    query_params["MEASURES"] = "20100"
+
+    self.query.write_code_snippets(table, meta, query_params)
+    self.assertTrue(os.system("python3 " + self.api.cache_dir + table + ".py") == 0)

@@ -3,7 +3,7 @@
 import ukcensusapi.Nomisweb as Api
 
 def main():
-  api = Api.Nomisweb("./")
+  api = Api.Nomisweb("/tmp/UKCensusAPI")
 
   print("Nomisweb census data geographical query example")
   print("See README.md for details on how to use this package")
