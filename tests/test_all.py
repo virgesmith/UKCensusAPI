@@ -121,3 +121,4 @@ class Test(TestCase):
 
     self.query.write_code_snippets(table, meta, query_params)
     self.assertTrue(os.system("python3 " + self.api.cache_dir + table + ".py") == 0)
+    self.assertTrue(os.system("Rscript " + self.api.cache_dir + table + ".R") == 0)

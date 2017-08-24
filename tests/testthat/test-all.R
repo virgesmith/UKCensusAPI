@@ -3,8 +3,9 @@
 context("UKCensusAPI")
 library(reticulate)
 
-api = UKCensusAPI::instance("./")
+api = UKCensusAPI::instance("/tmp/UKCensusAPI")
 
+# TODO not sure we need this now (since above works)
 # helper function to skip tests if we don't have the python module
 skip_if_no_python_api = function() {
   if (!py_module_available("ukcensusapi.Nomisweb"))
@@ -33,11 +34,8 @@ test_that("getData", {
 
 })
 
-
 test_that("getLADCodes", {
   skip_if_no_python_api()
-  # TODO made global...
-  #api = UKCensusAPI::instance("./")
   expect_true(length(getLADCodes(api, c())) == 0)
   expect_true(length(getLADCodes(api, c("Framley"))) == 0)
   expect_true(getLADCodes(api, c("Leeds")) == 1946157127)
@@ -97,5 +95,3 @@ test_that("geoquery example", {
   }
   source(paste0(path, "geoquery.R"))
 })
-
-

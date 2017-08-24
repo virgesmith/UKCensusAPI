@@ -2,7 +2,7 @@
 # this example code is an interim solution pending proper R-python integration
 library("UKCensusAPI")
 
-cacheDir = "./"
+cacheDir = "/tmp/UKCensusAPI"
 
 # Here's a predefined query using Leeds at MSOA resolution,
 # but we want to change the geographical area and refine the resolution

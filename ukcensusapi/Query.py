@@ -108,7 +108,7 @@ class Query:
       py_file.write("\n\n# This code requires an API key, see the README.md for details")
       py_file.write("\n\n# Query url:\n# " + self.api.get_url(meta["nomis_table"], query_params))
       py_file.write("\n\nimport ukcensusapi.Nomisweb as CensusApi")
-      py_file.write("\n\napi = CensusApi.Nomisweb(\"/tmp/UKCensusData\")")
+      py_file.write("\n\napi = CensusApi.Nomisweb(\"" + self.api.cache_dir + "\")")
       py_file.write("\ntable = \"" + table + "\"")
       py_file.write("\ntable_internal = \"" + meta["nomis_table"] + "\"")
       py_file.write("\nquery_params = {}")
@@ -132,8 +132,13 @@ class Query:
       r_file.write("\ntable = \"" + table + "\"") 
       r_file.write("\ntable_internal = \"" + meta["nomis_table"] + "\"") 
       r_file.write("\nqueryParams = list(")
+      first = True
       for key in query_params:
-        r_file.write("\n  "+key+" = \""+query_params[key]+"\",")
+        if first:
+          r_file.write("\n  "+key+" = \""+query_params[key] + "\"")
+          first = False
+        else:
+          r_file.write(",\n  "+key+" = \""+query_params[key] + "\"")
       if not "geography" in query_params:
         r_file.write("\n  # TODO add geography parameter to this query...")
       r_file.write("\n)")
