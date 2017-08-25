@@ -10,7 +10,16 @@ This package provides both a `python` and an `R` wrapper around the nomisweb cen
 - modifying the geography of queries
 - adding descriptive information to tables (from metadata)
 
-The code is primarily written in python, but we also supply an R interface (using the `reticulate` package for convenience.
+The code is primarily written in python, but we also supply an R interface (using the `reticulate` package) for convenience.
+
+## Prerequisites
+
+### Software
+
+- python3, pip, numpy and pandas
+- R version 3.3.3 or higher (if using the R interface)
+
+### API key
 
 It is recommended that you register with [nomisweb](https://www.nomisweb.co.uk) before using this package and use the API key the supply you in all queries. Without a key, queries may be truncated.
 
@@ -21,7 +30,7 @@ The key should be defined in an environment variable, like so:
 user@host:~$ echo $NOMIS_API_KEY
 0x0000000000000000000000000000000000000000
 ```
-R users can use thet standard practice of storing the key in their `.Renviron` file: R will set the environment on startup, which will be visible to python.
+R users can use the standard practice of storing the key in their `.Renviron` file: R will set the environment on startup, which will be visible to python.
 
 This avoids hard-coding the API key into code, which could easily end up in a publically accessible repo.
 
@@ -35,7 +44,7 @@ Since census data is essentially static, it makes little sense to download the d
 ```
 user@host:~$ pip install git+https://github.com/virgesmith/UKCensusAPI.git
 ``` 
-### python (from local repo):
+### python (from cloned repo):
 ```
 user@host:~/dev/UKCensusAPI$ ./setup.py install
 ``` 
@@ -52,13 +61,13 @@ user@host:~/dev/UKCensusAPI$ ./setup.py test
 
 ### Interactive Query
 
-The first thing users may want to do is an interactive query where the user simply specifies the name of a census table. The script will then iterate over the categories within the table , prompting the user to select the categories and values they are interested in.
+The first thing users may want to do is an interactive query. All you need to do is specify the name of a census table. The script will then iterate over the categories within the table, prompting you user to select the categories and values you're interested in.
 
-The user is then prompted to (optionally) specify a geography for the data - a geographical region and a resolution.
+Once done you'll be prompted to (optionally) specify a geography for the data - a geographical region and a resolution.
 
-Finally, if the user has specified the geography, the script will ask the user if they want to  download the data.
+Finally, if you've specified the geography, the script will ask if you want to download (and cache) the data immediately.
 
-The script will then produce the following files:
+The script then produces the following files:
 
 - a json file containing the table metadata
 - python and R code snippets that build the query and call this package to download the data 
@@ -68,7 +77,7 @@ These files are all saved in the cache directory (default is `/tmp/UKCensusAPI`)
 
 The code snippets are designed to be copy/pasted into user code. The (cached) data and metadata can simply be loaded by user code as required.
 
-Note for R users - there is no direct R script for the interactive query largely due to the fact it will not work from within RStudio (due to the way it redirects stdin).
+Note for R users - there is no direct R script for the interactive query largely due to the fact it will not work from within RStudio (due to the way RStudio handles stdin).
 
 ### Data reuse
 
@@ -86,17 +95,17 @@ Existing queries can easily be modified to switch to a different geographical ar
 
 This allows, for example, users to write models where the geographical coverage and resolution can be user inputs.
 
-Examples are provided in [`geoquery.py`](examples/geoquery.py) and [`geoquery.R`](examples/geoquery.R).
+Examples of how to do this are in [`geoquery.py`](examples/geoquery.py) and [`geoquery.R`](examples/geoquery.R).
 
 ## Code
 
-- [`NomiswebApi.py`](ukcensusapi/NomiswebApi.py) - python class containing the core API functionality.
+- [`Nomisweb.py`](ukcensusapi/Nomisweb.py) - python class containing the core API functionality.
 - [`NomiswebApi.R`](R/NomiswebApi.R) - R wrapper for the above above python class.
 - [`Query.py`](ukcensusapi/Query.py) - python class containing the query functionality
 - [`Package.R`](R/Package.R) - R code that initialises the python module
 - [`interactive.py`](inst/scripts/interactive.py) - interactive python script for building queries and downloading data for later use
 - [`geoquery.py`](inst/examples/geoquery.py) - example code illustrating how the geography of an existing query can be easily modified
-- [`geoquery.py`](inst/examples/geoquery.py) - R version of the above
+- [`geoquery.R`](inst/examples/geoquery.R) - R version of the above
 
 Queries have three distinct subtypes:
 
