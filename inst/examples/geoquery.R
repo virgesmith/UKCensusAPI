@@ -1,5 +1,4 @@
 
-# this example code is an interim solution pending proper R-python integration
 library("UKCensusAPI")
 
 cacheDir = "/tmp/UKCensusAPI"

@@ -16,6 +16,17 @@ instance = function(cacheDir) {
   return(api)
 }
 
+#' get an instance of the python query (required to call any of the functions)
+#'
+#' @param api an instance of the ukcensusapi
+#' @return an instance of the query module
+#' @export
+queryInstance = function(api) {
+  # TODO can we have a function-static variable here?
+  query = Query$Query(api)
+  return(query)
+}
+
 #' Interactive metadata query
 #'
 #' This function calls an interactive script where the user selects a table, a geography, and selects fields, optionally filtering by value.

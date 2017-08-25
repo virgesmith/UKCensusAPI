@@ -93,5 +93,30 @@ test_that("geoquery example", {
   } else {
     path = "../../UKCensusAPI/examples/"
   }
-  source(paste0(path, "geoquery.R"))
+  # better to use system and Rscript?
+  ret = source(paste0(path, "geoquery.R"))
+  expect_true(class(ret) == "list")
+})
+
+test_that("code snippet", {
+  skip_if_no_python_api()
+
+  # generate a code snippet
+  table = "KS401EW"
+  meta = getMetadata(api, table)
+  queryParams = list(
+    CELL = "7...13",
+    geography = "1245710558...1245710560",
+    select = "GEOGRAPHY_CODE,CELL,OBS_VALUE",
+    date = "latest",
+    RURAL_URBAN = "0",
+    MEASURES = "20100"
+  )
+  query = UKCensusAPI::queryInstance(api)
+  query$write_code_snippets(table, meta, queryParams)
+
+  # run the R snippet in a separate process
+  script = paste0("Rscript ", api$cache_dir, table, ".R")
+  ret = system(script)
+  expect_true(ret == 0)
 })
