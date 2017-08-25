@@ -93,9 +93,13 @@ test_that("geoquery example", {
   } else {
     path = "../../UKCensusAPI/examples/"
   }
-  # better to use system and Rscript?
-  ret = source(paste0(path, "geoquery.R"))
-  expect_true(class(ret) == "list")
+  # # better to use system and Rscript?
+  # ret = source(paste0(path, "geoquery.R"))
+  # expect_true(class(ret) == "list")
+  # run the R snippet in a separate process
+  script = paste0("Rscript ", path, "geoquery.R")
+  ret = system(script)
+  expect_true(ret == 0)
 })
 
 test_that("code snippet", {
