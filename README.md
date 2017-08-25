@@ -90,12 +90,7 @@ Examples are provided in [`geoquery.py`](examples/geoquery.py) and [`geoquery.R`
 
 ## Code
 
-- [`NomiswebApi.py`](ukcensusapi/NomiswebApi.py) - python class containing the core API functionality:
-- - conversion from ONS table names geographical codes to the nomisweb internal equivalents.
-- - compression of geographic code lists into the shortest possible form (to minimise http header size issues).
-- - metadata, geographical, and data queries.
-- - appending the user's API key to queries.
-- - retrieving and cacheing of data.
+- [`NomiswebApi.py`](ukcensusapi/NomiswebApi.py) - python class containing the core API functionality.
 - [`NomiswebApi.R`](R/NomiswebApi.R) - R wrapper for the above above python class.
 - [`Query.py`](ukcensusapi/Query.py) - python class containing the query functionality
 - [`Package.R`](R/Package.R) - R code that initialises the python module
@@ -219,9 +214,8 @@ Writing python code snippet to /tmp/UKCensusAPI/KS401EW.py
 Writing R code snippet to /tmp/UKCensusAPI/KS401EW.R
 user@host:~$
 ```
-Regardless of whether you selected geography, or downloaded the data, the query builder will generate python and R code snippets for later use:
+Regardless of whether you selected geography, or downloaded the data, the query builder will generate python and R code snippets for later use.
 
-User can then copy and paste the generated code snippets into their models, modifying as necessary, to automate the download of the correct data.
 The generated python code snippet is:
 
 ```
@@ -276,4 +270,58 @@ queryParams = list(
 )
 KS401EW = UKCensusAPI::getData(api, table, table_internal, queryParams)
 ```
+Users can then copy and paste the generated code snippets into their models, modifying as necessary, to automate the download of the correct data. The metadata looks like this:
+
+```
+{
+  "description": "KS401EW - Dwellings, household spaces and accommodation type",
+  "fields": {
+    "RURAL_URBAN": {
+      "0": "Total",
+      "1": "Urban city and town in a sparse setting",
+      "2": "Urban major conurbation",
+      "3": "Urban minor conurbation",
+      "4": "Urban city and town",
+      "101": "Rural (total)",
+      "6": "Rural village in a sparse setting",
+      "7": "Rural hamlet and isolated dwellings in a sparse setting",
+      "8": "Rural town and fringe",
+      "9": "Rural village",
+      "10": "Rural hamlet and isolated dwellings",
+      "100": "Urban (total)",
+      "5": "Rural town and fringe in a sparse setting"
+    },
+    "FREQ": {
+      "A": "Annually"
+    },
+    "GEOGRAPHY": {
+      "2092957699": "England",
+      "2092957700": "Wales",
+      "2092957703": "England and Wales"
+    },
+    "MEASURES": {
+      "20100": "value",
+      "20301": "percent"
+    },
+    "CELL": {
+      "0": "All categories: Dwelling type",
+      "1": "Unshared dwelling",
+      "2": "Shared dwelling: Two household spaces",
+      "3": "Shared dwelling: Three or more household spaces",
+      "4": "All categories: Household spaces",
+      "5": "Household spaces with at least one usual resident",
+      "6": "Household spaces with no usual residents",
+      "7": "Whole house or bungalow: Detached",
+      "8": "Whole house or bungalow: Semi-detached",
+      "9": "Whole house or bungalow: Terraced (including end-terrace)",
+      "10": "Flat, maisonette or apartment: Purpose-built block of flats or tenement",
+      "11": "Flat, maisonette or apartment: Part of a converted or shared house (including bed-sits)",
+      "12": "Flat, maisonette or apartment: In a commercial building",
+      "13": "Caravan or other mobile or temporary structure"
+    }
+  },
+  "nomis_table": "NM_618_1"
+}
+```
+
 
