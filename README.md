@@ -21,6 +21,8 @@ The key should be defined in an environment variable, like so:
 user@host:~$ echo $NOMIS_API_KEY
 0x0000000000000000000000000000000000000000
 ```
+R users can use thet standard practice of storing the key in their `.Renviron` file: R will set the environment on startup, which will be visible to python.
+
 This avoids hard-coding the API key into code, which could easily end up in a publically accessible repo.
 
 Queries can be customised on geographical coverage, geographical resolution, and table fields, the latter can be filtered to include only the category values you require.
@@ -48,31 +50,63 @@ user@host:~/dev/UKCensusAPI$ ./setup.py test
 
 ## Usage
 
-Firstly users can execute a one-off interactive query where the user specifies:
-- a census table
-- the fields and categories required in the output
-- (optionally) geographical coverage and resolution
-- (optionally, if geography has been selected) whether to immediately download and cache the data
+### Interactive Query
 
-This produces:
+The first thing users may want to do is an interactive query where the user simply specifies the name of a census table. The script will then iterate over the categories within the table , prompting the user to select the categories and values they are interested in.
+
+The user is then prompted to (optionally) specify a geography for the data - a geographical region and a resolution.
+
+Finally, if the user has specified the geography, the script will ask the user if they want to  download the data.
+
+The script will then produce the following files:
+
+- a json file containing the table metadata
 - python and R code snippets that build the query and call this package to download the data 
 - (optionally, depending on above selections) the data itself (which is cached)
 
-The code snippets are designed to be copy/pasted into user code, or the (cached) data can simply be loaded by user code.
+These files are all saved in the cache directory (default is `/tmp/UKCensusAPI`).
 
-Note for R users - the interactive query functionality does not work within RStudio (due to its redirection of stdin), use a standalone R session.
+The code snippets are designed to be copy/pasted into user code. The (cached) data and metadata can simply be loaded by user code as required.
 
-Existing queries can easily be modified to switch to a different geographical area and/or a different geographical resolution. Examples are provided in [`geoquery.py`](examples/geoquery.py) and [`geoquery.R`](examples/geoquery.R).
+Note for R users - there is no direct R script for the interactive query largely due to the fact it will not work from within RStudio (due to the way it redirects stdin).
 
-#### Code
+### Data reuse
 
-- `NomiswebApi.py` - python class containing the API functionality 
-- `NomiswebApi.R` - R equivalent of above
-- `query.py` - interactive python script for building queries and downloading data for later use, can be called from R
+Existing cached data is always used in preference to downloading. The data is stored locally using a filename based on the table name and md5 hash of the query used to download the data. This way, different queries on the same table can be stored.
+
+To force the data to be downloaded, just delete the cached data. 
+
+### Query Reuse
+
+The code snippets can simply be inserted into user code, and the metadata (json) can be used as a guide for modifying the query, either manually or automatically.
+
+### Switching Geography
+
+Existing queries can easily be modified to switch to a different geographical area and/or a different geographical resolution. 
+
+This allows, for example, users to write models where the geographical coverage and resolution can be user inputs.
+
+Examples are provided in [`geoquery.py`](examples/geoquery.py) and [`geoquery.R`](examples/geoquery.R).
+
+## Code
+
+- [`NomiswebApi.py`](ukcensusapi/NomiswebApi.py) - python class containing the core API functionality:
+- - conversion from ONS table names geographical codes to the nomisweb internal equivalents.
+- - compression of geographic code lists into the shortest possible form (to minimise http header size issues).
+- - metadata, geographical, and data queries.
+- - appending the user's API key to queries.
+- - retrieving and cacheing of data.
+- [`NomiswebApi.R`](R/NomiswebApi.R) - R wrapper for the above above python class.
+- [`Query.py`](ukcensusapi/Query.py) - python class containing the query functionality
+- [`Package.R`](R/Package.R) - R code that initialises the python module
+- [`interactive.py`](inst/scripts/interactive.py) - interactive python script for building queries and downloading data for later use
+- [`geoquery.py`](inst/examples/geoquery.py) - example code illustrating how the geography of an existing query can be easily modified
+- [`geoquery.py`](inst/examples/geoquery.py) - R version of the above
 
 Queries have three distinct subtypes:
+
 - metadata: query a table for the fields and categories it contains
-- geographic: retrieve a list of area codes of a particular type within a given region of another (larger) type. 
+- geography: retrieve a list of area codes of a particular type within a given region of another (larger) type.
 - data: retrieve data from a table using a query built from the metadata and geography.
 
 Data is cached locally to avoid unnecessary requests to nomisweb.co.uk.
@@ -81,22 +115,15 @@ Using the interactive query builder, and a known table, you can select geography
 
 The query builder also prints python code that can be subsequently used in a non-interactive application that requires the data.
 
-#### NomiswebApi python Class
+### Public methods (python)
 
-This class handles:
-- conversion from ONS table names geographical codes to the nomisweb internal equivalents.
-- compression of geographic code lists into the shortest possible form (to minimise http header size issues).
-- metadata, geographical, and data queries.
-- appending the user's API key to queries.
-- retrieving and cacheing of data.
+TODO link to python function documentation...
 
-The class (currently) depends on a local data file `laMapping.csv` that maps local authority names to nomis internal codes.
+### Public functions (R)
 
-The class constructor requires you so specify a location for a cache directory and well as the file above.
+See the man pages, which can be accessed from RStudio using the command `?UKCensusAPI`
+TODO make this actually work
 
-### NomiswebApi R functions
-
-Provides the basic functionality to fetch data given a precompiled query, for querying tables for their metadata, and for generating new geographic coverage and resolution for modifying existing queries. 
 
 ### Interactive Query Builder
 
@@ -105,16 +132,19 @@ This functionality requires that you already know the name of the census table o
 If you're unsure about which table to query, Nomisweb provide a useful [table finder](https://www.nomisweb.co.uk/census/2011/data_finder). NB Not all census tables are available at all geographical resolutions, but the above link will enumerate the available resolutions for each table.
 
 
-#### Example
+## Interactive Query Example
 
 Run the script. You'll be prompted to enter the name of the census table of interest:
 
 <pre>
-user@host:~/dev/Mistral/python$ ./interactive.py 
+az@AzLaptop ~/dev/UKCensusAPI $ inst/scripts/interactive.py 
+Cache directory:  /tmp/UKCensusAPI/
+Cacheing local authority codes
 Nomisweb census data interactive query builder
 See README.md for details on how to use this package
 Census table: <b>KS401EW</b>
 </pre>
+
 The table description is displayed. The script then interates through the available fields.
 ```
 KS401EW - Dwellings, household spaces and accommodation type
@@ -180,54 +210,70 @@ You will then be prompted to choose whether to download the data immediately. If
 
 ```
 Getting data...
-Downloading and cacheing data: ../data/b8b663a9d3fb331a9612aee2d3203c57.tsv
-```
-Regardless of whether you selected geography, or downloaded the data, the query builder will generate python and R code snippets for later use:
-```
-Writing python code to KS401EW.py
+Writing metadata to  /tmp/UKCensusAPI/KS401EW_metadata.json
+Downloading and cacheing data: /tmp/UKCensusAPI/KS401EW_2d17ead209999cbc7a1e7f5a299ccba5.tsv
+Writing metadata to  /tmp/UKCensusAPI/KS401EW_metadata.json
 
-Writing R code to KS401EW.R
+Writing python code snippet to /tmp/UKCensusAPI/KS401EW.py
+
+Writing R code snippet to /tmp/UKCensusAPI/KS401EW.R
 user@host:~$
 ```
+Regardless of whether you selected geography, or downloaded the data, the query builder will generate python and R code snippets for later use:
+
 User can then copy and paste the generated code snippets into their models, modifying as necessary, to automate the download of the correct data.
 The generated python code snippet is:
 
 ```
-# KS401EW - Dwellings, household spaces and accommodation type
+"""
+KS401EW - Dwellings, household spaces and accommodation type
 
-# Code autogenerated by NomiswebApi
+Code autogenerated by UKCensusAPI
+(https://github.com/virgesmith/UKCensusAPI)
+"""
 
 # This code requires an API key, see the README.md for details
 
 # Query url:
-# https://www.nomisweb.co.uk/api/v01/dataset/NM_618_1.data.tsv?CELL=7...13&MEASURES=20100&RURAL_URBAN=0&date=latest&geography=1245710558...1245710660%2C1245714998...1245714998%2C1245715007...1245715007%2C1245715021...1245715022&select=GEOGRAPHY_CODE%2CCELL%2COBS_VALUE
+# https://www.nomisweb.co.uk/api/v01/dataset/NM_618_1.data.tsv?CELL=7...13&MEASURES=20100&RURAL_URBAN=0&date=latest&geography=1245714681...1245714688&select=GEOGRAPHY_CODE%2CCELL%2COBS_VALUE
 
-from NomiswebApi import NomiswebApi
-from collections import OrderedDict
-api = NomiswebApi("../data/", "../persistent_data/laMapping.csv")
-table = "NM_618_1"
-queryParams = {}
-queryParams[CELL] = "7...13"
-queryParams[date] = "latest"
-queryParams[RURAL_URBAN] = "0"
-queryParams[select] = "GEOGRAPHY_CODE,CELL,OBS_VALUE"
-queryParams[geography] = "1245710558...1245710660,1245714998...1245714998,1245715007...1245715007,1245715021...1245715022"
-queryParams[MEASURES] = "20100"
-KS401EW = api.getData(table, queryParams)
+import ukcensusapi.Nomisweb as CensusApi
 
+api = CensusApi.Nomisweb("/tmp/UKCensusAPI/")
+table = "KS401EW"
+table_internal = "NM_618_1"
+query_params = {}
+query_params["RURAL_URBAN"] = "0"
+query_params["select"] = "GEOGRAPHY_CODE,CELL,OBS_VALUE"
+query_params["date"] = "latest"
+query_params["geography"] = "1245714681...1245714688"
+query_params["MEASURES"] = "20100"
+query_params["CELL"] = "7...13"
+KS401EW = api.get_data(table, table_internal, query_params)
 ```
 The the R code:
 ```
 # KS401EW - Dwellings, household spaces and accommodation type
 
-# Code autogenerated by NomiswebApi
+# Code autogenerated by UKCensusAPI
+#https://github.com/virgesmith/UKCensusAPI
 
 # This code requires an API key, see the README.md for details
+# Query url: https://www.nomisweb.co.uk/api/v01/dataset/NM_618_1.data.tsv?CELL=7...13&MEASURES=20100&RURAL_URBAN=0&date=latest&geography=1245714681...1245714688&select=GEOGRAPHY_CODE%2CCELL%2COBS_VALUE
 
-source("NomiswebApi.R")
-cacheDir = "../data/"
-queryUrl = "https://www.nomisweb.co.uk/api/v01/dataset/NM_618_1.data.tsv?CELL=7...13&MEASURES=20100&RURAL_URBAN=0&date=latest&geography=1245710558...1245710660%2C1245714998...1245714998%2C1245715007...1245715007%2C1245715021...1245715022&select=GEOGRAPHY_CODE%2CCELL%2COBS_VALUE"
-KS401EW = NomiswebApi.getData(queryUrl, cacheDir)
-
+library("UKCensusAPI")
+cacheDir = "/tmp/UKCensusAPI/"
+api = UKCensusAPI::instance(cacheDir)
+table = "KS401EW"
+table_internal = "NM_618_1"
+queryParams = list(
+  RURAL_URBAN = "0",
+  select = "GEOGRAPHY_CODE,CELL,OBS_VALUE",
+  date = "latest",
+  geography = "1245714681...1245714688",
+  MEASURES = "20100",
+  CELL = "7...13"
+)
+KS401EW = UKCensusAPI::getData(api, table, table_internal, queryParams)
 ```
 
