@@ -109,3 +109,10 @@ geoCodes = function(api, coverage, resolution) {
   return(api$get_geo_codes(as.integer(coverage), as.integer(resolution)))
 }
 
+#' contextify
+#'
+#' TODO
+#' @export
+contextify = function(api, table, columnName, metadata) {
+  stopifnot("TODO" == "DONE")
+}

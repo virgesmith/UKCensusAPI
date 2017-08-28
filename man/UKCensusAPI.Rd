@@ -26,5 +26,7 @@ See README.md for detailed information and examples.
 \code{\link{queryInstance}}
 
 \code{\link{queryMetadata}}
+
+\code{\link{contextify}}
 }
 

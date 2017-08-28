@@ -1,3 +1,6 @@
+"""
+Nomisweb API.
+"""
 
 import os
 import json
@@ -14,6 +17,9 @@ import pandas as pd
 
 # The core functionality for accessing the www.nomisweb.co.uk API
 class Nomisweb:
+  """
+  A class.
+  """
 
   # static constants
   URL = "https://www.nomisweb.co.uk/"
@@ -37,6 +43,12 @@ class Nomisweb:
 
   # initialise, supplying a location to cache downloads
   def __init__(self, cache_dir):
+    """Constructor.
+    Args:
+        cache_dir: cache directory
+    Returns:
+        an instance.
+    """
     self.cache_dir = cache_dir
     # ensure cache_dir is interpreted as a directory
     if not self.cache_dir.endswith("/"):
@@ -54,15 +66,22 @@ class Nomisweb:
 
     # TODO how best to deal with site unavailable...
     try:
-      response = request.urlopen(self.URL, timeout=Nomisweb.Timeout)
+      request.urlopen(self.URL, timeout=Nomisweb.Timeout)
     except (HTTPError, URLError, timeout) as error:
       print('ERROR: ', error, ' accessing', self.URL)
 
     # static member
     Nomisweb.cached_lad_codes = self.__cache_lad_codes()
-    
-  def get_geo_codes(self, la_codes, code_type):
 
+  def get_geo_codes(self, la_codes, code_type):
+    """Get nomis geographical codes.
+
+    Args:
+        la_codes: local authority codes for the region
+        code_type: enumeration specifying the geographical resolution
+    Returns:
+        a string representation of the codes.
+    """
     # force input to be a list
     if not isinstance(la_codes, list):
       la_codes = [la_codes]
@@ -75,7 +94,7 @@ class Nomisweb:
 
       # use try-catch block to deal with any issues arising from the returned json
       # which are likely due to invalid/empty LA codes
-      try:  
+      try:
         n_results = len(rawdata["structure"]["codelists"]["codelist"][0]["code"])
         # seems a bit daft not to take advantage of the fact we know the length
         for j in range(0, n_results):
@@ -85,6 +104,12 @@ class Nomisweb:
     return self.__shorten(geo_codes)
 
   def get_lad_codes(self, la_names):
+    """method.
+    Args:
+        la_names: 
+    Returns:
+        codes.
+    """
     if not isinstance(la_names, list):
       la_names = [la_names]
     codes = []
@@ -94,6 +119,13 @@ class Nomisweb:
     return codes
 
   def get_url(self, table_internal, query_params):
+    """method.
+    Args:
+        arg: argument
+        ...
+    Returns:
+        a return value.
+    """
 
     # python dicts have nondeterministic order, see
     # https://stackoverflow.com/questions/14956313/why-is-dictionary-ordering-non-deterministic
@@ -109,7 +141,14 @@ class Nomisweb:
   # Two reasons for this:
   # - pandas/R dataframes conversion is done via matrix (which drops col names)
   # - reporting errors to R is useful (print statements aren't displayed in R(Studio))
-  def get_data(self, table, table_internal, query_params, r_compat = False):
+  def get_data(self, table, table_internal, query_params, r_compat=False):
+    """method.
+    Args:
+        arg: argument
+        ...
+    Returns:
+        a return value.
+    """
     query_params["uid"] = Nomisweb.KEY
     query_string = self.get_url(table_internal, query_params)
 
@@ -128,19 +167,24 @@ class Nomisweb:
         errormsg = "ERROR: Query returned no data. Check table and query parameters"
         if r_compat:
           return errormsg
-        else:
-          print(errormsg)
-          return
+        print(errormsg)
+        return
     else:
       print("Using cached data: " + filename)
 
     # now load from cache and return
     if r_compat:
       return filename
-    else:
-      return pd.read_csv(filename, delimiter='\t')
+    return pd.read_csv(filename, delimiter='\t')
 
   def get_metadata(self, table_name):
+    """method.
+    Args:
+        arg: argument
+        ...
+    Returns:
+        a return value.
+    """
     path = "api/v01/dataset/def.sdmx.json?"
     query_params = {"search": "*"+table_name+"*"}
 
@@ -186,6 +230,13 @@ class Nomisweb:
   # loads metadata from cached json if available, otherwises downloads from nomisweb.
   # NB category KEYs need to be converted from string to integer for this data to work properly, see convert_code
   def load_metadata(self, table_name):
+    """method.
+    Args:
+        arg: argument
+        ...
+    Returns:
+        a return value.
+    """
     filename = self.cache_dir + table_name + "_metadata.json"
     # if file not there, get from nomisweb
     if not os.path.isfile(filename):
@@ -260,6 +311,13 @@ class Nomisweb:
 
   # save metadata as JSON for future reference
   def write_metadata(self, table, meta):
+    """method.
+    Args:
+        arg: argument
+        ...
+    Returns:
+        a return value.
+    """
 
     filename = self.cache_dir + table + "_metadata.json" 
     print("Writing metadata to ", filename)
@@ -269,7 +327,14 @@ class Nomisweb:
   # append <column> numeric values with the string values from the metadata
   # NB the "numeric" values are stored as strings in both the table and the metadata
   # this doesnt need to be a member
-  def convert_code(self, table, column, metadata):
+  def contextify(self, table, column, metadata):
+    """method.
+    Args:
+        arg: argument
+        ...
+    Returns:
+        a return value.
+    """
 
     if not column in metadata["fields"]:
       print(column, " is not in metadata")

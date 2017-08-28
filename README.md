@@ -17,7 +17,7 @@ The code is primarily written in python, but we also supply an R interface (usin
 ### Software
 
 - python3, pip, numpy and pandas
-- R version 3.3.3 or higher (if using the R interface)
+- (optional) R version 3.3.3 or higher (if using the R interface)
 
 ### API key
 
@@ -126,8 +126,6 @@ TODO link to python function documentation...
 ### Public functions (R)
 
 See the man pages, which can be accessed from RStudio using the command `?UKCensusAPI`
-TODO make this actually work
-
 
 ### Interactive Query Builder
 
@@ -141,7 +139,7 @@ If you're unsure about which table to query, Nomisweb provide a useful [table fi
 Run the script. You'll be prompted to enter the name of the census table of interest:
 
 <pre>
-az@AzLaptop ~/dev/UKCensusAPI $ inst/scripts/interactive.py 
+user@host ~/dev/UKCensusAPI $ inst/scripts/interactive.py 
 Cache directory:  /tmp/UKCensusAPI/
 Cacheing local authority codes
 Nomisweb census data interactive query builder
@@ -332,5 +330,23 @@ Users can then copy and paste the generated code snippets into their models, mod
   "nomis_table": "NM_618_1"
 }
 ```
+If you've selected to download the data, a tsv file (like csv but with a tab separator) called `KS401EW_24e10481f275c9c65cda1afc53adaa2d.tsv` will be saved in the cache directory: 
 
+```
+"GEOGRAPHY_CODE"	"CELL"	"OBS_VALUE"
+"E02002330"	"7"	1736
+"E02002330"	"8"	743
+"E02002330"	"9"	224
+"E02002330"	"10"	106
+"E02002330"	"11"	13
+"E02002330"	"12"	7
+"E02002330"	"13"	0
+"E02002331"	"7"	597
+"E02002331"	"8"	797
+...
+```
+
+The data in this table has (for brevity and efficiency) the values "7" to "13" in the cell column, which are obviously meaningless without context. Meaning can be conveyed using the metadata that is also downloaded. It's probably best to leave this step until the result stage, but you can annotate a table, given a column name and the appropriate metadata, using the `contextify` function.
+
+TODO examples 
 

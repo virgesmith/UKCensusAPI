@@ -123,3 +123,7 @@ class Test(TestCase):
     self.assertTrue(os.system("python3 " + self.api.cache_dir + table + ".py") == 0)
     # fails on travis because R isnt installed 
     #self.assertTrue(os.system("Rscript " + self.api.cache_dir + table + ".R") == 0)
+
+  def test_contextify(self):
+    #TODO...
+    self.assertTrue(True)

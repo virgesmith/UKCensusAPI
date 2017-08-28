@@ -124,3 +124,7 @@ test_that("code snippet", {
   ret = system(script)
   expect_true(ret == 0)
 })
+
+test_that("contextify", {
+  # TODO
+})

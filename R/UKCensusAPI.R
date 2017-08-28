@@ -19,6 +19,8 @@
 #'
 #' \code{\link{queryMetadata}}
 #'
+#' \code{\link{contextify}}
+#'
 #' @docType package
 #' @name UKCensusAPI
 NULL
