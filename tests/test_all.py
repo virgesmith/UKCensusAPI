@@ -76,10 +76,10 @@ class Test(TestCase):
     
     # first ensure table is unmodified if column doesnt exist
     old_cols = len(table.columns)
-    self.api.convert_code(table, "NOT_THERE", meta)
+    self.api.contextify(table, "NOT_THERE", meta)
     self.assertTrue(len(table.columns) == old_cols)
     
-    self.api.convert_code(table, "CELL", meta)
+    self.api.contextify(table, "CELL", meta)
     
     self.assertTrue(table.at[0,"CELL_NAME"] == "Whole house or bungalow: Detached")
     self.assertTrue(table.at[1,"CELL_NAME"] == "Whole house or bungalow: Semi-detached")
@@ -123,7 +123,3 @@ class Test(TestCase):
     self.assertTrue(os.system("python3 " + self.api.cache_dir + table + ".py") == 0)
     # fails on travis because R isnt installed 
     #self.assertTrue(os.system("Rscript " + self.api.cache_dir + table + ".R") == 0)
-
-  def test_contextify(self):
-    #TODO...
-    self.assertTrue(True)
