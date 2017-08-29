@@ -6,7 +6,6 @@ export(getLADCodes)
 export(getData)
 export(getMetadata)
 export(queryMetadata)
-# TODO re-enable once fixed
-#export(contextify)
+export(contextify)
 
 importFrom("utils", "data", "read.csv")

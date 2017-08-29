@@ -22,6 +22,5 @@ api = instance(cacheDir)
 KS401EW = getData(api, table, table_internal, queryParams)
 
 # Add the context...
-# TODO dataframes not compatible, need a function to return just the column lookup (as a dict?)
-#contextify(api, table, "CELL", KS401EW)
+KS401EW = contextify(api, table, "CELL", KS401EW)
 head(KS401EW)

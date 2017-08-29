@@ -1,30 +1,3 @@
-# UKCensusAPI  R interface
-
-# Store your api key in environment variable the "NOMIS_API_KEY"
-
-# TODO move the two functions below to UKCensusAPI.R and rename this file to Nomisweb.R
-
-#' get an instance of the python API (required to call any of the functions)
-#'
-#' @param cacheDir directory to cache data
-#' @return an instance of the ukcensusweb api
-#' @export
-instance = function(cacheDir) {
-  # TODO can we have a function-static variable here?
-  api = Api$Nomisweb(cacheDir)
-  return(api)
-}
-
-#' get an instance of the python query (required to call any of the functions)
-#'
-#' @param api an instance of the ukcensusapi
-#' @return an instance of the query module
-#' @export
-queryInstance = function(api) {
-  # TODO can we have a function-static variable here?
-  query = Query$Query(api)
-  return(query)
-}
 
 #' Interactive metadata query
 #'
@@ -101,5 +74,9 @@ geoCodes = function(api, coverage, resolution) {
 #' @return no return value, table is modified in-place
 #' @export
 contextify = function(api, tableName, columnName, table) {
-  api$contextify(tableName, columnName, table)
+  metadata = api$load_metadata(tableName)
+  # append a column using the value lookup provided by the metadata...
+  # Look at R go! such exquisitely beautiful and intuitive syntax
+  table[paste0(columnName, "_NAME")] = unlist(metadata$fields[columnName][[1]][as.character(table[[columnName]])])
+  return(table)
 }

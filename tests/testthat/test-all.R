@@ -85,6 +85,32 @@ test_that("geoCodes single OA", {
   expect_true(geoCodes(api, 1946157124, 299) == "1254148629...1254150034,1254267588...1254267709")
 })
 
+test_that("contextify", {
+  skip_if_no_python_api()
+  table = "KS401EW"
+  table_internal = "NM_618_1"
+  query = list(date = "latest",
+               geography = "1245714681...1245714688",
+               CELL = "7...13",
+               RURAL_URBAN="0",
+               measures = "20100",
+               select = "GEOGRAPHY_CODE,CELL,OBS_VALUE")
+  data = UKCensusAPI::getData(api, table, table_internal, query)
+  column = "CELL"
+
+  data = contextify(api, table, column, data)
+  # check table has column
+  expect_true("CELL_NAME" %in% colnames(data))
+  # then check values
+  expect_true(data$CELL_NAME[[1]] == "Whole house or bungalow: Detached")
+  expect_true(data$CELL_NAME[[2]] == "Whole house or bungalow: Semi-detached")
+  expect_true(data$CELL_NAME[[3]] == "Whole house or bungalow: Terraced (including end-terrace)")
+  expect_true(data$CELL_NAME[[4]] == "Flat, maisonette or apartment: Purpose-built block of flats or tenement")
+  expect_true(data$CELL_NAME[[5]] == "Flat, maisonette or apartment: Part of a converted or shared house (including bed-sits)")
+  expect_true(data$CELL_NAME[[6]] == "Flat, maisonette or apartment: In a commercial building")
+  expect_true(data$CELL_NAME[[7]] == "Caravan or other mobile or temporary structure")
+})
+
 test_that("geoquery example", {
   skip_if_no_python_api()
   # hack to get test to run as part of checks
@@ -98,6 +124,23 @@ test_that("geoquery example", {
   # expect_true(class(ret) == "list")
   # run the R snippet in a separate process
   script = paste0("Rscript ", path, "geoquery.R")
+  ret = system(script)
+  expect_true(ret == 0)
+})
+
+test_that("contextify example", {
+  skip_if_no_python_api()
+  # hack to get test to run as part of checks
+  if (dir.exists("../../inst/examples")) {
+    path = "../../inst/examples/"
+  } else {
+    path = "../../UKCensusAPI/examples/"
+  }
+  # # better to use system and Rscript?
+  # ret = source(paste0(path, "geoquery.R"))
+  # expect_true(class(ret) == "list")
+  # run the R snippet in a separate process
+  script = paste0("Rscript ", path, "contextify.R")
   ret = system(script)
   expect_true(ret == 0)
 })
@@ -124,27 +167,3 @@ test_that("code snippet", {
   ret = system(script)
   expect_true(ret == 0)
 })
-
-# # TODO pending fix for dataframe compat issues
-# test_that("contextify", {
-#   skip_if_no_python_api()
-#   table = "KS401EW"
-#   table_internal = "NM_618_1"
-#   query = list(date = "latest",
-#                geography = "1245714681...1245714688",
-#                CELL = "7...13",
-#                RURAL_URBAN="0",
-#                measures = "20100",
-#                select = "GEOGRAPHY_CODE,CELL,OBS_VALUE")
-#   data = UKCensusAPI::getData(api, table, table_internal, query)
-#   column = "CELL"
-#   # TODO load from cached?
-#   metadata = UKCensusAPI::getMetadata(api, table)
-#
-#   UKCensusAPI::contextify(api, table, column, data)
-#   # check table has column
-#   expect_true("CELL_NAME" %in% table)
-#   # then check values
-#   expect_true(table$CELL_NAME[[1]] == "blah")
-# })
-

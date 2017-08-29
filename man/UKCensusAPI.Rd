@@ -9,6 +9,7 @@
 R package for automating queries and downloads of UK census data.
 }
 \details{
+Put your api key in .Renviron as "NOMIS_API_KEY"
 See README.md for detailed information and examples.
 }
 \section{Functions}{
