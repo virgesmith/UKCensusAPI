@@ -10,14 +10,24 @@ This package provides both a `python` and an `R` wrapper around the nomisweb cen
 - modifying the geography of queries
 - adding descriptive information to tables (from metadata)
 
-The code is primarily written in python, but we also supply an R interface (using the `reticulate` package) for convenience.
+UKCensusAPI is essentially a python package, but also come with an R interface (using the `reticulate` package).
+
+Queries can be customised on geographical coverage, geographical resolution, and table fields, the latter can be filtered to include only the category values you require.
+
+The package generates reusable code snippets that can be copied and pasted into user code.
+
+Since census data is essentially static, it makes little sense to download the data every time it is requested: all data downloads are cached.
+
+Example code is also provided which:
+- shows how an existing query can easily be modified in terms of geographical coverage.
+- shows how raw data can be annotated with meaningful metadata
 
 ## Prerequisites
 
 ### Software
 
 - python3, pip, numpy and pandas
-- (optional) R version 3.3.3 or higher (if using the R interface)
+- R version 3.3.3 or higher (optional, if using the R interface)
 
 ### API key
 
@@ -30,13 +40,9 @@ The key should be defined in an environment variable, like so:
 user@host:~$ echo $NOMIS_API_KEY
 0x0000000000000000000000000000000000000000
 ```
-R users can use the standard practice of storing the key in their `.Renviron` file: R will set the environment on startup, which will be visible to python.
+R users can (should) store the key in their `.Renviron` file: R will set the environment on startup, which will be visible to a python session instantiated from R. (A standalone python session will not see it.)
 
 This avoids hard-coding the API key into code, which could easily end up in a publically accessible repo.
-
-Queries can be customised on geographical coverage, geographical resolution, and table fields, the latter can be filtered to include only the category values you require.
-
-Since census data is essentially static, it makes little sense to download the data every time it is requested: all data downloads are cached.
 
 ## Installation
 
@@ -58,6 +64,20 @@ user@host:~/dev/UKCensusAPI$ ./setup.py test
 ```
 
 ## Usage
+
+### Queries
+
+Queries have three distinct subtypes:
+
+- metadata: query a table for the fields and categories it contains
+- geography: retrieve a list of area codes of a particular type within a given region of another (larger) type.
+- data: retrieve data from a table using a query built from the metadata and geography.
+
+Data and metadata are cached locally to minimise requests to nomisweb.co.uk.
+
+Using the interactive query builder, and a known table, you can constuct a programmatically reusable query selecting categories, specific category values, and (optionally) geography, See example below. 
+
+Queries can subsequently be programmatically modified to switched to a different geographical region and/or resolution.
 
 ### Interactive Query
 
@@ -95,46 +115,21 @@ Existing queries can easily be modified to switch to a different geographical ar
 
 This allows, for example, users to write models where the geographical coverage and resolution can be user inputs.
 
-Examples of how to do this are in [`geoquery.py`](examples/geoquery.py) and [`geoquery.R`](examples/geoquery.R).
+Examples of how to do this are in [`geoquery.py`](inst/examples/geoquery.py) and [`geoquery.R`](inst/examples/geoquery.R).
 
-## Code
+### Annotating Data
 
-- [`Nomisweb.py`](ukcensusapi/Nomisweb.py) - python class containing the core API functionality.
-- [`NomiswebApi.R`](R/NomiswebApi.R) - R wrapper for the above above python class.
-- [`Query.py`](ukcensusapi/Query.py) - python class containing the query functionality
-- [`Package.R`](R/Package.R) - R code that initialises the python module
-- [`interactive.py`](inst/scripts/interactive.py) - interactive python script for building queries and downloading data for later use
-- [`geoquery.py`](inst/examples/geoquery.py) - example code illustrating how the geography of an existing query can be easily modified
-- [`geoquery.R`](inst/examples/geoquery.R) - R version of the above
+Queries will download data with a minimal memory footprint, but also metadata that provides meaning. Whilst this makes manipulating and querying the data efficient, it means that the data itself lacks human-readability. For this reason the package provides a way of annotating tables with contextual data derived from the table metadata. 
 
-Queries have three distinct subtypes:
+Examples of how to do this are in [`contextify.py`](inst/examples/contextify.py) and [`contextify.R`](inst/examples/contextify.R).
 
-- metadata: query a table for the fields and categories it contains
-- geography: retrieve a list of area codes of a particular type within a given region of another (larger) type.
-- data: retrieve data from a table using a query built from the metadata and geography.
-
-Data is cached locally to avoid unnecessary requests to nomisweb.co.uk.
-
-Using the interactive query builder, and a known table, you can select geography, categories and category values. The code will assemble the query, then download and cache the data.
-
-The query builder also prints python code that can be subsequently used in a non-interactive application that requires the data.
-
-### Public methods (python)
-
-TODO link to python function documentation...
-
-### Public functions (R)
-
-See the man pages, which can be accessed from RStudio using the command `?UKCensusAPI`
-
-### Interactive Query Builder
+## Interactive Query Builder
 
 This functionality requires that you already know the name of the census table of interest, and want to define a custom query on that table, for a specific geography at a specific resolution.
 
 If you're unsure about which table to query, Nomisweb provide a useful [table finder](https://www.nomisweb.co.uk/census/2011/data_finder). NB Not all census tables are available at all geographical resolutions, but the above link will enumerate the available resolutions for each table.
 
-
-## Interactive Query Example
+### Interactive Query - Example
 
 Run the script. You'll be prompted to enter the name of the census table of interest:
 
@@ -346,9 +341,7 @@ If you've selected to download the data, a tsv file (like csv but with a tab sep
 ...
 ```
 
-The data in this table has (for brevity and efficiency) the values "7" to "13" in the cell column, which are obviously meaningless without context. Meaning can be conveyed using the metadata that is also downloaded. It's probably best to leave this step until the result stage, but you can annotate a table, given a column name and the appropriate metadata, using the `contextify` function.
-
-TODO examples 
+The data in this table has (for brevity and efficiency) the values "7" to "13" in the cell column, which are obviously meaningless without context. Meaning can be conveyed using the metadata that is also downloaded and cached locally. It's probably best to leave this step until the result stage, but you can annotate a table, given a column name and the appropriate metadata, using the `contextify` function, like this:
 
 ```
 "GEOGRAPHY_CODE"	"CELL"	"OBS_VALUE"	"CELL_NAME"
@@ -363,4 +356,15 @@ TODO examples
 "E02002331"	"8"	797	"Whole house or bungalow: Semi-detached"
 ...
 ```
+See the example code in [contextify.py](inst/examples/contextify.py) and/or [contextify.R](inst/examples/contextify.R)
+
+## Detailed Help
+
+### Public methods (python)
+
+TODO link to python function documentation...
+
+### Public functions (R)
+
+See the man pages, which can be accessed from RStudio using the command `?UKCensusAPI`
 
