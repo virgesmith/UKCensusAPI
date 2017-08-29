@@ -71,7 +71,7 @@ geoCodes = function(api, coverage, resolution) {
 #' @param tableName name of census table
 #' @param columnName name of column in the table
 #' @param table the table
-#' @return no return value, table is modified in-place
+#' @return the table containing a new column with the contextual data
 #' @export
 contextify = function(api, tableName, columnName, table) {
   metadata = api$load_metadata(tableName)
