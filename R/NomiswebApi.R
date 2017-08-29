@@ -2,8 +2,7 @@
 
 # Store your api key in environment variable the "NOMIS_API_KEY"
 
-# TODO should these be removed?
-#library(reticulate)
+# TODO move the two functions below to UKCensusAPI.R and rename this file to Nomisweb.R
 
 #' get an instance of the python API (required to call any of the functions)
 #'
@@ -38,8 +37,6 @@ queryMetadata = function() {
     cat("This interactive code cannot be run from within RStudio due to the way RStudio handles stdin.\n")
     cat("Please either run it from a standalone R session, or call the python code (interactive.py) directly\n")
   } else {
-    # TODO use reticulate when have worked out how to tell it to use python3
-    # oddly defaults to 3.5 in rstudio, 2.7 on cmd line (which fails)
     system("scripts/interactive.py")
   }
 }
@@ -71,22 +68,6 @@ getData = function(api, tableName, internalName, query) {
   return(read.csv(filename, sep="\t", stringsAsFactors = FALSE))
 }
 
-# getData = function(queryUrl, cacheDir) {
-#   # append API key to query
-#   queryUrl = paste0(queryUrl, "&uid=", Sys.getenv("NOMIS_API_KEY"))
-#
-#   # in typical R fashion, digest will do something nonstandard unless you override defaulted arguments
-#   filename <- paste0(cacheDir, digest(queryUrl, "md5", serialize=F), ".tsv")
-#   # used cached data if available, otherwise download. md5sum should ensure data file exactly matches query
-#   if (!file.exists(filename)) {
-#     curl::curl_download(queryUrl, filename)
-#   } else {
-#     print(paste("using cached data:", filename))
-#   }
-#   result <- read.csv(filename, sep="\t", stringsAsFactors = FALSE)
-#   return (result)
-# }
-
 #' Map local authority names to nomisweb codes (python)
 #'
 #' @param api an instance of the UKCensusData API.
@@ -111,8 +92,14 @@ geoCodes = function(api, coverage, resolution) {
 
 #' contextify
 #'
-#' TODO
+#' Append table with a contextual column.
+#'
+#' @param api the instance of the an integer vector of nomisweb geographical codes
+#' @param tableName name of census table
+#' @param columnName name of column in the table
+#' @param table the table
+#' @return no return value, table is modified in-place
 #' @export
-contextify = function(api, table, columnName, metadata) {
-  stopifnot("TODO" == "DONE")
+contextify = function(api, tableName, columnName, table) {
+  api$contextify(tableName, columnName, table)
 }

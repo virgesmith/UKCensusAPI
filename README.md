@@ -350,3 +350,17 @@ The data in this table has (for brevity and efficiency) the values "7" to "13" i
 
 TODO examples 
 
+```
+"GEOGRAPHY_CODE"	"CELL"	"OBS_VALUE"	"CELL_NAME"
+"E02002330"	"7"	1736	"Whole house or bungalow: Detached"
+"E02002330"	"8"	743	"Whole house or bungalow: Semi-detached"
+"E02002330"	"9"	224	"Whole house or bungalow: Terraced (including end-terrace)"
+"E02002330"	"10"	106	"Flat, maisonette or apartment: Purpose-built block of flats or tenement"
+"E02002330"	"11"	13	"Flat, maisonette or apartment: Part of a converted or shared house (including bed-sits)"
+"E02002330"	"12"	7	"Flat, maisonette or apartment: In a commercial building"
+"E02002330"	"13"	0	"Caravan or other mobile or temporary structure"
+"E02002331"	"7"	597	"Whole house or bungalow: Detached"
+"E02002331"	"8"	797	"Whole house or bungalow: Semi-detached"
+...
+```
+

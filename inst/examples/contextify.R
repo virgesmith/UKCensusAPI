@@ -18,14 +18,10 @@ queryParams = list(
 
 api = instance(cacheDir)
 
-# Define the new region and resolution
-coverage = c("City of London")
-resolution = 299 # OA - see NomiswebApi.py
-
-# Modify the query
-coverageCodes = getLADCodes(api, coverage)
-queryParams["geography"] = geoCodes(api, coverageCodes, resolution)
-
-# Fetch the new data
+# Fetch the data
 KS401EW = getData(api, table, table_internal, queryParams)
 
+# Add the context...
+# TODO dataframes not compatible, need a function to return just the column lookup (as a dict?)
+#contextify(api, table, "CELL", KS401EW)
+head(KS401EW)

@@ -60,7 +60,6 @@ class Test(TestCase):
   def test_get_and_add_descriptive_column(self):
 
     table_name = "KS401EW"
-    # try to load locally first
     meta = self.api.load_metadata(table_name)
 
     query_params = {}
@@ -76,10 +75,10 @@ class Test(TestCase):
     
     # first ensure table is unmodified if column doesnt exist
     old_cols = len(table.columns)
-    self.api.contextify(table, "NOT_THERE", meta)
+    self.api.contextify(table_name, "NOT_THERE", table)
     self.assertTrue(len(table.columns) == old_cols)
     
-    self.api.contextify(table, "CELL", meta)
+    self.api.contextify(table_name, "CELL", table)
     
     self.assertTrue(table.at[0,"CELL_NAME"] == "Whole house or bungalow: Detached")
     self.assertTrue(table.at[1,"CELL_NAME"] == "Whole house or bungalow: Semi-detached")
@@ -102,10 +101,16 @@ class Test(TestCase):
   def test_get_geog_from_codes(self):
     result = self.query.api.get_geo_codes([Api.Nomisweb.EnglandWales], Api.Nomisweb.LAD)
     self.assertEqual(result, '1946157057...1946157404')
-    
+
+  # test example code
+
   def test_geoquery(self):
     import inst.examples.geoquery as eg_geo
     eg_geo.main()
+
+  def test_contextify(self):
+    import inst.examples.contextify as eg_cont
+    eg_cont.main()
 
   # just checks code snippet runs ok (i.e. returns 0)
   def test_code_snippet(self):

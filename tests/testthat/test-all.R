@@ -125,6 +125,26 @@ test_that("code snippet", {
   expect_true(ret == 0)
 })
 
-test_that("contextify", {
-  # TODO
-})
+# # TODO pending fix for dataframe compat issues
+# test_that("contextify", {
+#   skip_if_no_python_api()
+#   table = "KS401EW"
+#   table_internal = "NM_618_1"
+#   query = list(date = "latest",
+#                geography = "1245714681...1245714688",
+#                CELL = "7...13",
+#                RURAL_URBAN="0",
+#                measures = "20100",
+#                select = "GEOGRAPHY_CODE,CELL,OBS_VALUE")
+#   data = UKCensusAPI::getData(api, table, table_internal, query)
+#   column = "CELL"
+#   # TODO load from cached?
+#   metadata = UKCensusAPI::getMetadata(api, table)
+#
+#   UKCensusAPI::contextify(api, table, column, data)
+#   # check table has column
+#   expect_true("CELL_NAME" %in% table)
+#   # then check values
+#   expect_true(table$CELL_NAME[[1]] == "blah")
+# })
+

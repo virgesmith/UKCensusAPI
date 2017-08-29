@@ -4,8 +4,20 @@
 \alias{contextify}
 \title{contextify}
 \usage{
-contextify(api, table, columnName, metadata)
+contextify(api, tableName, columnName, table)
+}
+\arguments{
+\item{api}{the instance of the an integer vector of nomisweb geographical codes}
+
+\item{tableName}{name of census table}
+
+\item{columnName}{name of column in the table}
+
+\item{table}{the table}
+}
+\value{
+no return value, table is modified in-place
 }
 \description{
-TODO
+Append table with a contextual column.
 }

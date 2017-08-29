@@ -327,7 +327,7 @@ class Nomisweb:
   # append <column> numeric values with the string values from the metadata
   # NB the "numeric" values are stored as strings in both the table and the metadata
   # this doesnt need to be a member
-  def contextify(self, table, column, metadata):
+  def contextify(self, tableName, column, table):
     """method.
     Args:
         arg: argument
@@ -335,6 +335,8 @@ class Nomisweb:
     Returns:
         a return value.
     """
+
+    metadata = self.load_metadata(tableName)
 
     if not column in metadata["fields"]:
       print(column, " is not in metadata")
