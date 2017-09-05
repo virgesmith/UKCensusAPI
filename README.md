@@ -62,6 +62,10 @@ user@host:~/dev/UKCensusAPI$ ./setup.py test
 ```
 > devtools::install_github("virgesmith/UKCensusAPI")
 ```
+Set the `RETICULATE_PYTHON` environment variable (in .Renviron?) to the python3 interpreter, e.g.
+```
+RETICULATE_PYTHON=$(which python3)
+```
 
 ## Usage
 
