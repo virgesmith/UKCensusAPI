@@ -18,7 +18,7 @@ import pandas as pd
 # The core functionality for accessing the www.nomisweb.co.uk API
 class Nomisweb:
   """
-  A class.
+  TODO A class.
   """
 
   # static constants
@@ -58,11 +58,10 @@ class Nomisweb:
       # TODO check dir created
     if Nomisweb.KEY is None:
       print("Warning - no API key found, downloads may be truncated.\n"
-            "Set the KEY value in the environment variable NOMIS_API_KEY.\n"
+            "Set the key value in the environment variable NOMIS_API_KEY.\n"
             "Register at www.nomisweb.co.uk to obtain a key")
 
     print("Cache directory: ", self.cache_dir)
-    print("Cacheing local authority codes")
 
     # TODO how best to deal with site unavailable...
     try:
@@ -243,6 +242,7 @@ class Nomisweb:
       print(filename, " not found, downloading...")
       return self.get_metadata(table_name)
     else:
+      print(filename, " found, using cached LAD codes...")
       with open(filename) as metafile:
         meta = json.load(metafile)
 
@@ -253,15 +253,30 @@ class Nomisweb:
   # download and cache the nomis codes for local authorities
   def __cache_lad_codes(self):
 
-    data = self.__fetch_json("api/v01/dataset/NM_144_1/geography/" \
-         + str(Nomisweb.EnglandWales) + "TYPE" + str(Nomisweb.LAD) + ".def.sdmx.json?", {})
-    if data == {}:
-      return []
-    rawfields = data["structure"]["codelists"]["codelist"][0]["code"]
+    filename = self.cache_dir + "lad_codes.json"
 
-    codes = {}
-    for rawfield in rawfields:
-      codes[rawfield["description"]["value"]] = rawfield["value"]
+    if not os.path.isfile(filename):
+      print(filename, "not found, downloading LAD codes...")
+
+      data = self.__fetch_json("api/v01/dataset/NM_144_1/geography/" \
+          + str(Nomisweb.EnglandWales) + "TYPE" + str(Nomisweb.LAD) + ".def.sdmx.json?", {})
+      if data == {}:
+        return []
+
+      rawfields = data["structure"]["codelists"]["codelist"][0]["code"]
+      codes = {}
+      for rawfield in rawfields:
+        codes[rawfield["description"]["value"]] = rawfield["value"]
+      print("Writing LAD codes to ", filename)
+
+      # save LAD codes
+      with open(filename, "w") as metafile:
+        json.dump(codes, metafile, indent=2)
+      
+    else:
+      print("using cached LAD codes:", filename)
+      with open(filename) as cached_ladcodes:
+        codes = json.load(cached_ladcodes)
     return codes
 
   # given a list of integer codes, generates a string using the nomisweb shortened form
