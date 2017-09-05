@@ -80,7 +80,7 @@ class Test(TestCase):
 
     self.api.contextify(table_name, "CELL", table)
 
-    self.assertTrue(table.at[0, "CLLL_NAME"] == "Whole house or bungalow: Detached")
+    self.assertTrue(table.at[0, "CELL_NAME"] == "Whole house or bungalow: Detached")
     self.assertTrue(table.at[1, "CELL_NAME"] == "Whole house or bungalow: Semi-detached")
     self.assertTrue(table.at[2, "CELL_NAME"] == "Whole house or bungalow: Terraced (including end-terrace)")
     self.assertTrue(table.at[3, "CELL_NAME"] == "Flat, maisonette or apartment: Purpose-built block of flats or tenement")
