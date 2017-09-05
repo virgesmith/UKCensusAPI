@@ -56,7 +56,7 @@ class Test(TestCase):
     table = self.api.get_data(table, table_internal, query_params)
     self.assertEqual(table.shape, (21, 3))
     self.assertEqual(sum(table.OBS_VALUE), 8214)
-    
+
   def test_get_and_add_descriptive_column(self):
 
     table_name = "KS401EW"
@@ -72,21 +72,21 @@ class Test(TestCase):
     table = self.api.get_data(table_name, meta["nomis_table"], query_params)
     self.assertEqual(table.shape, (21, 3))
     self.assertEqual(sum(table.OBS_VALUE), 8214)
-    
+
     # first ensure table is unmodified if column doesnt exist
     old_cols = len(table.columns)
     self.api.contextify(table_name, "NOT_THERE", table)
     self.assertTrue(len(table.columns) == old_cols)
-    
+
     self.api.contextify(table_name, "CELL", table)
-    
-    self.assertTrue(table.at[0,"CELL_NAME"] == "Whole house or bungalow: Detached")
-    self.assertTrue(table.at[1,"CELL_NAME"] == "Whole house or bungalow: Semi-detached")
-    self.assertTrue(table.at[2,"CELL_NAME"] == "Whole house or bungalow: Terraced (including end-terrace)")
-    self.assertTrue(table.at[3,"CELL_NAME"] == "Flat, maisonette or apartment: Purpose-built block of flats or tenement")
-    self.assertTrue(table.at[4,"CELL_NAME"] == "Flat, maisonette or apartment: Part of a converted or shared house (including bed-sits)")
-    self.assertTrue(table.at[5,"CELL_NAME"] == "Flat, maisonette or apartment: In a commercial building")
-    self.assertTrue(table.at[6,"CELL_NAME"] == "Caravan or other mobile or temporary structure")
+
+    self.assertTrue(table.at[0, "CLLL_NAME"] == "Whole house or bungalow: Detached")
+    self.assertTrue(table.at[1, "CELL_NAME"] == "Whole house or bungalow: Semi-detached")
+    self.assertTrue(table.at[2, "CELL_NAME"] == "Whole house or bungalow: Terraced (including end-terrace)")
+    self.assertTrue(table.at[3, "CELL_NAME"] == "Flat, maisonette or apartment: Purpose-built block of flats or tenement")
+    self.assertTrue(table.at[4, "CELL_NAME"] == "Flat, maisonette or apartment: Part of a converted or shared house (including bed-sits)")
+    self.assertTrue(table.at[5, "CELL_NAME"] == "Flat, maisonette or apartment: In a commercial building")
+    self.assertTrue(table.at[6, "CELL_NAME"] == "Caravan or other mobile or temporary structure")
 
   def test_get_geog_from_names(self):
     result = self.query.get_geog_from_names(["Leeds"], Api.Nomisweb.OA)
@@ -114,7 +114,7 @@ class Test(TestCase):
 
   # just checks code snippet runs ok (i.e. returns 0)
   def test_code_snippet(self):
-    table = "KS401EW" 
+    table = "KS401EW"
     meta = self.api.get_metadata(table)
     query_params = {}
     query_params["CELL"] = "7...13"
@@ -126,5 +126,5 @@ class Test(TestCase):
 
     self.query.write_code_snippets(table, meta, query_params)
     self.assertTrue(os.system("python3 " + self.api.cache_dir + table + ".py") == 0)
-    # fails on travis because R isnt installed 
+    # fails on travis because R isnt installed
     #self.assertTrue(os.system("Rscript " + self.api.cache_dir + table + ".R") == 0)

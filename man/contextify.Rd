@@ -16,7 +16,7 @@ contextify(api, tableName, columnName, table)
 \item{table}{the table}
 }
 \value{
-no return value, table is modified in-place
+the table containing a new column with the contextual data
 }
 \description{
 Append table with a contextual column.
