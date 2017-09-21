@@ -1,7 +1,7 @@
 # UK Census Data API
 
 [![Build Status](https://travis-ci.org/virgesmith/UKCensusAPI.png?branch=master)](https://travis-ci.org/virgesmith/UKCensusAPI) [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
-[![JOSS status](http://joss.theoj.org/papers/506e8826b77d22fe9a6795717aa794be/status.svg)](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a)
+[![JOSS status](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a/status.svg)](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a)
 
 This package provides both a `python` and an `R` wrapper around the nomisweb census data API, enabling:
 
