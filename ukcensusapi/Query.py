@@ -41,7 +41,7 @@ class Query:
     add_geog = input("Add geography? (y/N): ") == "y"
     if add_geog:
       query_params["geography"] = self.__add_geog()
-      print(query_params)
+      #print(query_params)
 
       get_data = input("Get data now? (y/N): ") == "y"
       if get_data:
