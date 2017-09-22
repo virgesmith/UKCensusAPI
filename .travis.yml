@@ -37,36 +37,37 @@ matrix:
     #     - ./setup.py install
     #   dist: trusty
 
-    # - language: r
-    #   r: devel
-    #   env:
-    #     - RETICULATE_PYTHON=$(which python3)
-    #   # install the python package first
-    #   before_install:
-    #     - pip3 install numpy pandas
-    #     - ./setup.py install
-    #   dist: trusty
+    - language: r
+      r: devel
+      env:
+        - RETICULATE_PYTHON=$(which python3)
+      # install the python package first
+      before_install:
+        - pyenv global system 3.5
+        - pip3 install numpy pandas
+        - ./setup.py install
+      dist: trusty
 
-    - language: python
-      python: 3.4
-      install:
-        - pip install -r requirements.txt
-      script:
-        - python setup.py test
+    # - language: python
+    #   python: 3.4
+    #   install:
+    #     - pip install -r requirements.txt
+    #   script:
+    #     - python setup.py test
 
-    - language: python
-      python: 3.5
-      install:
-        - pip install -r requirements.txt
-      script:
-        - python setup.py test
+    # - language: python
+    #   python: 3.5
+    #   install:
+    #     - pip install -r requirements.txt
+    #   script:
+    #     - python setup.py test
 
-    - language: python
-      python: 3.6
-      install:
-        - pip install -r requirements.txt
-      script:
-        - python setup.py test
+    # - language: python
+    #   python: 3.6
+    #   install:
+    #     - pip install -r requirements.txt
+    #   script:
+    #     - python setup.py test
 
 warnings_are_errors: false
 
