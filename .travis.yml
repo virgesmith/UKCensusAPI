@@ -20,7 +20,7 @@ matrix:
         - RETICULATE_PYTHON=$(which python3)
       # install the python package first
       before_install:
-        - pip3 install numpy pandas
+        - pip install -r requirements.txt
         - ./setup.py install
       dist: trusty
 
