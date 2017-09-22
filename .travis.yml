@@ -4,9 +4,23 @@ sudo: false
 
 matrix:
   include:
+    # - language: r
+    #   r: oldrel
+    #   # install the python package first
+    #   addons:
+    #     apt:
+    #       packages:
+    #       - "python3"
+    #       - "python3-pip"
+    #   env:
+    #     - RETICULATE_PYTHON=$(which python3)
+    #   before_install:
+    #     - pip3 install numpy pandas
+    #     - ./setup.py install
+    #   dist: trusty
+
     - language: r
-      r: oldrel
-      # install the python package first
+      r: release
       addons:
         apt:
           packages:
@@ -14,52 +28,42 @@ matrix:
           - "python3-pip"
       env:
         - RETICULATE_PYTHON=$(which python3)
-      before_install:
-        - pip3 install numpy pandas
-        - ./setup.py install
-      dist: precise
-
-    - language: r
-      r: release
-      env:
-        - RETICULATE_PYTHON=$(which python3)
       # install the python package first
       before_install:
-        - sudo apt install python3-pip -y
-        - sudo pip3 install -r requirements.txt
+        - pip3 install -r requirements.txt
         - ./setup.py install
       dist: trusty
 
-    - language: r
-      r: devel
-      env:
-        - RETICULATE_PYTHON=$(which python3)
-      # install the python package first
-      before_install:
-        - pip3 install numpy pandas
-        - ./setup.py install
-      dist: trusty
+    # - language: r
+    #   r: devel
+    #   env:
+    #     - RETICULATE_PYTHON=$(which python3)
+    #   # install the python package first
+    #   before_install:
+    #     - pip3 install numpy pandas
+    #     - ./setup.py install
+    #   dist: trusty
 
-    - language: python
-      python: 3.4
-      install:
-        - pip install -r requirements.txt
-      script:
-        - python setup.py test
+    # - language: python
+    #   python: 3.4
+    #   install:
+    #     - pip install -r requirements.txt
+    #   script:
+    #     - python setup.py test
 
-    - language: python
-      python: 3.5
-      install:
-        - pip install -r requirements.txt
-      script:
-        - python setup.py test
+    # - language: python
+    #   python: 3.5
+    #   install:
+    #     - pip install -r requirements.txt
+    #   script:
+    #     - python setup.py test
 
-    - language: python
-      python: 3.6
-      install:
-        - pip install -r requirements.txt
-      script:
-        - python setup.py test
+    # - language: python
+    #   python: 3.6
+    #   install:
+    #     - pip install -r requirements.txt
+    #   script:
+    #     - python setup.py test
 
 warnings_are_errors: false
 
