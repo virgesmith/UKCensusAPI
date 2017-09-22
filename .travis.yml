@@ -39,13 +39,13 @@ matrix:
 
     - language: r
       r: devel
-      env:
-        - RETICULATE_PYTHON=$(which python3)
       # install the python package first
       before_install:
         - pyenv global system 3.5
         - pip3 install setuptools numpy pandas
         - ./setup.py install
+      env:
+        - RETICULATE_PYTHON=$(which python3)
       dist: trusty
 
     # - language: python
