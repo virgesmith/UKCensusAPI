@@ -21,7 +21,7 @@ matrix:
       # install the python package first
       before_install:
         - sudo apt install python3-pip -y
-        - pip3 install -r requirements.txt
+        - sudo pip3 install -r requirements.txt
         - ./setup.py install
       dist: trusty
 
