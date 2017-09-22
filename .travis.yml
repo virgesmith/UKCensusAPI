@@ -41,7 +41,7 @@ matrix:
       r: devel
       # install the python package first
       before_install:
-        - pyenv global system 3.4
+        - pyenv global system 3.5.3
         - pip3 install setuptools numpy pandas
         - ./setup.py install
       env:
