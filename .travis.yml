@@ -19,26 +19,8 @@ matrix:
     #     - ./setup.py install
     #   dist: trusty
 
-    # - language: r
-    #   r: release
-    #   addons:
-    #     apt:
-    #       packages:
-    #       - "python3"
-    #       - "python3-pip"
-    #       - "python3-numpy"
-    #       - "python3-pandas"
-    #   env:
-    #     - RETICULATE_PYTHON=$(which python3)
-    #   # install the python package first
-    #   before_install:
-    #    # - pip3 install .
-    #    # -r requirements.txt
-    #     - ./setup.py install
-    #   dist: trusty
-
     - language: r
-      r: devel
+      r: release
       # install the python package first
       before_install:
         - pyenv global system 3.5.3
@@ -48,6 +30,18 @@ matrix:
       env:
         - RETICULATE_PYTHON=$(which python3)
       dist: trusty
+
+#     - language: r
+#       r: devel
+#       # install the python package first
+#       before_install:
+#         - pyenv global system 3.5.3
+#         - pip3 install setuptools numpy pandas
+# #        - ./setup.py install
+#         - pip3 install .
+#       env:
+#         - RETICULATE_PYTHON=$(which python3)
+#       dist: trusty
 
     # - language: python
     #   python: 3.4
