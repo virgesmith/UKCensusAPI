@@ -1,6 +1,6 @@
 
 cache: packages
-sudo: false
+sudo: true
 
 matrix:
   include:
@@ -20,7 +20,8 @@ matrix:
         - RETICULATE_PYTHON=$(which python3)
       # install the python package first
       before_install:
-        - pip install -r requirements.txt
+        - sudo apt install python3-pip -y
+        - pip3 install -r requirements.txt
         - ./setup.py install
       dist: trusty
 
