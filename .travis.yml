@@ -20,6 +20,7 @@ matrix:
         - RETICULATE_PYTHON=$(which python3)
       # install the python package first
       before_install:
+        - pyenv shell 3.5
         - pip3 install numpy pandas
         - ./setup.py install
       dist: trusty
