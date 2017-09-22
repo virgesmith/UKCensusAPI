@@ -43,7 +43,8 @@ matrix:
       before_install:
         - pyenv global system 3.5.3
         - pip3 install setuptools numpy pandas
-        - ./setup.py install
+#        - ./setup.py install
+        - pip3 install .
       env:
         - RETICULATE_PYTHON=$(which python3)
       dist: trusty
