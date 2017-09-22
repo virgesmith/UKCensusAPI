@@ -30,7 +30,8 @@ matrix:
         - RETICULATE_PYTHON=$(which python3)
       # install the python package first
       before_install:
-        - pip3 install -r requirements.txt
+        - pip3 install .
+       # -r requirements.txt
         - ./setup.py install
       dist: trusty
 
