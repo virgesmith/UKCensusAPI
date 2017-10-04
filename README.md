@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/virgesmith/UKCensusAPI.png?branch=master)](https://travis-ci.org/virgesmith/UKCensusAPI) [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
 [![JOSS status](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a/status.svg)](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a)
 
+[Nomisweb](https://www.nomisweb.co.uk), run by Durham University, provides online access to the most detailed and up-to-date statistics from official sources for local areas throughout the UK, including census data.  
+
 This package provides both a `python` and an `R` wrapper around the nomisweb census data API, enabling:
 
 - querying table metadata
@@ -10,8 +12,6 @@ This package provides both a `python` and an `R` wrapper around the nomisweb cen
 - automated cached data downloads
 - modifying the geography of queries
 - adding descriptive information to tables (from metadata)
-
-UKCensusAPI is essentially a python package, but also come with an R interface (using the `reticulate` package).
 
 Queries can be customised on geographical coverage, geographical resolution, and table fields, the latter can be filtered to include only the category values you require.
 
@@ -27,7 +27,7 @@ Example code is also provided which:
 
 ### Software
 
-- python3, pip, numpy and pandas
+- python3.4 or higher, with pip, numpy and pandas. The dependencies should install automatically. Python 2 is not supported.
 - R version 3.3.3 or higher (optional, if using the R interface)
 
 ### API key
@@ -63,12 +63,22 @@ user@host:~/dev/UKCensusAPI$ ./setup.py test
 ```
 > devtools::install_github("virgesmith/UKCensusAPI")
 ```
-Set the `RETICULATE_PYTHON` environment variable (in .Renviron?) to the python3 interpreter, e.g.
+Set the `RETICULATE_PYTHON` environment variable in your .Renviron file to the python3 interpreter, e.g.
 ```
 RETICULATE_PYTHON=$(which python3)
 ```
 
 ## Usage
+
+In your Python code import the package like e.g.:
+
+```
+import ukcensusapi.Nomisweb as census_api
+```
+And in R:
+```
+library(UKCensusAPI)
+```
 
 ### Queries
 
@@ -214,7 +224,6 @@ You will then be prompted to choose whether to download the data immediately. If
 Getting data...
 Writing metadata to  /tmp/UKCensusAPI/KS401EW_metadata.json
 Downloading and cacheing data: /tmp/UKCensusAPI/KS401EW_2d17ead209999cbc7a1e7f5a299ccba5.tsv
-Writing metadata to  /tmp/UKCensusAPI/KS401EW_metadata.json
 
 Writing python code snippet to /tmp/UKCensusAPI/KS401EW.py
 
