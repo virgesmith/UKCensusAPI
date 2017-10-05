@@ -386,3 +386,9 @@ Use python's built-in help functionality, e.g.
 
 See the man pages, which can be accessed from RStudio using the command `?UKCensusAPI`
 
+## Support and Feature Requests
+
+Please use the issues section to report bugs, request features and see status of existing issues. Code contributions (by PR) are most welcome.
+
+
+
