@@ -18,7 +18,7 @@ import pandas as pd
 # The core functionality for accessing the www.nomisweb.co.uk API
 class Nomisweb:
   """
-  TODO A class.
+  Nomisweb API methods and data.
   """
 
   # static constants
@@ -103,9 +103,9 @@ class Nomisweb:
     return self.__shorten(geo_codes)
 
   def get_lad_codes(self, la_names):
-    """method.
+    """Convert local autority name(s) to nomisweb codes.
     Args:
-        la_names: 
+        la_names:
     Returns:
         codes.
     """
@@ -118,18 +118,18 @@ class Nomisweb:
     return codes
 
   def get_url(self, table_internal, query_params):
-    """method.
+    """Constructs a query url given a nomisweb table code and a query.
     Args:
-        arg: argument
-        ...
+        table_internal: nomis table code. This can be found in the table metadata
+        query_params: a dictionary of parameters and values
     Returns:
-        a return value.
+        the url that can be used to download the data 
     """
 
     # python dicts have nondeterministic order, see
     # https://stackoverflow.com/questions/14956313/why-is-dictionary-ordering-non-deterministic
-    # this is problematic for the cacheing, so we insert alphabetically into an OrderedDict
-    # (which preserves insertion order)
+    # this is problematic for the cacheing (md5 sum dependent on order), so we insert alphabetically 
+    # into an OrderedDict (which preserves insertion order)
     ordered = OrderedDict()
     for key in sorted(query_params):
       ordered[key] = query_params[key]
@@ -141,12 +141,13 @@ class Nomisweb:
   # - pandas/R dataframes conversion is done via matrix (which drops col names)
   # - reporting errors to R is useful (print statements aren't displayed in R(Studio))
   def get_data(self, table, table_internal, query_params, r_compat=False):
-    """method.
+    """Downloads or retrieves data given a table and query parameters.
     Args:
-        arg: argument
-        ...
+       table: ONS table name
+       table_internal: nomisweb table code (can be found in metadata)
+       query_params: table query parameters
     Returns:
-        a return value.
+        a dataframe containing the data. If downloaded, the data is also cached to a file
     """
     query_params["uid"] = Nomisweb.KEY
     query_string = self.get_url(table_internal, query_params)
@@ -177,12 +178,11 @@ class Nomisweb:
     return pd.read_csv(filename, delimiter='\t')
 
   def get_metadata(self, table_name):
-    """method.
+    """Downloads census table metadata.
     Args:
-        arg: argument
-        ...
+      table_name: the (ONS) table name, e.g. KS4402EW
     Returns:
-        a return value.
+      a dictionary containing information about the table contents including categories and category values.
     """
     path = "api/v01/dataset/def.sdmx.json?"
     query_params = {"search": "*"+table_name+"*"}
@@ -229,12 +229,11 @@ class Nomisweb:
   # loads metadata from cached json if available, otherwises downloads from nomisweb.
   # NB category KEYs need to be converted from string to integer for this data to work properly, see convert_code
   def load_metadata(self, table_name):
-    """method.
+    """Retrieves cached, or downloads census table metadata. Use this in preference to get_metadata.
     Args:
-        arg: argument
-        ...
+      table_name: the (ONS) table name, e.g. KS4402EW
     Returns:
-        a return value.
+      a dictionary containing information about the table contents including categories and category values.
     """
     filename = self.cache_dir + table_name + "_metadata.json"
     # if file not there, get from nomisweb
@@ -272,7 +271,7 @@ class Nomisweb:
       # save LAD codes
       with open(filename, "w") as metafile:
         json.dump(codes, metafile, indent=2)
-      
+
     else:
       print("using cached LAD codes:", filename)
       with open(filename) as cached_ladcodes:
@@ -334,7 +333,7 @@ class Nomisweb:
         a return value.
     """
 
-    filename = self.cache_dir + table + "_metadata.json" 
+    filename = self.cache_dir + table + "_metadata.json"
     print("Writing metadata to ", filename)
     with open(filename, "w") as metafile:
       json.dump(meta, metafile, indent=2)
@@ -342,16 +341,17 @@ class Nomisweb:
   # append <column> numeric values with the string values from the metadata
   # NB the "numeric" values are stored as strings in both the table and the metadata
   # this doesnt need to be a member
-  def contextify(self, tableName, column, table):
-    """method.
+  def contextify(self, table_name, column, table):
+    """Adds context to a column in a table, as a separate column containing the meanings of each numerical value 
     Args:
-        arg: argument
-        ...
+        table_name: name of census table
+        column: name of column within the table (containing numeric values)
+        table:
     Returns:
-        a return value.
+        a new table containing an extra column with descriptions of the numeric values.
     """
 
-    metadata = self.load_metadata(tableName)
+    metadata = self.load_metadata(table_name)
 
     if not column in metadata["fields"]:
       print(column, " is not in metadata")

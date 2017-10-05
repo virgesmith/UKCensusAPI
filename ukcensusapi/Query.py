@@ -1,14 +1,23 @@
+"""
+Nomisweb census data interactive query builder
+See README.md for details on how to use this package
+"""
 
 import sys
-import json
 import ukcensusapi.Nomisweb as Api
 
 class Query:
+  """
+  Census query functionality
+  """
 
   def __init__(self, api):
     self.api = api
 
   def table(self):
+    """
+    Interactive census table query
+    """
 
     print("Nomisweb census data interactive query builder")
     print("See README.md for details on how to use this package")
@@ -60,13 +69,13 @@ class Query:
 
   # returns a geography string that can be inserted into an existing query
   def get_geog_from_names(self, coverage, resolution):
+    """
+    Return a set of nomisweb geography codes for areas within the specified coverage at the specified resolution
+    """
 
     # Convert the coverage area into nomis codes
     coverage_codes = self.api.get_lad_codes(coverage)
     return self.api.get_geo_codes(coverage_codes, resolution)
-
-#  def get_geog_from_codes(self, coverage, resolution):
-#    return self.api.get_geo_codes(coverage, resolution)
 
   def __add_geog(self):
 
@@ -98,8 +107,11 @@ class Query:
 
     area_codes = self.api.get_geo_codes(coverage_codes, resolution)
     return area_codes
-    
+
   def write_code_snippets(self, table, meta, query_params):
+    """
+    Write out python and R code snippets, based on the supplied query, for later use
+    """
     print("\nWriting python code snippet to " + self.api.cache_dir + table + ".py")
     with open(self.api.cache_dir + table + ".py", "w") as py_file:
       py_file.write("\"\"\"\n" + meta["description"])
@@ -118,7 +130,6 @@ class Query:
         py_file.write("\n# TODO query_params[\"geography\"] = ...")
       py_file.write("\n" + table + " = api.get_data(table, table_internal, query_params)\n")
 
-    # TODO dump query params not url 
     print("\nWriting R code snippet to " + self.api.cache_dir + table + ".R")
     with open(self.api.cache_dir + table + ".R", "w") as r_file:
       r_file.write("# " + meta["description"])
@@ -129,8 +140,8 @@ class Query:
       r_file.write("\n\nlibrary(\"UKCensusAPI\")")
       r_file.write("\ncacheDir = \"" + self.api.cache_dir + "\"")
       r_file.write("\napi = UKCensusAPI::instance(cacheDir)")
-      r_file.write("\ntable = \"" + table + "\"") 
-      r_file.write("\ntable_internal = \"" + meta["nomis_table"] + "\"") 
+      r_file.write("\ntable = \"" + table + "\"")
+      r_file.write("\ntable_internal = \"" + meta["nomis_table"] + "\"")
       r_file.write("\nqueryParams = list(")
       first = True
       for key in query_params:
@@ -143,5 +154,3 @@ class Query:
         r_file.write("\n  # TODO add geography parameter to this query...")
       r_file.write("\n)")
       r_file.write("\n" + table + " = UKCensusAPI::getData(api, table, table_internal, queryParams)\n")
-      
-

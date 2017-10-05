@@ -7,7 +7,7 @@ def readme():
     return f.read()
 
 setup(name='ukcensusapi',
-  version='0.1',
+  version='1.0.0',
   description='UK census data query automation',
   long_description=readme(),
   url='https://github.com/virgesmith/UKCensusAPI',
@@ -22,7 +22,7 @@ setup(name='ukcensusapi',
   tests_require=['nose'],
   package_data = {
     # paths relative to the package directory
-    'ukcensusapi': ['../README.md', '../data/laMapping.csv'],
+    'ukcensusapi': ['../README.md'],
   },
   include_package_data=True
 )
