@@ -71,7 +71,6 @@ RETICULATE_PYTHON=$(which python3)
 ## Usage
 
 In your Python code import the package like e.g.:
-
 ```
 import ukcensusapi.Nomisweb as census_api
 ```
@@ -79,7 +78,6 @@ And in R:
 ```
 library(UKCensusAPI)
 ```
-
 ### Queries
 
 Queries have three distinct subtypes:
@@ -374,10 +372,9 @@ See the example code in [contextify.py](inst/examples/contextify.py) and/or [con
 
 ## Detailed Help
 
-### Public methods (python)
+### Public classes/methods (python)
 
-Use python's build-in help functionality, e.g.
-
+Use python's built-in help functionality, e.g.
 ```
 >>> import ukcensusapi.Nomisweb as api
 >>> help(api)
@@ -385,7 +382,6 @@ Use python's build-in help functionality, e.g.
 >>> import ukcensusapi.Query as query
 >>> help(query)
 ```
-
 ### Public functions (R)
 
 See the man pages, which can be accessed from RStudio using the command `?UKCensusAPI`
