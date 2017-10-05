@@ -376,7 +376,15 @@ See the example code in [contextify.py](inst/examples/contextify.py) and/or [con
 
 ### Public methods (python)
 
-TODO link to python function documentation...
+Use python's build-in help functionality, e.g.
+
+```
+>>> import ukcensusapi.Nomisweb as api
+>>> help(api)
+...
+>>> import ukcensusapi.Query as query
+>>> help(query)
+```
 
 ### Public functions (R)
 
