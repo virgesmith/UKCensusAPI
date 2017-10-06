@@ -15,7 +15,7 @@ This package provides both a `python` and an `R` wrapper around the nomisweb cen
 
 Queries can be customised on geographical coverage, geographical resolution, and table fields, the latter can be filtered to include only the category values you require.
 
-The package generates reusable code snippets that can be copied and pasted into user code.
+The package generates reusable code snippets that can be inserted into applications. Such applications will work seamlessly for any user as long as they have installed this package, and possess their own nomisweb API key.   
 
 Since census data is essentially static, it makes little sense to download the data every time it is requested: all data downloads are cached.
 
