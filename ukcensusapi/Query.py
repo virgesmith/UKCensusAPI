@@ -84,12 +84,18 @@ class Query:
 
     if resolution == "LA":
       resolution = Api.Nomisweb.LAD
-    elif resolution == "MSOA":
-      resolution = Api.Nomisweb.MSOA
-    elif resolution == "LSOA":
-      resolution = Api.Nomisweb.LSOA
-    elif resolution == "OA":
-      resolution = Api.Nomisweb.OA
+    elif resolution == "MSOA11":
+      resolution = Api.Nomisweb.MSOA11
+    elif resolution == "LSOA11":
+      resolution = Api.Nomisweb.LSOA11
+    elif resolution == "OA11":
+      resolution = Api.Nomisweb.OA11
+    elif resolution == "MSOA01":
+      resolution = Api.Nomisweb.MSOA01
+    elif resolution == "LSOA01":
+      resolution = Api.Nomisweb.LSOA01
+    # elif resolution == "OA01":
+    #   resolution = Api.Nomisweb.OA01
     else:
       print("Invalid resolution")
       sys.exit()

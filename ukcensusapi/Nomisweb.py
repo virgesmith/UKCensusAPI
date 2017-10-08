@@ -31,9 +31,14 @@ class Nomisweb:
   # Define Nomisweb geographic area codes
   LAD = 464 # defined in NM_144_1 (also 463 is county not district and returns fewer entries)
   # https://www.nomisweb.co.uk/api/v01/dataset/NM_144_1/geography/2092957703TYPE464.def.sdmx.json
-  MSOA = 297
-  LSOA = 298
-  OA = 299
+  # 2011 codes
+  MSOA11 = 297
+  LSOA11 = 298
+  OA11 = 299
+  # 2001 codes
+  MSOA01 = 305
+  LSOA01 = 304
+  #OA01 = ??306 # TODO check?
 
   # Country-level area codes
   England = 2092957699

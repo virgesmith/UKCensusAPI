@@ -23,7 +23,7 @@ def main():
   # Define the new coverage area in terms of local authorities
   coverage = ["Leeds", "Bradford"]
   # Define the new resolution
-  resolution = Api.Nomisweb.OA
+  resolution = Api.Nomisweb.OA11
   # Convert the coverage area into nomis codes
   coverage_codes = api.get_lad_codes(coverage)
   # replace the geography value in the query

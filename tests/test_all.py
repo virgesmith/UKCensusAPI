@@ -22,8 +22,11 @@ class Test(TestCase):
   def test_geo_codes(self):
     result = self.api.get_geo_codes([Api.Nomisweb.EnglandWales], Api.Nomisweb.LAD)
     self.assertEqual(result, '1946157057...1946157404')
-    result = self.api.get_geo_codes([1946157127], Api.Nomisweb.OA)
+    result = self.api.get_geo_codes([1946157127], Api.Nomisweb.OA11)
     self.assertEqual(result, '1254151943...1254154269,1254258198...1254258221,1254261711...1254261745,1254261853...1254261870,1254261894...1254261918,1254262125...1254262142,1254262341...1254262353,1254262394...1254262398,1254262498...1254262532,1254262620...1254262658,1254262922...1254262925')
+    # test 2001 codes
+    result = self.api.get_geo_codes([1946157127], Api.Nomisweb.MSOA01)
+    self.assertEqual(result, '1279265050...1279265157')
 
   def test_get_metadata(self):
     meta = self.api.get_metadata("NONEXISTENT")
@@ -31,6 +34,10 @@ class Test(TestCase):
     meta = self.api.get_metadata("KS401EW")
     self.assertEqual(meta["description"], 'KS401EW - Dwellings, household spaces and accommodation type')
     self.assertEqual(meta["nomis_table"], 'NM_618_1')
+    # test 2001 table
+    meta = self.api.get_metadata("UV070")
+    self.assertEqual(meta["description"], 'UV070 - Communal Establishments')
+    self.assertEqual(meta["nomis_table"], 'NM_1686_1')
 
   def test_get_url(self):
     table = "NM_618_1"
@@ -89,13 +96,13 @@ class Test(TestCase):
     self.assertTrue(table.at[6, "CELL_NAME"] == "Caravan or other mobile or temporary structure")
 
   def test_get_geog_from_names(self):
-    result = self.query.get_geog_from_names(["Leeds"], Api.Nomisweb.OA)
+    result = self.query.get_geog_from_names(["Leeds"], Api.Nomisweb.OA11)
     self.assertEqual(result, '1254151943...1254154269,1254258198...1254258221,1254261711...1254261745,1254261853...1254261870,1254261894...1254261918,1254262125...1254262142,1254262341...1254262353,1254262394...1254262398,1254262498...1254262532,1254262620...1254262658,1254262922...1254262925')
 
-    result = self.query.get_geog_from_names(["Newcastle upon Tyne"], Api.Nomisweb.LSOA)
+    result = self.query.get_geog_from_names(["Newcastle upon Tyne"], Api.Nomisweb.LSOA11)
     self.assertEqual(result, '1249910667...1249910832,1249935220...1249935228')
 
-    result = self.query.get_geog_from_names(["Leeds", "Bradford"], Api.Nomisweb.MSOA)
+    result = self.query.get_geog_from_names(["Leeds", "Bradford"], Api.Nomisweb.MSOA11)
     self.assertEqual(result, '1245710411...1245710471,1245710558...1245710660,1245714998...1245714998,1245715007...1245715007,1245715021...1245715022')
 
   def test_get_geog_from_codes(self):
