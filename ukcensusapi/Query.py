@@ -38,7 +38,7 @@ class Query:
           print("  " + str(category) + " (" + meta["fields"][field][category] + ")")
         categories = input("Select categories (default 0): ")
         include = True
-        if categories == "":
+        if categories == "" or categories == "0":
           include = input("include in output (y/n, default=n)? ") == "y"
           categories = "0"
         query_params[field] = categories
@@ -80,34 +80,21 @@ class Query:
   def __add_geog(self):
 
     coverage = input("\nGeographical coverage\nE/EW/GB/UK or LA name(s), comma separated: ")
-    resolution = input("Resolution (LA/MSOA/LSOA/OA): ")
 
-    if resolution == "LA":
-      resolution = Api.Nomisweb.LAD
-    elif resolution == "MSOA11":
-      resolution = Api.Nomisweb.MSOA11
-    elif resolution == "LSOA11":
-      resolution = Api.Nomisweb.LSOA11
-    elif resolution == "OA11":
-      resolution = Api.Nomisweb.OA11
-    elif resolution == "MSOA01":
-      resolution = Api.Nomisweb.MSOA01
-    elif resolution == "LSOA01":
-      resolution = Api.Nomisweb.LSOA01
-    # elif resolution == "OA01":
-    #   resolution = Api.Nomisweb.OA01
-    else:
-      print("Invalid resolution")
-      sys.exit()
+    resolution = input("Resolution (LAD/MSOA11/LSOA11/OA11/MSOA01/LSOA01/OA01): ")
+    while not resolution in Api.Nomisweb.GeoCodeLookup.keys():
+      print(resolution + " is not valid")
+      resolution = input("Resolution (LAD/MSOA11/LSOA11/OA11/MSOA01/LSOA01/OA01): ")
+    resolution = Api.Nomisweb.GeoCodeLookup[resolution]
 
     if coverage == "E":
-      coverage_codes = [Api.Nomisweb.England]
+      coverage_codes = [Api.Nomisweb.GeoCodeLookup["England"]]
     elif coverage == "EW":
-      coverage_codes = [Api.Nomisweb.EnglandWales]
+      coverage_codes = [Api.Nomisweb.GeoCodeLookup["EnglandWales"]]
     elif coverage == "GB":
-      coverage_codes = [Api.Nomisweb.GB]
+      coverage_codes = [Api.Nomisweb.GeoCodeLookup["GB"]]
     elif coverage == "UK":
-      coverage_codes = [Api.Nomisweb.UK]
+      coverage_codes = [Api.Nomisweb.GeoCodeLookup["UK"]]
     else:
       coverage_codes = self.api.get_lad_codes(coverage.split(","))
 
