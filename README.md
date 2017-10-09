@@ -63,7 +63,7 @@ user@host:~/dev/UKCensusAPI$ ./setup.py test
 ```
 > devtools::install_github("virgesmith/UKCensusAPI")
 ```
-Set the `RETICULATE_PYTHON` environment variable in your .Renviron file to the python3 interpreter, e.g.
+Set the `RETICULATE_PYTHON` environment variable in your .Renviron file to the python3 interpreter, e.g. (for linux)
 ```
 RETICULATE_PYTHON=$(which python3)
 ```
@@ -155,7 +155,7 @@ See README.md for details on how to use this package
 Census table: <b>KS401EW</b>
 </pre>
 
-The table description is displayed. The script then interates through the available fields.
+The table description is displayed. The script then iterates through the available fields.
 ```
 KS401EW - Dwellings, household spaces and accommodation type
 ```
@@ -212,9 +212,9 @@ Add geography? (y/N): <b>y</b>
 Geographical coverage
 E/EW/GB/UK or LA name(s), comma separated: <b>Leeds</b>
 </pre>
-Now select the geographical resolution required. Currently supports local authority, MSOA, LSOA, and OA:
+Now select the geographical resolution required. Currently supports local authority, and both 2001 and 2011 MSOA, LSOA, and OAs:
 <pre>
-Resolution (LA/MSOA/LSOA/OA): <b>MSOA</b>
+Resolution (LAD/MSOA11/LSOA11/OA11/MSOA01/LSOA01/OA01): <b>MSOA11</b>
 </pre>
 You will then be prompted to choose whether to download the data immediately. If so, the query builder assembles the query and computes an md5 hash of it. It then checks the cache directory if a file with this name exists and will load the data from the file if so. If not, the query builder downloads the data and save the data in the cache directory. 
 
