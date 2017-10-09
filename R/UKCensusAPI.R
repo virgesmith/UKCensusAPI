@@ -6,6 +6,8 @@
 #' See README.md for detailed information and examples.
 #'
 #' @section Functions:
+#' \code{\link{geoCodeLookup}}
+#'
 #' \code{\link{geoCodes}}
 #'
 #' \code{\link{getData}}

@@ -12,6 +12,14 @@ skip_if_no_python_api = function() {
     skip("python module ukcensusapi.Nomisweb not available, skipping test")
 }
 
+# simply checks we can get nomis geo codes back
+test_that("geoCodeLookup", {
+  expect_true(UKCensusAPI::geoCodeLookup(api, "MSOA11") == 297)
+  expect_true(UKCensusAPI::geoCodeLookup(api, "LSOA01") == 304)
+  expect_true(UKCensusAPI::geoCodeLookup(api, "LAD") == 464)
+  expect_true(UKCensusAPI::geoCodeLookup(api, "EnglandWales") == 2092957703)
+})
+
 # simply checks we get data back
 test_that("getMetadata", {
   skip_if_no_python_api()

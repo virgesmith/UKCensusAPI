@@ -28,23 +28,39 @@ class Nomisweb:
   # timeout for http requests
   Timeout = 15
 
-  # Define Nomisweb geographic area codes
-  LAD = 464 # defined in NM_144_1 (also 463 is county not district and returns fewer entries)
-  # https://www.nomisweb.co.uk/api/v01/dataset/NM_144_1/geography/2092957703TYPE464.def.sdmx.json
-  # 2011 codes
-  MSOA11 = 297
-  LSOA11 = 298
-  OA11 = 299
-  # 2001 codes
-  MSOA01 = 305
-  LSOA01 = 304
-  #OA01 = ??306 # TODO check?
+  # # Define Nomisweb geographic area codes
+  # LAD = 464 # defined in NM_144_1 (also 463 is county not district and returns fewer entries)
+  # # 2011 codes
+  # MSOA11 = 297
+  # LSOA11 = 298
+  # OA11 = 299
+  # # 2001 codes
+  # MSOA01 = 305
+  # LSOA01 = 304
+  # #OA01 = ??306 # TODO check?
 
-  # Country-level area codes
-  England = 2092957699
-  EnglandWales = 2092957703
-  GB = 2092957698
-  UK = 2092957697
+  # # Country-level area codes
+  # England = 2092957699
+  # EnglandWales = 2092957703
+  # GB = 2092957698
+  # UK = 2092957697
+
+  # See
+  # https://www.nomisweb.co.uk/api/v01/dataset/NM_144_1/geography/2092957703TYPE464.def.sdmx.json
+  # https://www.nomisweb.co.uk/api/v01/dataset/NM_1_1/geography/2092957703TYPE464.def.sdmx.json
+  GeoCodeLookup = {
+    "LAD": 464,
+    "MSOA11": 297,
+    "LSOA11": 298,
+    "OA11": 299,
+    "MSOA01": 305,
+    "LSOA01": 304,
+    # TODO 2001 OA...    
+    "England": 2092957699,
+    "EnglandWales": 2092957703,
+    "GB": 2092957698,
+    "UK": 2092957697
+  }
 
   # initialise, supplying a location to cache downloads
   def __init__(self, cache_dir):
@@ -263,7 +279,7 @@ class Nomisweb:
       print(filename, "not found, downloading LAD codes...")
 
       data = self.__fetch_json("api/v01/dataset/NM_144_1/geography/" \
-          + str(Nomisweb.EnglandWales) + "TYPE" + str(Nomisweb.LAD) + ".def.sdmx.json?", {})
+          + str(Nomisweb.GeoCodeLookup["EnglandWales"]) + "TYPE" + str(Nomisweb.GeoCodeLookup["LAD"]) + ".def.sdmx.json?", {})
       if data == {}:
         return []
 

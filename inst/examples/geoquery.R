@@ -20,7 +20,7 @@ api = instance(cacheDir)
 
 # Define the new region and resolution
 coverage = c("City of London")
-resolution = 299 # OA - see NomiswebApi.py
+resolution = geoCodeLookup(api, "OA11") # OA 2011 - see NomiswebApi.py
 
 # Modify the query
 coverageCodes = getLADCodes(api, coverage)

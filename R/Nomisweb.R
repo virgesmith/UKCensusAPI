@@ -14,6 +14,16 @@ queryMetadata = function() {
   }
 }
 
+#' Geographic code lookup
+#'
+#' This function returns the nomisweb code for a particular geographic area
+#' @param api an instance of the API (returned by instance())
+#' @param geoCodeString the string representation of a geography, e.g MSOA11
+#' @export
+geoCodeLookup = function(api, geoCodeString) {
+  return(as.integer(api$GeoCodeLookup[geoCodeString]))
+}
+
 #' getMetadata()
 #' Fetch the metadata for a census table
 #'

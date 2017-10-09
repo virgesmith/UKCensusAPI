@@ -23,7 +23,7 @@ def main():
   # Define the new coverage area in terms of local authorities
   coverage = ["Leeds", "Bradford"]
   # Define the new resolution
-  resolution = Api.Nomisweb.OA11
+  resolution = Api.Nomisweb.GeoCodeLookup["OA11"]
   # Convert the coverage area into nomis codes
   coverage_codes = api.get_lad_codes(coverage)
   # replace the geography value in the query
@@ -33,8 +33,8 @@ def main():
   print(ks401fine.head(5))
 
   # Now widen the coverage to England & Wales and coarsen the resolution to LA
-  coverage_codes = [Api.Nomisweb.EnglandWales]
-  resolution = Api.Nomisweb.LAD
+  coverage_codes = [Api.Nomisweb.GeoCodeLookup["EnglandWales"]]
+  resolution = Api.Nomisweb.GeoCodeLookup["LAD"]
   query_params["geography"] = api.get_geo_codes(coverage_codes, resolution)
   # get the data
   ks401broad = api.get_data(table, table_internal, query_params)

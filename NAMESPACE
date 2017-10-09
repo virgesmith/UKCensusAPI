@@ -1,6 +1,7 @@
 
 export(instance)
 export(queryInstance)
+export(geoCodeLookup)
 export(geoCodes)
 export(getLADCodes)
 export(getData)
