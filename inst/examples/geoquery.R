@@ -1,4 +1,9 @@
-
+###############################################################
+# Example: Modifying the geography of a query:
+#
+# This file shows how an existing query can easily be modified
+# in terms of geographical coverage:
+###############################################################
 library("UKCensusAPI")
 
 cacheDir = "/tmp/UKCensusAPI"
@@ -28,4 +33,7 @@ queryParams["geography"] = geoCodes(api, coverageCodes, resolution)
 
 # Fetch the new data
 KS401EW = getData(api, table, table_internal, queryParams)
+
+# End of example
+
 

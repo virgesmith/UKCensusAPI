@@ -1,3 +1,8 @@
+###############################################################
+# Example: Annotating data from metadata
+#
+# shows how raw data can be annotated with meaningful metadata
+###############################################################
 
 library("UKCensusAPI")
 
@@ -24,3 +29,6 @@ KS401EW = getData(api, table, table_internal, queryParams)
 # Add the context...
 KS401EW = contextify(api, table, "CELL", KS401EW)
 head(KS401EW)
+
+# end of example
+

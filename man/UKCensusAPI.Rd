@@ -6,12 +6,33 @@
 \alias{UKCensusAPI-package}
 \title{UKCensusAPI}
 \description{
-R package for automating queries and downloads of UK census data.
+R package for creating, and modifying, automated downloads of UK census data. See below for an overview of the package.
 }
 \details{
-Put your api key in .Renviron as "NOMIS_API_KEY"
+It requires that you register with www.nomisweb.co.uk and obtain an API key,
+whiBch should be stored in your .Renviron as "NOMIS_API_KEY", e.g.
+
+\samp{NOMIS_API_KEY=0x0123456789abcdef0123456789abcdef01234567}
 See README.md for detailed information and examples.
 }
+\section{Overview}{
+
+Nomisweb, run by Durham University, provides online access to the most detailed and up-to-date statistics from official sources for local areas throughout the UK, including census data.
+This package provides both a python and an R wrapper around the nomisweb census data API, enabling:
+
+\itemize{
+ \item querying table metadata
+ \item autogenerating customised python and R query code for future use
+ \item automated cached data downloads
+ \item modifying the geography of queries
+ \item adding descriptive information to tables (from metadata)
+}
+
+Queries can be customised on geographical coverage, geographical resolution, and table fields, the latter can be filtered to include only the category values you require.
+The package generates reusable code snippets that can be inserted into applications. Such applications will work seamlessly for any user as long as they have installed this package, and possess their own nomisweb API key.
+Since census data is essentially static, it makes little sense to download the data every time it is requested: all data downloads are cached.
+}
+
 \section{Functions}{
 
 \code{\link{geoCodeLookup}}
@@ -33,3 +54,78 @@ See README.md for detailed information and examples.
 \code{\link{contextify}}
 }
 
+\examples{
+###############################################################
+# Example: Modifying the geography of a query:
+#
+# This file shows how an existing query can easily be modified
+# in terms of geographical coverage:
+###############################################################
+library("UKCensusAPI")
+
+cacheDir = "/tmp/UKCensusAPI"
+
+# Here's a predefined query using Leeds at MSOA resolution,
+# but we want to change the geographical area and refine the resolution
+table = "KS401EW"
+table_internal = "NM_618_1"
+queryParams = list(
+  date = "latest",
+  RURAL_URBAN = "0",
+  MEASURES = "20100",
+  CELL = "7...13",
+  geography = "1245710558...1245710660,1245714998...1245714998,1245715007...1245715007,1245715021...1245715022",
+  select = "GEOGRAPHY_CODE,CELL,OBS_VALUE"
+)
+
+api = instance(cacheDir)
+
+# Define the new region and resolution
+coverage = c("City of London")
+resolution = geoCodeLookup(api, "OA11") # OA 2011 - see NomiswebApi.py
+
+# Modify the query
+coverageCodes = getLADCodes(api, coverage)
+queryParams["geography"] = geoCodes(api, coverageCodes, resolution)
+
+# Fetch the new data
+KS401EW = getData(api, table, table_internal, queryParams)
+
+# End of example
+
+
+###############################################################
+# Example: Annotating data from metadata
+#
+# shows how raw data can be annotated with meaningful metadata
+###############################################################
+
+library("UKCensusAPI")
+
+cacheDir = "/tmp/UKCensusAPI"
+
+# Here's a predefined query, to which we add contextual data
+
+table = "KS401EW"
+table_internal = "NM_618_1"
+queryParams = list(
+  date = "latest",
+  RURAL_URBAN = "0",
+  MEASURES = "20100",
+  CELL = "7...13",
+  geography = "1245710558...1245710660",
+  select = "GEOGRAPHY_CODE,CELL,OBS_VALUE"
+)
+
+api = instance(cacheDir)
+
+# Fetch the data
+KS401EW = getData(api, table, table_internal, queryParams)
+
+# Add the context...
+KS401EW = contextify(api, table, "CELL", KS401EW)
+head(KS401EW)
+
+# end of example
+
+}

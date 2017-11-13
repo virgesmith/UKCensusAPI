@@ -1,10 +1,33 @@
 #' UKCensusAPI
 #'
-#' R package for automating queries and downloads of UK census data.
+#' R package for creating, and modifying, automated downloads of UK census data. See below for an overview of the package.
 #'
-#' Put your api key in .Renviron as "NOMIS_API_KEY"
+#' It requires that you register with www.nomisweb.co.uk and obtain an API key,
+#' whiBch should be stored in your .Renviron as "NOMIS_API_KEY", e.g.
+#'
+#' \samp{NOMIS_API_KEY=0x0123456789abcdef0123456789abcdef01234567}
+
 #' See README.md for detailed information and examples.
 #'
+#' @section Overview:
+#' Nomisweb, run by Durham University, provides online access to the most detailed and up-to-date statistics from official sources for local areas throughout the UK, including census data.
+#' This package provides both a python and an R wrapper around the nomisweb census data API, enabling:
+#'
+#' \itemize{
+#'  \item querying table metadata
+#'  \item autogenerating customised python and R query code for future use
+#'  \item automated cached data downloads
+#'  \item modifying the geography of queries
+#'  \item adding descriptive information to tables (from metadata)
+#'}
+#'
+#' Queries can be customised on geographical coverage, geographical resolution, and table fields, the latter can be filtered to include only the category values you require.
+#' The package generates reusable code snippets that can be inserted into applications. Such applications will work seamlessly for any user as long as they have installed this package, and possess their own nomisweb API key.
+#' Since census data is essentially static, it makes little sense to download the data every time it is requested: all data downloads are cached.
+
+#' @example inst/examples/geoquery.R
+#' @example inst/examples/contextify.R
+
 #' @section Functions:
 #' \code{\link{geoCodeLookup}}
 #'
