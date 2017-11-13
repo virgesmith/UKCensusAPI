@@ -11,6 +11,14 @@ geoCodeLookup(api, geoCodeString)
 
 \item{geoCodeString}{the string representation of a geography, e.g MSOA11}
 }
+\value{
+code - an integer
+}
 \description{
-This function returns the nomisweb code for a particular geographic area
+This function returns the nomisweb code for a particular geographic area type
+}
+\examples{
+library(UKCensusAPI)
+censusapi = instance("/tmp/UKCensusAPI")
+geoCodeLookup(censusapi, "MSOA11")
 }

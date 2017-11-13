@@ -2,7 +2,7 @@
 % Please edit documentation in R/Nomisweb.R
 \name{getLADCodes}
 \alias{getLADCodes}
-\title{Map local authority names to nomisweb codes (python)}
+\title{Map local authority names to nomisweb codes}
 \usage{
 getLADCodes(api, laNames)
 }
@@ -15,5 +15,10 @@ getLADCodes(api, laNames)
 an integer vector of nomisweb local authority codes
 }
 \description{
-Map local authority names to nomisweb codes (python)
+Map local authority names to nomisweb codes
+}
+\examples{
+library(UKCensusAPI)
+censusapi = instance("/tmp/UKCensusAPI")
+codes = getLADCodes(censusapi, c("Leeds","Bradford"))
 }

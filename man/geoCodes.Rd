@@ -14,7 +14,17 @@ geoCodes(api, coverage, resolution)
 
 \item{resolution}{the nomisweb code for a particular area type (e.g. 297 for MSOA)}
 }
+\value{
+a compressed string (nomisweb format) containing nomisweb area codes
+}
 \description{
 geoCodes
 Get nomisweb geographical codes for a region
+}
+\examples{
+library(UKCensusAPI)
+censusapi = instance("/tmp/UKCensusAPI")
+coverage = getLADCodes(censusapi, c("City of London"))
+resolution = geoCodeLookup(censusapi, "LSOA11")
+codes = geoCodes(censusapi, coverage, resolution)
 }

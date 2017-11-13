@@ -12,7 +12,17 @@ getMetadata(api, tableName)
 
 \item{tableName}{the name of the census table}
 }
+\value{
+metadata a list data structure containing the table metadata
+}
 \description{
 getMetadata()
 Fetch the metadata for a census table
+}
+\examples{
+\dontrun{
+library(UKCensusAPI)
+censusapi = instance("/tmp/UKCensusAPI")
+getMetadata(censusapi, "KS001")
+}
 }
