@@ -109,7 +109,7 @@ class Nomisweb:
   def get_lad_codes(self, la_names):
     """Convert local autority name(s) to nomisweb codes.
     Args:
-        la_names:
+        la_names: one or more local authorities (specify either the name or the ONS code)
     Returns:
         codes.
     """

@@ -9,7 +9,7 @@ getLADCodes(api, laNames)
 \arguments{
 \item{api}{an instance of the UKCensusData API.}
 
-\item{laNames}{a string vector of local authority names.}
+\item{laNames}{a string vector of local authority names or ONS codes.}
 }
 \value{
 an integer vector of nomisweb local authority codes

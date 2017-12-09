@@ -86,7 +86,7 @@ getData = function(api, tableName, internalName, query) {
 #' Map local authority names to nomisweb codes
 #'
 #' @param api an instance of the UKCensusData API.
-#' @param laNames a string vector of local authority names.
+#' @param laNames a string vector of local authority names or ONS codes.
 #' @return an integer vector of nomisweb local authority codes
 #' @examples
 #' library(UKCensusAPI)

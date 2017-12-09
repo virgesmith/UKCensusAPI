@@ -206,12 +206,12 @@ RURAL_URBAN:
 Select categories (default 0): <b>&#8629;</b>
 include in output? (y/n) <b>n</b>
 </pre>
-Now you can optionally select the geographical area(s) you want to cover. This can be a single local authority, multiple local authorities, England, England & Wales, GB or UK.
+Now you can optionally select the geographical area(s) you want to cover. This can be a single local authority, multiple local authorities, England, England & Wales, GB or UK. If a local authority, you can specify it either by name or ONS code (e.g. E09000001)
 <pre>
 Add geography? (y/N): <b>y</b>
 
 Geographical coverage
-E/EW/GB/UK or LA name(s), comma separated: <b>Leeds</b>
+E/EW/GB/UK or LA code(s)/name(s), comma separated: <b>Leeds</b>
 </pre>
 Now select the geographical resolution required. Currently supports local authority, and both 2001 and 2011 MSOA, LSOA, and OAs:
 <pre>

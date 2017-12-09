@@ -79,7 +79,7 @@ class Query:
 
   def __add_geog(self):
 
-    coverage = input("\nGeographical coverage\nE/EW/GB/UK or LA name(s), comma separated: ")
+    coverage = input("\nGeographical coverage\nE/EW/GB/UK or LAD codes(s)/name(s), comma separated: ")
 
     resolution = input("Resolution (LAD/MSOA11/LSOA11/OA11/MSOA01/LSOA01/OA01): ")
     while not resolution in Api.Nomisweb.GeoCodeLookup.keys():
