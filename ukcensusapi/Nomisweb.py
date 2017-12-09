@@ -270,6 +270,7 @@ class Nomisweb:
       codes = {}
       for rawfield in rawfields:
         codes[rawfield["description"]["value"]] = rawfield["value"]
+        codes[rawfield["annotations"]["annotation"][2]["annotationtext"]] = rawfield["value"]
       print("Writing LAD codes to ", filename)
 
       # save LAD codes
