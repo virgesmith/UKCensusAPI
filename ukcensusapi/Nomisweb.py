@@ -61,9 +61,9 @@ class Nomisweb:
       os.mkdir(self.cache_dir)
       # TODO check dir created
     if Nomisweb.KEY is None:
-      print("Warning - no API key found, downloads may be truncated.\n"
-            "Set the key value in the environment variable NOMIS_API_KEY.\n"
-            "Register at www.nomisweb.co.uk to obtain a key")
+      raise RuntimeError("no API key found. Giving up since downloads may be truncated.\n" \
+                         "Set the key value in the environment variable NOMIS_API_KEY.\n" \
+                         "Register at www.nomisweb.co.uk to obtain a key")
 
     print("Cache directory: ", self.cache_dir)
 
