@@ -7,6 +7,7 @@ matrix:
     - language: r
       r: oldrel
       env:
+        - NOMIS_API_KEY=DUMMY
         - RETICULATE_PYTHON=$(which python3)
       # install the python package first
       before_install:
@@ -18,6 +19,7 @@ matrix:
     - language: r
       r: release
       env:
+        - NOMIS_API_KEY=DUMMY
         - RETICULATE_PYTHON=$(which python3)
       # install the python package first
       before_install:
@@ -29,6 +31,7 @@ matrix:
     - language: r
       r: devel
       env:
+        - NOMIS_API_KEY=DUMMY
         - RETICULATE_PYTHON=$(which python3)
       # install the python package first
       before_install:
@@ -39,6 +42,8 @@ matrix:
 
     - language: python
       python: 3.4
+      env:
+        - NOMIS_API_KEY=DUMMY
       install:
         - pip install -r requirements.txt
       script:
@@ -46,6 +51,8 @@ matrix:
 
     - language: python
       python: 3.5
+      env:
+        - NOMIS_API_KEY=DUMMY
       install:
         - pip install -r requirements.txt
       script:
@@ -53,6 +60,8 @@ matrix:
 
     - language: python
       python: 3.6
+      env:
+        - NOMIS_API_KEY=DUMMY
       install:
         - pip install -r requirements.txt
       script:
