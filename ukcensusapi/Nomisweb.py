@@ -224,9 +224,28 @@ class Nomisweb:
           # KEYs are stored as strings for json compatibility
           fields[field][value["value"]] = value["description"]["value"]
 
+    # Fetch the geographies available for this table
+    geogs = {}
+    path = "api/v01/dataset/"+table+"/geography/TYPE.def.sdmx.json?"
+    try:
+      fdata = self.__fetch_json(path, {})
+    except timeout:
+      print("HTTP timeout requesting metadata for " + table_name)
+      return {}
+    except (HTTPError, URLError):
+      print("HTTP error requesting metadata for " + table_name)
+      return {}
+    else:
+      values = fdata["structure"]["codelists"]["codelist"][0]["code"]
+      #print(values)
+      for value in values:
+        geogs[str(value["value"])] = value["description"]["value"]
+
+
     result = {"nomis_table": table,
               "description": data["structure"]["keyfamilies"]["keyfamily"][0]["name"]["value"],
-              "fields": fields}
+              "fields": fields,
+              "geographies": geogs }
 
     return result
 
@@ -316,7 +335,6 @@ class Nomisweb:
 
     query_string = Nomisweb.URL + path + str(urlencode(query_params))
 
-    #print(query_string)
     reply = {}
     try:
       response = request.urlopen(query_string, timeout=Nomisweb.Timeout)
