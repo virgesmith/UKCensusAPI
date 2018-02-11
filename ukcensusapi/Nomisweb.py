@@ -39,7 +39,7 @@ class Nomisweb:
     "OA11": "TYPE299",
     "MSOA01": "TYPE305",
     "LSOA01": "TYPE304",
-    "OA01": "TYPE310",       
+    "OA01": "TYPE310",
     "England": "2092957699",
     "EnglandWales": "2092957703",
     "GB": "2092957698",
@@ -60,7 +60,6 @@ class Nomisweb:
       self.cache_dir += "/"
     if not os.path.exists(self.cache_dir):
       os.mkdir(self.cache_dir)
-      # TODO check dir created
     if Nomisweb.KEY is None:
       raise RuntimeError("No API key found. Whilst downloads still work, they may be truncated,\n" \
                          "causing potentially unforseen problems in any modelling/analysis.\n" \
@@ -128,12 +127,12 @@ class Nomisweb:
         table_internal: nomis table code. This can be found in the table metadata
         query_params: a dictionary of parameters and values
     Returns:
-        the url that can be used to download the data 
+        the url that can be used to download the data
     """
 
     # python dicts have nondeterministic order, see
     # https://stackoverflow.com/questions/14956313/why-is-dictionary-ordering-non-deterministic
-    # this is problematic for the cacheing (md5 sum dependent on order), so we insert alphabetically 
+    # this is problematic for the cacheing (md5 sum dependent on order), so we insert alphabetically
     # into an OrderedDict (which preserves insertion order)
     ordered = OrderedDict()
     for key in sorted(query_params):
@@ -162,7 +161,6 @@ class Nomisweb:
 
     # retrieve if not in cache
     if not os.path.isfile(filename):
-      meta = self.load_metadata(table)
       #self.write_metadata(table, meta)
       print("Downloading and cacheing data: " + filename)
       request.urlretrieve(query_string, filename) #, timeout = Nomisweb.Timeout)
@@ -247,7 +245,7 @@ class Nomisweb:
     result = {"nomis_table": table,
               "description": data["structure"]["keyfamilies"]["keyfamily"][0]["name"]["value"],
               "fields": fields,
-              "geographies": geogs }
+              "geographies": geogs}
 
     # save a copy
     self.write_metadata(table_name, result)
@@ -370,7 +368,7 @@ class Nomisweb:
   # NB the "numeric" values are stored as strings in both the table and the metadata
   # this doesnt need to be a member
   def contextify(self, table_name, column, table):
-    """Adds context to a column in a table, as a separate column containing the meanings of each numerical value 
+    """Adds context to a column in a table, as a separate column containing the meanings of each numerical value
     Args:
         table_name: name of census table
         column: name of column within the table (containing numeric values)

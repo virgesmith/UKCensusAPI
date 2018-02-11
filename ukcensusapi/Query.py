@@ -3,7 +3,6 @@ Nomisweb census data interactive query builder
 See README.md for details on how to use this package
 """
 
-import sys
 import ukcensusapi.Nomisweb as Api
 
 class Query:

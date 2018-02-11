@@ -7,3 +7,5 @@
 /*.egg-info
 .eggs/
 build/
+
+.vscode/
