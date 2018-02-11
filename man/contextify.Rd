@@ -27,7 +27,6 @@ library("UKCensusAPI")
 cacheDir = "/tmp/UKCensusAPI/"
 censusapi = UKCensusAPI::instance(cacheDir)
 table = "KS401EW"
-table_internal = "NM_618_1"
 queryParams = list(
   date = "latest",
   CELL = "7...13", # dwelling type
@@ -36,7 +35,7 @@ queryParams = list(
   geography = "1245710558...1245710560",
   RURAL_URBAN = "0"
 )
-KS401EW = UKCensusAPI::getData(censusapi, table, table_internal, queryParams)
+KS401EW = UKCensusAPI::getData(censusapi, table, queryParams)
 annotated = contextify(censusapi, table, "CELL", KS401EW)
 }
 }

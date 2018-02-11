@@ -55,7 +55,6 @@ getMetadata = function(api, tableName) {
 #' This prevents conversion to floating-point which can makie queries fail
 #' @param api a predefined query
 #' @param tableName name of census table (e.g KS401EW)
-#' @param internalName internal name of census table (e.g NM_618_1)
 #' @param query query parameters
 #' @return a data.frame contraing the downloaded data
 #' @examples
@@ -73,7 +72,7 @@ getMetadata = function(api, tableName) {
 #'   RURAL_URBAN = "0",
 #'   date = "latest"
 #' )
-#' getData(censusapi, table, meta$nomis_table, queryParams)
+#' getData(censusapi, table, queryParams)
 #' }
 #' @export
 getData = function(api, tableName, query) {
@@ -131,7 +130,6 @@ geoCodes = function(api, coverage, resolution) {
 #' cacheDir = "/tmp/UKCensusAPI/"
 #' censusapi = UKCensusAPI::instance(cacheDir)
 #' table = "KS401EW"
-#' table_internal = "NM_618_1"
 #' queryParams = list(
 #'   date = "latest",
 #'   CELL = "7...13", # dwelling type
@@ -140,7 +138,7 @@ geoCodes = function(api, coverage, resolution) {
 #'   geography = "1245710558...1245710560",
 #'   RURAL_URBAN = "0"
 #' )
-#' KS401EW = UKCensusAPI::getData(censusapi, table, table_internal, queryParams)
+#' KS401EW = UKCensusAPI::getData(censusapi, table, queryParams)
 #' annotated = contextify(censusapi, table, "CELL", KS401EW)
 #' }
 #' @export

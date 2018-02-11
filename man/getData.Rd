@@ -5,14 +5,12 @@
 \title{getData()
 Fetch and cache census data using a predefined query}
 \usage{
-getData(api, tableName, internalName, query)
+getData(api, tableName, query)
 }
 \arguments{
 \item{api}{a predefined query}
 
 \item{tableName}{name of census table (e.g KS401EW)}
-
-\item{internalName}{internal name of census table (e.g NM_618_1)}
 
 \item{query}{query parameters}
 }
@@ -38,6 +36,6 @@ queryParams = list(
   RURAL_URBAN = "0",
   date = "latest"
 )
-getData(censusapi, table, meta$nomis_table, queryParams)
+getData(censusapi, table, queryParams)
 }
 }
