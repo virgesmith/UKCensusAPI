@@ -286,7 +286,7 @@ class Nomisweb:
       print(filename, "not found, downloading LAD codes...")
 
       data = self.__fetch_json("api/v01/dataset/NM_144_1/geography/" \
-          + str(Nomisweb.GeoCodeLookup["EnglandWales"]) + "TYPE" + str(Nomisweb.GeoCodeLookup["LAD"]) + ".def.sdmx.json?", {})
+          + str(Nomisweb.GeoCodeLookup["EnglandWales"]) + Nomisweb.GeoCodeLookup["LAD"] + ".def.sdmx.json?", {})
       if data == {}:
         return []
 
