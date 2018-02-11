@@ -7,10 +7,11 @@ matrix:
     - language: r
       r: oldrel
       env:
+        - NOMIS_API_KEY=DUMMY
         - RETICULATE_PYTHON=$(which python3)
       # install the python package first
       before_install:
-        - pyenv shell 3.5
+        - pyenv shell 3.6
         - pip3 install numpy pandas
         - ./setup.py install
       dist: trusty
@@ -18,10 +19,11 @@ matrix:
     - language: r
       r: release
       env:
+        - NOMIS_API_KEY=DUMMY
         - RETICULATE_PYTHON=$(which python3)
       # install the python package first
       before_install:
-        - pyenv shell 3.5
+        - pyenv shell 3.6
         - pip3 install numpy pandas
         - ./setup.py install
       dist: trusty
@@ -29,16 +31,19 @@ matrix:
     - language: r
       r: devel
       env:
+        - NOMIS_API_KEY=DUMMY
         - RETICULATE_PYTHON=$(which python3)
       # install the python package first
       before_install:
-        - pyenv shell 3.5
+        - pyenv shell 3.6
         - pip3 install numpy pandas
         - ./setup.py install
       dist: trusty
 
     - language: python
       python: 3.4
+      env:
+        - NOMIS_API_KEY=DUMMY
       install:
         - pip install -r requirements.txt
       script:
@@ -46,6 +51,8 @@ matrix:
 
     - language: python
       python: 3.5
+      env:
+        - NOMIS_API_KEY=DUMMY
       install:
         - pip install -r requirements.txt
       script:
@@ -53,13 +60,15 @@ matrix:
 
     - language: python
       python: 3.6
+      env:
+        - NOMIS_API_KEY=DUMMY
       install:
         - pip install -r requirements.txt
       script:
         - python setup.py test
 
-#  allow_failures:
-#    - r: devel
+  allow_failures:
+    - r: devel
 
 warnings_are_errors: false
 
