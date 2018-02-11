@@ -16,7 +16,6 @@ def main():
 
   # Heres predefined query on a small geographical area
   table = "KS401EW"
-  table_internal = "NM_618_1"
   query_params = {}
   query_params["CELL"] = "7...13"
   query_params["date"] = "latest"
@@ -25,7 +24,7 @@ def main():
   query_params["geography"] = "1245710558...1245710560"
   query_params["MEASURES"] = "20100"
 
-  ks401 = api.get_data(table, table_internal, query_params)
+  ks401 = api.get_data(table, query_params)
   # display the first ten rows
   print(ks401.head(10))
 

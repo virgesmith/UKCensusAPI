@@ -11,7 +11,6 @@ cacheDir = "/tmp/UKCensusAPI"
 # Here's a predefined query, to which we add contextual data
 
 table = "KS401EW"
-table_internal = "NM_618_1"
 queryParams = list(
   date = "latest",
   RURAL_URBAN = "0",
@@ -24,7 +23,7 @@ queryParams = list(
 api = instance(cacheDir)
 
 # Fetch the data
-KS401EW = getData(api, table, table_internal, queryParams)
+KS401EW = getData(api, table, queryParams)
 
 # Add the context...
 KS401EW = contextify(api, table, "CELL", KS401EW)

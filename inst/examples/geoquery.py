@@ -11,7 +11,6 @@ def main():
   # In the previous example we had a predefined query using Leeds at MSOA resolution,
   # but we want to expand the geographical area and refine the resolution
   table = "KS401EW"
-  table_internal = "NM_618_1"
   query_params = {}
   query_params["CELL"] = "7...13"
   query_params["date"] = "latest"
@@ -29,7 +28,7 @@ def main():
   # replace the geography value in the query
   query_params["geography"] = api.get_geo_codes(coverage_codes, resolution)
   # get the data
-  ks401fine = api.get_data(table, table_internal, query_params)
+  ks401fine = api.get_data(table, query_params)
   print(ks401fine.head(5))
 
   # Now widen the coverage to England & Wales and coarsen the resolution to LA
@@ -37,7 +36,7 @@ def main():
   resolution = Api.Nomisweb.GeoCodeLookup["LAD"]
   query_params["geography"] = api.get_geo_codes(coverage_codes, resolution)
   # get the data
-  ks401broad = api.get_data(table, table_internal, query_params)
+  ks401broad = api.get_data(table, query_params)
   print(ks401broad.head(5))
 
 if __name__ == "__main__":

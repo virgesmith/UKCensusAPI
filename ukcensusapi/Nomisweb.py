@@ -32,17 +32,18 @@ class Nomisweb:
   # https://www.nomisweb.co.uk/api/v01/dataset/NM_144_1/geography/2092957703TYPE464.def.sdmx.json
   # https://www.nomisweb.co.uk/api/v01/dataset/NM_1_1/geography/2092957703TYPE464.def.sdmx.json
   GeoCodeLookup = {
-    "LAD": 464,
-    "MSOA11": 297,
-    "LSOA11": 298,
-    "OA11": 299,
-    "MSOA01": 305,
-    "LSOA01": 304,
-    "OA01": 310,   
-    "England": 2092957699,
-    "EnglandWales": 2092957703,
-    "GB": 2092957698,
-    "UK": 2092957697
+    # give meaning to some common nomis geography types/codes
+    "LAD": "TYPE464",
+    "MSOA11": "TYPE297",
+    "LSOA11": "TYPE298",
+    "OA11": "TYPE299",
+    "MSOA01": "TYPE305",
+    "LSOA01": "TYPE304",
+    "OA01": "TYPE310",       
+    "England": "2092957699",
+    "EnglandWales": "2092957703",
+    "GB": "2092957698",
+    "UK": "2092957697"
   }
 
   # initialise, supplying a location to cache downloads
@@ -61,7 +62,8 @@ class Nomisweb:
       os.mkdir(self.cache_dir)
       # TODO check dir created
     if Nomisweb.KEY is None:
-      raise RuntimeError("no API key found. Giving up since downloads may be truncated.\n" \
+      raise RuntimeError("No API key found. Whilst downloads still work, they may be truncated,\n" \
+                         "causing potentially unforseen problems in any modelling/analysis.\n" \
                          "Set the key value in the environment variable NOMIS_API_KEY.\n" \
                          "Register at www.nomisweb.co.uk to obtain a key")
 
@@ -91,8 +93,7 @@ class Nomisweb:
 
     geo_codes = []
     for i in range(0, len(la_codes)):
-      path = "api/v01/dataset/NM_144_1/geography/" + str(la_codes[i]) + "TYPE" \
-           + str(code_type) + ".def.sdmx.json?"
+      path = "api/v01/dataset/NM_144_1/geography/" + str(la_codes[i]) + code_type + ".def.sdmx.json?"
       rawdata = self.__fetch_json(path, {})
 
       # use try-catch block to deal with any issues arising from the returned json
@@ -144,7 +145,7 @@ class Nomisweb:
   # Two reasons for this:
   # - pandas/R dataframes conversion is done via matrix (which drops col names)
   # - reporting errors to R is useful (print statements aren't displayed in R(Studio))
-  def get_data(self, table, table_internal, query_params, r_compat=False):
+  def get_data(self, table, query_params, r_compat=False):
     """Downloads or retrieves data given a table and query parameters.
     Args:
        table: ONS table name
@@ -154,14 +155,15 @@ class Nomisweb:
         a dataframe containing the data. If downloaded, the data is also cached to a file
     """
     query_params["uid"] = Nomisweb.KEY
-    query_string = self.get_url(table_internal, query_params)
+    metadata = self.load_metadata(table)
+    query_string = self.get_url(metadata["nomis_table"], query_params)
 
     filename = self.cache_dir + table + "_" + hashlib.md5(query_string.encode()).hexdigest()+".tsv"
 
     # retrieve if not in cache
     if not os.path.isfile(filename):
-      meta = self.get_metadata(table)
-      self.write_metadata(table, meta)
+      meta = self.load_metadata(table)
+      #self.write_metadata(table, meta)
       print("Downloading and cacheing data: " + filename)
       request.urlretrieve(query_string, filename) #, timeout = Nomisweb.Timeout)
 
@@ -246,6 +248,9 @@ class Nomisweb:
               "description": data["structure"]["keyfamilies"]["keyfamily"][0]["name"]["value"],
               "fields": fields,
               "geographies": geogs }
+
+    # save a copy
+    self.write_metadata(table_name, result)
 
     return result
 

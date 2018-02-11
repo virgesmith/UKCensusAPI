@@ -14,10 +14,10 @@ skip_if_no_python_api = function() {
 
 # simply checks we can get nomis geo codes back
 test_that("geoCodeLookup", {
-  expect_true(UKCensusAPI::geoCodeLookup(api, "MSOA11") == 297)
-  expect_true(UKCensusAPI::geoCodeLookup(api, "LSOA01") == 304)
-  expect_true(UKCensusAPI::geoCodeLookup(api, "LAD") == 464)
-  expect_true(UKCensusAPI::geoCodeLookup(api, "EnglandWales") == 2092957703)
+  expect_true(UKCensusAPI::geoCodeLookup(api, "MSOA11") == "TYPE297")
+  expect_true(UKCensusAPI::geoCodeLookup(api, "LSOA01") == "TYPE304")
+  expect_true(UKCensusAPI::geoCodeLookup(api, "LAD") == "TYPE464")
+  expect_true(UKCensusAPI::geoCodeLookup(api, "EnglandWales") == "2092957703")
 })
 
 # simply checks we get data back
@@ -31,14 +31,13 @@ test_that("getMetadata", {
 test_that("getData", {
   skip_if_no_python_api()
   table = "KS401EW"
-  table_internal = "NM_618_1"
   query = list(date = "latest",
                geography = "1245714681...1245714688",
                CELL = "7...13",
                RURAL_URBAN="0",
                measures = "20100",
                select = "GEOGRAPHY_CODE,CELL,OBS_VALUE")
-  expect_true(class(UKCensusAPI::getData(api, table, table_internal, query)) == "data.frame")
+  expect_true(class(UKCensusAPI::getData(api, table, query)) == "data.frame")
 
 })
 
@@ -65,45 +64,44 @@ test_that("getLADCodes", {
 
 test_that("geoCodes empty", {
   skip_if_no_python_api()
-  expect_true(geoCodes(api, c(), 999) == "")
+  expect_true(geoCodes(api, c(), "TYPE999") == "")
 })
 
 test_that("geoCodes invalid", {
   skip_if_no_python_api()
-  expect_true(geoCodes(api, c(999), 999) == "")
+  expect_true(geoCodes(api, c(999), "TYPE999") == "")
 })
 
 test_that("geoCodes single LA", {
   skip_if_no_python_api()
-  expect_true(geoCodes(api, 1946157124, 464) == "1946157124")
+  expect_true(geoCodes(api, 1946157124, "TYPE464") == "1946157124")
 })
 
 test_that("geoCodes multi MSOA", {
   skip_if_no_python_api()
-  expect_true(geoCodes(api, c(1946157124, 1946157128), 297) == "1245710411...1245710471,1245710661...1245710705")
+  expect_true(geoCodes(api, c(1946157124, 1946157128), "TYPE297") == "1245710411...1245710471,1245710661...1245710705")
 })
 
 test_that("geoCodes multi LSOA", {
   skip_if_no_python_api()
-  expect_true(geoCodes(api, c(1946157124, 1946157128), 298) == "1249912854...1249913154,1249913980...1249914188,1249935357...1249935365")
+  expect_true(geoCodes(api, c(1946157124, 1946157128), "TYPE298") == "1249912854...1249913154,1249913980...1249914188,1249935357...1249935365")
 })
 
 test_that("geoCodes single OA", {
   skip_if_no_python_api()
-  expect_true(geoCodes(api, 1946157124, 299) == "1254148629...1254150034,1254267588...1254267709")
+  expect_true(geoCodes(api, 1946157124, "TYPE299") == "1254148629...1254150034,1254267588...1254267709")
 })
 
 test_that("contextify", {
   skip_if_no_python_api()
   table = "KS401EW"
-  table_internal = "NM_618_1"
   query = list(date = "latest",
                geography = "1245714681...1245714688",
                CELL = "7...13",
                RURAL_URBAN="0",
                measures = "20100",
                select = "GEOGRAPHY_CODE,CELL,OBS_VALUE")
-  data = UKCensusAPI::getData(api, table, table_internal, query)
+  data = UKCensusAPI::getData(api, table, query)
   column = "CELL"
 
   data = contextify(api, table, column, data)

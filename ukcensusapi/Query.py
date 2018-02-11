@@ -49,7 +49,7 @@ class Query:
 
     add_geog = input("Add geography? (y/N): ") == "y"
     if add_geog:
-      query_params["geography"] = self.__add_geog()
+      query_params["geography"] = self.__add_geog(meta)
       #print(query_params)
 
       get_data = input("Get data now? (y/N): ") == "y"
@@ -57,13 +57,11 @@ class Query:
         print("\n\nGetting data...")
 
         # Fetch (and cache) data
-        self.api.get_data(table, meta["nomis_table"], query_params)
+        self.api.get_data(table, query_params)
 
     # Remove API key in example code (lest it be accidentally committed)
     if "uid" in query_params:
       del query_params["uid"]
-
-    self.api.write_metadata(table, meta)
 
     self.write_code_snippets(table, meta, query_params)
 
@@ -77,15 +75,9 @@ class Query:
     coverage_codes = self.api.get_lad_codes(coverage)
     return self.api.get_geo_codes(coverage_codes, resolution)
 
-  def __add_geog(self):
+  def __add_geog(self, metadata):
 
     coverage = input("\nGeographical coverage\nE/EW/GB/UK or LAD codes(s)/name(s), comma separated: ")
-
-    resolution = input("Resolution (LAD/MSOA11/LSOA11/OA11/MSOA01/LSOA01/OA01): ")
-    while not resolution in Api.Nomisweb.GeoCodeLookup.keys():
-      print(resolution + " is not valid")
-      resolution = input("Resolution (LAD/MSOA11/LSOA11/OA11/MSOA01/LSOA01/OA01): ")
-    resolution = Api.Nomisweb.GeoCodeLookup[resolution]
 
     if coverage == "E":
       coverage_codes = [Api.Nomisweb.GeoCodeLookup["England"]]
@@ -97,6 +89,18 @@ class Query:
       coverage_codes = [Api.Nomisweb.GeoCodeLookup["UK"]]
     else:
       coverage_codes = self.api.get_lad_codes(coverage.split(","))
+
+    #print(metadata)
+    for key in metadata["geographies"]:
+      print(key, metadata["geographies"][key])
+
+    resolution_valid = False
+    while not resolution_valid:
+      resolution = input("Select Resolution: ")
+      if resolution in metadata["geographies"].keys():
+        resolution_valid = True
+      else:
+        print(resolution + " is not valid")
 
     area_codes = self.api.get_geo_codes(coverage_codes, resolution)
     return area_codes
@@ -121,7 +125,7 @@ class Query:
         py_file.write("\nquery_params[\""+key+"\"] = \""+query_params[key]+"\"")
       if not "geography" in query_params:
         py_file.write("\n# TODO query_params[\"geography\"] = ...")
-      py_file.write("\n" + table + " = api.get_data(table, table_internal, query_params)\n")
+      py_file.write("\n" + table + " = api.get_data(table, query_params)\n")
 
     print("\nWriting R code snippet to " + self.api.cache_dir + table + ".R")
     with open(self.api.cache_dir + table + ".R", "w") as r_file:
@@ -146,4 +150,4 @@ class Query:
       if not "geography" in query_params:
         r_file.write("\n  # TODO add geography parameter to this query...")
       r_file.write("\n)")
-      r_file.write("\n" + table + " = UKCensusAPI::getData(api, table, table_internal, queryParams)\n")
+      r_file.write("\n" + table + " = UKCensusAPI::getData(api, table, queryParams)\n")

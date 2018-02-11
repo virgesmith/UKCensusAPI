@@ -52,7 +52,7 @@ class Test(TestCase):
 
   def test_get_data(self):
     table = "KS401EW"
-    table_internal = "NM_618_1"
+#    table_internal = "NM_618_1"
     query_params = {}
     query_params["CELL"] = "7...13"
     query_params["date"] = "latest"
@@ -60,14 +60,13 @@ class Test(TestCase):
     query_params["select"] = "GEOGRAPHY_CODE,CELL,OBS_VALUE"
     query_params["geography"] = "1245710558...1245710560"
     query_params["MEASURES"] = "20100"
-    table = self.api.get_data(table, table_internal, query_params)
+    table = self.api.get_data(table, query_params)
     self.assertEqual(table.shape, (21, 3))
     self.assertEqual(sum(table.OBS_VALUE), 8214)
 
   def test_get_and_add_descriptive_column(self):
 
     table_name = "KS401EW"
-    meta = self.api.load_metadata(table_name)
 
     query_params = {}
     query_params["CELL"] = "7...13"
@@ -76,7 +75,7 @@ class Test(TestCase):
     query_params["select"] = "GEOGRAPHY_CODE,CELL,OBS_VALUE"
     query_params["geography"] = "1245710558...1245710560"
     query_params["MEASURES"] = "20100"
-    table = self.api.get_data(table_name, meta["nomis_table"], query_params)
+    table = self.api.get_data(table_name, query_params)
     self.assertEqual(table.shape, (21, 3))
     self.assertEqual(sum(table.OBS_VALUE), 8214)
 

@@ -28,7 +28,7 @@ queryMetadata = function() {
 #' geoCodeLookup(censusapi, "MSOA11")
 #' @export
 geoCodeLookup = function(api, geoCodeString) {
-  return(as.integer(api$GeoCodeLookup[geoCodeString]))
+  return(as.character(api$GeoCodeLookup[geoCodeString]))
 }
 
 #' getMetadata()
@@ -76,9 +76,9 @@ getMetadata = function(api, tableName) {
 #' getData(censusapi, table, meta$nomis_table, queryParams)
 #' }
 #' @export
-getData = function(api, tableName, internalName, query) {
+getData = function(api, tableName, query) {
   # returned value is filename (or error) to avoid data frame compatibility issues
-  filename = api$get_data(tableName, internalName, query, TRUE)
+  filename = api$get_data(tableName, query, TRUE)
   # TODO check that string isnt an error!
   return(read.csv(filename, sep="\t", stringsAsFactors = FALSE))
 }
@@ -113,7 +113,7 @@ getLADCodes = function(api, laNames) {
 #' @export
 geoCodes = function(api, coverage, resolution) {
   # force correct types
-  return(api$get_geo_codes(as.integer(coverage), as.integer(resolution)))
+  return(api$get_geo_codes(as.integer(coverage), resolution))
 }
 
 #' contextify
