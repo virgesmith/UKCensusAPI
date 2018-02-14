@@ -38,7 +38,19 @@ test_that("getData", {
                measures = "20100",
                select = "GEOGRAPHY_CODE,CELL,OBS_VALUE")
   expect_true(class(UKCensusAPI::getData(api, table, query)) == "data.frame")
+})
 
+# simply checks we get a data frame back
+test_that("getOdData", {
+  skip_if_no_python_api()
+  table = "WF01BEW"
+  query = list(date = "latest",
+               # OD are 5 LSOAs in central Leeds
+               currently_residing_in = "1249934756...1249934758,1249934760,1249934761",
+               place_of_work = "1249934756...1249934758,1249934760,1249934761",
+               measures = "20100",
+               select = "currently_residing_in_code,place_of_work_code,OBS_VALUE")
+  expect_true(class(UKCensusAPI::getData(api, table, query)) == "data.frame")
 })
 
 test_that("getLADCodes", {
