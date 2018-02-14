@@ -69,6 +69,21 @@ class Test(TestCase):
     self.assertEqual(table.shape, (21, 3))
     self.assertEqual(sum(table.OBS_VALUE), 8214)
 
+  # OD data is structured differently
+  def test_get_od_data(self):
+    table = "WF01BEW"
+#    table_internal = "NM_1228_1"
+    query_params = {}
+    query_params["date"] = "latest"
+    query_params["select"] = "currently_residing_in_code,place_of_work_code,OBS_VALUE"
+    # OD are 5 LSOAs in central Leeds
+    query_params["currently_residing_in"] = "1249934756...1249934758,1249934760,1249934761"
+    query_params["place_of_work"] = "1249934756...1249934758,1249934760,1249934761"
+    query_params["MEASURES"] = "20100"
+    table = self.api.get_data(table, query_params)
+    self.assertEqual(table.shape, (25, 3))
+    self.assertEqual(sum(table.OBS_VALUE), 1791)
+
   def test_get_and_add_descriptive_column(self):
 
     table_name = "KS401EW"

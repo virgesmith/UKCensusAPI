@@ -204,7 +204,13 @@ class Nomisweb:
     fields = {}
     for rawfield in rawfields:
       field = rawfield["conceptref"]
+
       fields[field] = {}
+
+      # ignore when too many categories (i.e. geograpical ones)
+      if field.upper() == "CURRENTLY_RESIDING_IN" or field.upper() == "PLACE_OF_WORK":
+        continue
+
       # further query to get categories
       path = "api/v01/dataset/"+table+"/"+field+".def.sdmx.json?"
       #print(path)
@@ -230,17 +236,15 @@ class Nomisweb:
     try:
       fdata = self.__fetch_json(path, {})
     except timeout:
-      print("HTTP timeout requesting metadata for " + table_name)
-      return {}
+      print("HTTP timeout requesting geography metadata for " + table_name)
     except (HTTPError, URLError):
-      print("HTTP error requesting metadata for " + table_name)
-      return {}
+      print("HTTP error requesting geography metadata for " + table_name)
     else:
-      values = fdata["structure"]["codelists"]["codelist"][0]["code"]
-      #print(values)
-      for value in values:
-        geogs[str(value["value"])] = value["description"]["value"]
-
+      if fdata["structure"]["codelists"]:
+        values = fdata["structure"]["codelists"]["codelist"][0]["code"]
+        #print(values)
+        for value in values:
+          geogs[str(value["value"])] = value["description"]["value"]
 
     result = {"nomis_table": table,
               "description": data["structure"]["keyfamilies"]["keyfamily"][0]["name"]["value"],
