@@ -147,21 +147,22 @@ class Nomisweb:
   def get_data(self, table, query_params, r_compat=False):
     """Downloads or retrieves data given a table and query parameters.
     Args:
-       table: ONS table name
-       table_internal: nomisweb table code (can be found in metadata)
+       table: ONS table name, or nomisweb table code if no explicit ONS name 
        query_params: table query parameters
     Returns:
         a dataframe containing the data. If downloaded, the data is also cached to a file
     """
-    query_params["uid"] = Nomisweb.KEY
+
+    # load the metadata
     metadata = self.load_metadata(table)
+
     query_string = self.get_url(metadata["nomis_table"], query_params)
+    query_params["uid"] = Nomisweb.KEY
 
     filename = self.cache_dir + table + "_" + hashlib.md5(query_string.encode()).hexdigest()+".tsv"
 
     # retrieve if not in cache
     if not os.path.isfile(filename):
-      #self.write_metadata(table, meta)
       print("Downloading and cacheing data: " + filename)
       request.urlretrieve(query_string, filename) #, timeout = Nomisweb.Timeout)
 
@@ -188,10 +189,15 @@ class Nomisweb:
     Returns:
       a dictionary containing information about the table contents including categories and category values.
     """
-    path = "api/v01/dataset/def.sdmx.json?"
-    query_params = {"search": "*"+table_name+"*"}
-
+    if not table_name.startswith("NM_"):
+      path = "api/v01/dataset/def.sdmx.json?"
+      query_params = {"search": "*"+table_name+"*"}
+    else:
+      path = "api/v01/" + table_name + ".def.sdmx.json?"
+      query_params = {}
+      
     data = self.__fetch_json(path, query_params)
+    print(data)
 
     # return empty if no useful metadata returned (likely table doesnt exist)
     if not data["structure"]["keyfamilies"]:
@@ -199,6 +205,7 @@ class Nomisweb:
 
     # this is the nomis internal table name
     table = data["structure"]["keyfamilies"]["keyfamily"][0]["id"]
+    print(table)
 
     rawfields = data["structure"]["keyfamilies"]["keyfamily"][0]["components"]["dimension"]
     fields = {}
@@ -268,10 +275,10 @@ class Nomisweb:
     filename = self.cache_dir + table_name + "_metadata.json"
     # if file not there, get from nomisweb
     if not os.path.isfile(filename):
-      print(filename, " not found, downloading...")
+      print(filename, "not found, downloading...")
       return self.get_metadata(table_name)
     else:
-      print(filename, " found, using cached LAD codes...")
+      print(filename, "found, using cached LAD codes...")
       with open(filename) as metafile:
         meta = json.load(metafile)
 
@@ -341,6 +348,8 @@ class Nomisweb:
     query_params["uid"] = Nomisweb.KEY
 
     query_string = Nomisweb.URL + path + str(urlencode(query_params))
+
+    print(query_string)
 
     reply = {}
     try:
