@@ -156,9 +156,9 @@ class Nomisweb:
     # load the metadata
     metadata = self.load_metadata(table)
 
-    query_string = self.get_url(metadata["nomis_table"], query_params)
     query_params["uid"] = Nomisweb.KEY
-
+    query_string = self.get_url(metadata["nomis_table"], query_params)
+    print(query_string)
     filename = self.cache_dir + table + "_" + hashlib.md5(query_string.encode()).hexdigest()+".tsv"
 
     # retrieve if not in cache
