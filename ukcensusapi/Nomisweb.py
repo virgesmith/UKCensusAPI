@@ -197,7 +197,6 @@ class Nomisweb:
       query_params = {}
       
     data = self.__fetch_json(path, query_params)
-    print(data)
 
     # return empty if no useful metadata returned (likely table doesnt exist)
     if not data["structure"]["keyfamilies"]:
@@ -205,7 +204,6 @@ class Nomisweb:
 
     # this is the nomis internal table name
     table = data["structure"]["keyfamilies"]["keyfamily"][0]["id"]
-    print(table)
 
     rawfields = data["structure"]["keyfamilies"]["keyfamily"][0]["components"]["dimension"]
     fields = {}
@@ -348,8 +346,6 @@ class Nomisweb:
     query_params["uid"] = Nomisweb.KEY
 
     query_string = Nomisweb.URL + path + str(urlencode(query_params))
-
-    print(query_string)
 
     reply = {}
     try:
