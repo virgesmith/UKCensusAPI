@@ -275,7 +275,7 @@ class Nomisweb:
       print(filename, "not found, downloading...")
       return self.get_metadata(table_name)
     else:
-      print(filename, "found, using cached LAD codes...")
+      print(filename, "found, using cached metadata...")
       with open(filename) as metafile:
         meta = json.load(metafile)
 
