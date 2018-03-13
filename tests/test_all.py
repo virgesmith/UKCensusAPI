@@ -84,14 +84,14 @@ class Test(TestCase):
     self.assertEqual(table.shape, (25, 3))
     self.assertEqual(sum(table.OBS_VALUE), 1791)
 
-  # Projection data doesnt explicitly have a table name - tests directly specifying nomis internal name 
+  # Projection data doesnt explicitly have a table name - tests directly specifying nomis internal name
   def test_get_proj_data(self):
     table_internal = "NM_2002_1"
     query_params = {
       "gender": "1,2",
-      "age": "101...191",
+      "c_age": "101...191",
       "MEASURES": "20100",
-      "select": "geography_code,gender,age,obs_value",
+      "select": "geography_code,gender,c_age,obs_value",
       "geography": "1879048193...1879048194",
       "date": "latestMINUS15" # 2001
     }
