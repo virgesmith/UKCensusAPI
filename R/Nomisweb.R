@@ -79,7 +79,11 @@ getData = function(api, tableName, query) {
   # returned value is filename (or error) to avoid data frame compatibility issues
   filename = api$get_data(tableName, query, TRUE)
   # TODO check that string isnt an error!
-  return(read.csv(filename, sep="\t", stringsAsFactors = FALSE))
+  data = read.csv(filename, sep="\t", stringsAsFactors = FALSE)
+  if (nrow(data) == 1000000) {
+    warning("Download has reached nomisweb's single query limit. Truncation is extremely likely")
+  }
+  return(data)
 }
 
 #' Map local authority names to nomisweb codes

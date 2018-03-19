@@ -5,6 +5,7 @@ Nomisweb API.
 import os
 import json
 import hashlib
+import warnings
 from collections import OrderedDict
 from urllib import request
 from urllib.error import HTTPError
@@ -179,7 +180,10 @@ class Nomisweb:
     # now load from cache and return
     if r_compat:
       return filename
-    return pd.read_csv(filename, delimiter='\t')
+    data = pd.read_csv(filename, delimiter='\t')
+    if len(data) == 1000000:
+      warnings.warn("Data download has reached nomisweb's single-query row limit. Truncation is extremely likely")
+    return data
 
   def get_metadata(self, table_name):
     """Downloads census table metadata.
