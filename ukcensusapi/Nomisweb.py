@@ -75,8 +75,6 @@ class Nomisweb:
 
     self.key = _get_api_key(self.cache_dir)
 
-    print("key:", self.key)
-
     if self.key is None:
       raise RuntimeError("No API key found. Whilst downloads still work, they may be truncated,\n" \
                          "causing potentially unforseen problems in any modelling/analysis.\n" \
