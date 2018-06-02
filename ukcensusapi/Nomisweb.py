@@ -15,6 +15,18 @@ from socket import timeout
 import pandas as pd
 #import numpy as np
 
+def _get_api_key(cache_dir):
+  """
+  Look for key in file NOMIS_API_KEY in cache dir, falling back to env var
+  """
+  filename = cache_dir + "/NOMIS_API_KEY"
+  if os.path.isfile(filename):
+    with open (filename, "r") as file:
+      content = file.readlines()
+      # return 1st line (if present) stripped of newline
+      return None if len(content) == 0 else content[0].replace("\n","") 
+  return os.environ.get("NOMIS_API_KEY")
+
 
 # The core functionality for accessing the www.nomisweb.co.uk API
 class Nomisweb:
@@ -24,7 +36,6 @@ class Nomisweb:
 
   # static constants
   URL = "https://www.nomisweb.co.uk/"
-  KEY = os.environ.get("NOMIS_API_KEY")
 
   # timeout for http requests
   Timeout = 15
@@ -61,7 +72,12 @@ class Nomisweb:
       self.cache_dir += "/"
     if not os.path.exists(self.cache_dir):
       os.mkdir(self.cache_dir)
-    if Nomisweb.KEY is None:
+
+    self.key = _get_api_key(self.cache_dir)
+
+    print("key:", self.key)
+
+    if self.key is None:
       raise RuntimeError("No API key found. Whilst downloads still work, they may be truncated,\n" \
                          "causing potentially unforseen problems in any modelling/analysis.\n" \
                          "Set the key value in the environment variable NOMIS_API_KEY.\n" \
@@ -157,7 +173,7 @@ class Nomisweb:
     # load the metadata
     metadata = self.load_metadata(table)
 
-    query_params["uid"] = Nomisweb.KEY
+    query_params["uid"] = self.key
     query_string = self.get_url(metadata["nomis_table"], query_params)
     filename = self.cache_dir + table + "_" + hashlib.md5(query_string.encode()).hexdigest()+".tsv"
 
@@ -346,7 +362,7 @@ class Nomisweb:
 
   def __fetch_json(self, path, query_params):
     # add API KEY to params
-    query_params["uid"] = Nomisweb.KEY
+    query_params["uid"] = self.key
 
     query_string = Nomisweb.URL + path + str(urlencode(query_params))
 
