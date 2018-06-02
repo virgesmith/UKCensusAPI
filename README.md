@@ -33,18 +33,19 @@ Example code is also provided which:
 
 ### API key
 
-It is recommended that you register with [nomisweb](https://www.nomisweb.co.uk) before using this package and use the API key the supply you in all queries. Without a key, queries may be truncated.
+It is recommended that you register with [nomisweb](https://www.nomisweb.co.uk) before using this package and use the API key the supply you in all queries. Without a key, queries will be truncated (max 25000 rows). With a key, the row limit is 1000000 and this package will warn if a query generates data with this number of rows. 
 
 Once registered, you will find your API key on [this page](https://www.nomisweb.co.uk/myaccount/webservice.asp). You should not divulge this key to others.
 
-The key should be defined in an environment variable, like so:
-```
-user@host:~$ echo $NOMIS_API_KEY
-0x0000000000000000000000000000000000000000
-```
-R users can (should) store the key in their `.Renviron` file: R will set the environment on startup, which will be visible to a python session instantiated from R. (A standalone python session will not see it.)
+This package will look for the key in the following places (in order):
+- locally: a file `NOMIS_API_KEY` in the cache directory defined at initialisation, e.g.
+   ```
+   $ cat cache/NOMIS_API_KEY
+   0x0000000000000000000000000000000000000000
+   ```
+- globally: the environment variable NOMIS_API_KEY. R users can store the key in their `.Renviron` file: R will set the environment on startup, which will be visible to a python session instantiated from R.
 
-This avoids hard-coding the API key into code, which could easily end up in a publically accessible repo.
+Initialisation will fail if the key is not defined in one of these locations. Note: it doesn't need to be a valid key, and in fact for testing it is quite useful to define the key to an invalid value.
 
 ## Installation
 
