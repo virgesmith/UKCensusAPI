@@ -141,7 +141,7 @@ test_that("geoquery example", {
   # ret = source(paste0(path, "geoquery.R"))
   # expect_true(class(ret) == "list")
   # run the R snippet in a separate process
-  script = paste0("Rscript ", path, "geoquery.R")
+  script = paste0(R.home("bin"), "/Rscript ", path, "geoquery.R")
   ret = system(script)
   expect_true(ret == 0)
 })
@@ -158,7 +158,7 @@ test_that("contextify example", {
   # ret = source(paste0(path, "geoquery.R"))
   # expect_true(class(ret) == "list")
   # run the R snippet in a separate process
-  script = paste0("Rscript ", path, "contextify.R")
+  script = paste0(R.home("bin"), "/Rscript ", path, "contextify.R")
   ret = system(script)
   expect_true(ret == 0)
 })
@@ -181,7 +181,7 @@ test_that("code snippet", {
   query$write_code_snippets(table, meta, queryParams)
 
   # run the R snippet in a separate process
-  script = paste0("Rscript ", api$cache_dir, table, ".R")
+  script = paste0(R.home("bin"), "/Rscript ", api$cache_dir, table, ".R")
   ret = system(script)
   expect_true(ret == 0)
 })
