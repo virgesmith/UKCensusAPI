@@ -41,7 +41,7 @@ matrix:
       dist: trusty
 
     - language: python
-      python: 3.6-dev
+      python: 3.7-dev
       env:
         - NOMIS_API_KEY=DUMMY
       install:
@@ -67,8 +67,8 @@ matrix:
       script:
         - python setup.py test
 
-#  allow_failures:
-#    - r: devel
+allow_failures:
+  - python: 3.7-dev
 
 warnings_are_errors: false
 
