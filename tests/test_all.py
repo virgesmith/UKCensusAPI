@@ -5,6 +5,7 @@
 
 import os
 from unittest import TestCase
+from random import sample
 
 import ukcensusapi.Nomisweb as Api
 import ukcensusapi.Query as Census
@@ -174,3 +175,26 @@ class Test(TestCase):
     self.assertTrue(os.system("python3 " + self.api.cache_dir + table + ".py") == 0)
     # fails on travis because R isnt installed
     #self.assertTrue(os.system("Rscript " + self.api.cache_dir + table + ".R") == 0)
+
+  # checks the logic to compress a list of nomis geo codes into a shorter form for url
+  def test_shorten_codelist(self):
+    n = list(range(1,21))
+
+    for i in range(0,100):
+      short = Api._shorten(sample(n, len(n))) 
+      self.assertEqual(short, "1...20")
+
+    del(n[3])
+    for i in range(0,100):
+      short = Api._shorten(sample(n, len(n))) 
+      self.assertEqual(short, "1...3,5...20")
+
+    del(n[16])
+    for i in range(0,100):
+      short = Api._shorten(sample(n, len(n))) 
+      self.assertEqual(short, "1...3,5...17,19...20")
+
+    del(n[16])
+    for i in range(0,100):
+      short = Api._shorten(sample(n, len(n))) 
+      self.assertEqual(short, "1...3,5...17,20")

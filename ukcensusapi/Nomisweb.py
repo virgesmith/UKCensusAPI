@@ -27,6 +27,36 @@ def _get_api_key(cache_dir):
       return None if len(content) == 0 else content[0].replace("\n","") 
   return os.environ.get("NOMIS_API_KEY")
 
+def _shorten(code_list):
+  """
+  Shortens a list of numeric nomis geo codes into a string format where contiguous values are represented as ranges, e.g.
+  1,2,3,6,7,8,9,10 -> "1...3,6,7...10"
+  which can drastically reduce the length of the query url
+  """
+  # empty evals to False
+  if not code_list:
+    return ""
+  if len(code_list) == 1:
+    return str(code_list[0])
+
+  code_list.sort() # assume this is a modifying operation
+  short_string = ""
+  index0 = 0
+  index1 = 0 # appease lint
+  for index1 in range(1, len(code_list)):
+    if code_list[index1] != (code_list[index1-1] + 1):
+      if index0 == index1:
+        short_string += str(code_list[index0]) + ","
+      else:
+        short_string += str(code_list[index0]) + "..." + str(code_list[index1-1]) + ","
+      index0 = index1
+  if index0 == index1:
+    short_string += str(code_list[index0])
+  else:
+    short_string += str(code_list[index0]) + "..." + str(code_list[index1])
+  return short_string
+
+
 
 # The core functionality for accessing the www.nomisweb.co.uk API
 class Nomisweb:
@@ -119,7 +149,7 @@ class Nomisweb:
           geo_codes.append(rawdata["structure"]["codelists"]["codelist"][0]["code"][j]["value"])
       except (KeyError, ValueError):
         print(la_codes[i], " does not appear to be a valid LA code")
-    return self.__shorten(geo_codes)
+    return _shorten(geo_codes)
 
   def get_lad_codes(self, la_names):
     """Convert local autority name(s) to nomisweb codes.
@@ -333,31 +363,6 @@ class Nomisweb:
 
   # given a list of integer codes, generates a string using the nomisweb shortened form
   # (consecutive numbers represented by a range, non-consecutive are comma separated
-  def __shorten(self, code_list):
-
-    # empty evals to False
-    if not code_list:
-      return ""
-    if len(code_list) == 1:
-      return str(code_list[0])
-
-    code_list.sort() # assume this is a modifying operation
-    short_string = ""
-    index0 = 0
-    index1 = 0 # appease lint
-    for index1 in range(1, len(code_list)):
-      if code_list[index1] != (code_list[index1-1] + 1):
-        if index0 == index1:
-          short_string += str(code_list[index0]) + ","
-        else:
-          short_string += str(code_list[index0]) + "..." + str(code_list[index1-1]) + ","
-        index0 = index1
-    if index0 == index1:
-      short_string += str(code_list[index0])
-    else:
-      short_string += str(code_list[index0]) + "..." + str(code_list[index1])
-    return short_string
-
   def __fetch_json(self, path, query_params):
     # add API KEY to params
     query_params["uid"] = self.key
