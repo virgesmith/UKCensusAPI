@@ -23,8 +23,8 @@ def _get_api_key(cache_dir):
   Look for key in file NOMIS_API_KEY in cache dir, falling back to env var
   """
   filename = cache_dir / "NOMIS_API_KEY"
-  if os.path.isfile(filename):
-    with open (filename, "r") as file:
+  if os.path.isfile(str(filename)):
+    with open(str(filename), "r") as file:
       content = file.readlines()
       # return 1st line (if present) stripped of newline
       return None if len(content) == 0 else content[0].replace("\n","") 
@@ -204,13 +204,13 @@ class Nomisweb:
     filename = self.cache_dir / (table + "_" + hashlib.md5(query_string.encode()).hexdigest()+".tsv")
 
     # retrieve if not in cache
-    if not os.path.isfile(filename):
+    if not os.path.isfile(str(filename)):
       print("Downloading and cacheing data: " + str(filename))
-      request.urlretrieve(query_string, filename) #, timeout = Nomisweb.Timeout)
+      request.urlretrieve(query_string, str(filename)) #, timeout = Nomisweb.Timeout)
 
       # check for empty file, if so delete it and report error
-      if os.stat(filename).st_size == 0:
-        os.remove(filename)
+      if os.stat(str(filename)).st_size == 0:
+        os.remove(str(filename))
         errormsg = "ERROR: Query returned no data. Check table and query parameters"
         if r_compat:
           return errormsg
@@ -222,7 +222,7 @@ class Nomisweb:
     # now load from cache and return
     if r_compat:
       return filename
-    data = pd.read_csv(filename, delimiter='\t')
+    data = pd.read_csv(str(filename), delimiter='\t')
     if len(data) == 1000000:
       warnings.warn("Data download has reached nomisweb's single-query row limit. Truncation is extremely likely")
     return data
@@ -317,12 +317,12 @@ class Nomisweb:
     """
     filename = self.cache_dir / (table_name + "_metadata.json")
     # if file not there, get from nomisweb
-    if not os.path.isfile(filename):
+    if not os.path.isfile(str(filename)):
       print(filename, "not found, downloading...")
       return self.get_metadata(table_name)
     else:
       print(filename, "found, using cached metadata...")
-      with open(filename) as metafile:
+      with open(str(filename)) as metafile:
         meta = json.load(metafile)
 
     return meta
@@ -334,7 +334,7 @@ class Nomisweb:
 
     filename = self.cache_dir / "lad_codes.json"
 
-    if not os.path.isfile(filename):
+    if not os.path.isfile(str(filename)):
       print(filename, "not found, downloading LAD codes...")
 
       data = self.__fetch_json("api/v01/dataset/NM_144_1/geography/" \
@@ -350,12 +350,12 @@ class Nomisweb:
       print("Writing LAD codes to ", filename)
 
       # save LAD codes
-      with open(filename, "w") as metafile:
+      with open(str(filename), "w") as metafile:
         json.dump(codes, metafile, indent=2)
 
     else:
       print("using cached LAD codes:", filename)
-      with open(filename) as cached_ladcodes:
+      with open(str(filename)) as cached_ladcodes:
         codes = json.load(cached_ladcodes)
     return codes
 
@@ -389,8 +389,8 @@ class Nomisweb:
     """
 
     filename = self.cache_dir / (table + "_metadata.json")
-    print("Writing metadata to ", filename)
-    with open(filename, "w") as metafile:
+    print("Writing metadata to ", str(filename))
+    with open(str(filename), "w") as metafile:
       json.dump(meta, metafile, indent=2)
 
   # append <column> numeric values with the string values from the metadata

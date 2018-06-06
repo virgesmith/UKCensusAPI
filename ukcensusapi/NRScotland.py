@@ -4,10 +4,8 @@ Data scraper for Scottish 2011 census Data
 
 import os.path
 from pathlib import Path
-import json
 import urllib.parse
 import zipfile
-import numpy as np
 import pandas as pd
 import requests
 
@@ -59,13 +57,10 @@ class NRScotland:
     # checks exists and is writable, creates if necessary
     self.cache_dir = utils.init_cache_dir(cache_dir)
 
-#    for data_source in NRScotland.data_sources:
-#      zipfile = self.__source_to_zip(data_source)
-
   def get_metadata(self, table, resolution):
-    z = zipfile.ZipFile(self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]]))
+    z = zipfile.ZipFile(str(self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]])))
     #print(z.namelist())   
-    data = pd.read_csv(z.open(table + ".csv"))  
+    data = pd.read_csv(z.open(table + ".csv"))
     # assumes first column is geography (unnamed)   
     meta = { "table": table,
              "description": "",
@@ -77,7 +72,7 @@ class NRScotland:
 
   def get_data(self, table, resolution, geography, category_filter=None):
 
-    z = zipfile.ZipFile(self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]]))
+    z = zipfile.ZipFile(str(self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]])))
     data = pd.read_csv(z.open(table + ".csv"))  
     data = data.replace("-", 0)
     # assumes first column is geography (unnamed)   
@@ -121,15 +116,15 @@ class NRScotland:
     """
     Downloads if necessary and returns the name of the locally cached zip file of the source data (replacing spaces with _)
     """
-    zipfile = self.cache_dir / (source_name.replace(" ", "_") + ".zip")
-    if not os.path.isfile(zipfile):
+    zip = self.cache_dir / (source_name.replace(" ", "_") + ".zip")
+    if not os.path.isfile(str(zip)):
       # The URL must have %20 (not "+") for space
       scotland_src = NRScotland.URL + "?downloadFileIds=" + urllib.parse.quote(source_name)
       print(scotland_src, " -> ", self.cache_dir / zipfile, "...", end="")
       response = requests.get(scotland_src)
-      with open(zipfile, 'wb') as fd:
+      with open(str(zip), 'wb') as fd:
         for chunk in response.iter_content(chunk_size=1024):
           fd.write(chunk)
       print("OK")
-    return zipfile
+    return zip
 
