@@ -221,7 +221,7 @@ class Nomisweb:
 
     # now load from cache and return
     if r_compat:
-      return filename
+      return str(filename) # R expects a string not a Path
     data = pd.read_csv(str(filename), delimiter='\t')
     if len(data) == 1000000:
       warnings.warn("Data download has reached nomisweb's single-query row limit. Truncation is extremely likely")
