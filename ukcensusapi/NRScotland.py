@@ -120,7 +120,7 @@ class NRScotland:
     if not os.path.isfile(str(zip)):
       # The URL must have %20 (not "+") for space
       scotland_src = NRScotland.URL + "?downloadFileIds=" + urllib.parse.quote(source_name)
-      print(scotland_src, " -> ", self.cache_dir / zipfile, "...", end="")
+      print(scotland_src, " -> ", self.cache_dir / zip, "...", end="")
       response = requests.get(scotland_src)
       with open(str(zip), 'wb') as fd:
         for chunk in response.iter_content(chunk_size=1024):
