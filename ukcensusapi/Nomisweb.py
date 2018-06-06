@@ -6,6 +6,7 @@ import os
 import json
 import hashlib
 import warnings
+from pathlib import Path
 from collections import OrderedDict
 from urllib import request
 from urllib.error import HTTPError
@@ -15,11 +16,13 @@ from socket import timeout
 import pandas as pd
 #import numpy as np
 
+import ukcensusapi.utils as utils
+
 def _get_api_key(cache_dir):
   """
   Look for key in file NOMIS_API_KEY in cache dir, falling back to env var
   """
-  filename = cache_dir + "/NOMIS_API_KEY"
+  filename = cache_dir / "NOMIS_API_KEY"
   if os.path.isfile(filename):
     with open (filename, "r") as file:
       content = file.readlines()
@@ -96,12 +99,7 @@ class Nomisweb:
     Returns:
         an instance.
     """
-    self.cache_dir = cache_dir
-    # ensure cache_dir is interpreted as a directory
-    if not self.cache_dir.endswith("/"):
-      self.cache_dir += "/"
-    if not os.path.exists(self.cache_dir):
-      os.mkdir(self.cache_dir)
+    self.cache_dir = utils.init_cache_dir(cache_dir)
 
     self.key = _get_api_key(self.cache_dir)
 
@@ -203,11 +201,11 @@ class Nomisweb:
 
     query_params["uid"] = self.key
     query_string = self.get_url(metadata["nomis_table"], query_params)
-    filename = self.cache_dir + table + "_" + hashlib.md5(query_string.encode()).hexdigest()+".tsv"
+    filename = self.cache_dir / (table + "_" + hashlib.md5(query_string.encode()).hexdigest()+".tsv")
 
     # retrieve if not in cache
     if not os.path.isfile(filename):
-      print("Downloading and cacheing data: " + filename)
+      print("Downloading and cacheing data: " + str(filename))
       request.urlretrieve(query_string, filename) #, timeout = Nomisweb.Timeout)
 
       # check for empty file, if so delete it and report error
@@ -219,7 +217,7 @@ class Nomisweb:
         print(errormsg)
         return
     else:
-      print("Using cached data: " + filename)
+      print("Using cached data: " + str(filename))
 
     # now load from cache and return
     if r_compat:
@@ -317,7 +315,7 @@ class Nomisweb:
     Returns:
       a dictionary containing information about the table contents including categories and category values.
     """
-    filename = self.cache_dir + table_name + "_metadata.json"
+    filename = self.cache_dir / (table_name + "_metadata.json")
     # if file not there, get from nomisweb
     if not os.path.isfile(filename):
       print(filename, "not found, downloading...")
@@ -334,7 +332,7 @@ class Nomisweb:
   # download and cache the nomis codes for local authorities
   def __cache_lad_codes(self):
 
-    filename = self.cache_dir + "lad_codes.json"
+    filename = self.cache_dir / "lad_codes.json"
 
     if not os.path.isfile(filename):
       print(filename, "not found, downloading LAD codes...")
@@ -390,7 +388,7 @@ class Nomisweb:
         a return value.
     """
 
-    filename = self.cache_dir + table + "_metadata.json"
+    filename = self.cache_dir / (table + "_metadata.json")
     print("Writing metadata to ", filename)
     with open(filename, "w") as metafile:
       json.dump(meta, metafile, indent=2)

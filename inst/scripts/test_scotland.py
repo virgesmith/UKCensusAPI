@@ -6,9 +6,14 @@ import ukcensusapi.NRScotland as NRScotland
 
 census = NRScotland.NRScotland("~/.ukpopulation/cache")
 
-categories = census.get_metadata("KS401SC", "LAD")
-print(categories)
+meta = census.get_metadata("KS401SC", "LAD")
+#print(meta)
 
-census.get_data("KS401SC", "LAD")
+table = census.get_data("KS401SC", "LAD", "S12000033")
+print(table)
+
+table = census.contextify(table, meta)
+print(table)
+
 
 
