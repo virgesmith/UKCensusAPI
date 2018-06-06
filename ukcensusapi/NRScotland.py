@@ -58,6 +58,15 @@ class NRScotland:
     self.cache_dir = utils.init_cache_dir(cache_dir)
 
   def get_metadata(self, table, resolution):
+    """
+    Returns the table metadata
+    """
+    return self.__get_rawdata(table, resolution)[0]
+
+  def __get_rawdata(self, table, resolution):
+    """
+    Gets the raw csv data and metadata
+    """
     z = zipfile.ZipFile(str(self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]])))
     #print(z.namelist())   
     raw_data = pd.read_csv(z.open(table + ".csv"))
@@ -84,14 +93,14 @@ class NRScotland:
     return (meta, raw_data)
     #print(data.head())
 
-  def get_data(self, table, resolution, geography, category_filter=None):
-
-    meta, raw_data = self.get_metadata(table, resolution)
+  def get_data(self, table, resolution, geography, category_filters=None):
+    """
+    Returns a table with categories in columns, filtered by geography and (optionally) category values 
+    """
+    meta, raw_data = self.__get_rawdata(table, resolution)
     raw_data = raw_data.replace("-", 0)
     # assumes the first n are (unnamed) columns we don't want to melt, geography coming first: n = geog + num categories - 1 (the one to melt) 
     lookup = raw_data.columns.tolist()[len(meta["fields"]):]
-
-    #print(meta["fields"].keys())
 
     id_vars = ["GEOGRAPHY_CODE"]
     for i in range(1,len(meta["fields"])):
@@ -115,22 +124,23 @@ class NRScotland:
       category_map = { k: v for v, k in enumerate(category_values)} 
       raw_data[category_name] = raw_data[category_name].map(category_map)
 
-#    print(category_map)
-
     # geography (and category_filter) must be lists
     if isinstance(geography, str):
       geography = [geography]
-    
-    # TODO multi-category filters
-    # if no category_filter is provided we return all categories
-    # if category_filter is None:
-    #   category_filter = raw_data[table + "_0_CODE"].unique()
-    # if isinstance(category_filter, int):
-    #   category_filter = [category_filter]
 
+    data = raw_data[raw_data.GEOGRAPHY_CODE.isin(geography)]
+    
+    # multi-category filters
+    for category in category_filters:
+      filter = category_filters[category]
+      if isinstance(filter, int):
+        filter = [filter]
+      data = data[data[category].isin(filter)]
+
+    return data.reset_index(drop=True)
     # # filter by geography and category
     # return raw_data[(raw_data.GEOGRAPHY_CODE.isin(geography)) & (raw_data[table + "_CODE"].isin(category_filter))].reset_index(drop=True)
-    return raw_data[raw_data.GEOGRAPHY_CODE.isin(geography)].reset_index(drop=True)
+#    return raw_data[raw_data.GEOGRAPHY_CODE.isin(geography)].reset_index(drop=True)
 
   # TODO this is very close to duplicating the code in Nomisweb.py - refactor
   def contextify(self, table, meta, colname):

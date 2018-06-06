@@ -83,15 +83,17 @@ class Test(TestCase):
     geography = "S12000033" # Aberdeen
     categories = { "KS401SC_0_CODE": range(8,15) }
     table = self.api_sc.get_data(table_name, "LAD", geography, categories)
-    # self.assertEqual(table.shape, (7, 3))
-    # self.assertEqual(sum(table.OBS_VALUE), 108153)
+    self.assertEqual(table.shape, (7, 3))
+    self.assertEqual(sum(table.OBS_VALUE), 108153)
 
     table_name = "DC2101SC"
     geography = "S12000033" # Aberdeen
-    categories = { "DC2101SC_0_CODE": 0 }
+    categories = { "DC2101SC_0_CODE": 4, # White Irish 
+                   "DC2101SC_1_CODE": [1,2], # M+F
+                   "DC2101SC_2_CODE": [6,7,8,9,10,11,12] } # 18-49
     table = self.api_sc.get_data(table_name, "LAD", geography, categories)
-    # self.assertEqual(table.shape, (1575, 5))
-    # self.assertEqual(sum(table.OBS_VALUE), 108153)
+    self.assertEqual(table.shape, (14, 5))
+    self.assertEqual(sum(table.OBS_VALUE), 1732)
     
 
   # OD data is structured differently
