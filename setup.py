@@ -7,7 +7,7 @@ def readme():
     return f.read()
 
 setup(name='ukcensusapi',
-  version='1.0.0',
+  version='1.1.0',
   description='UK census data query automation',
   long_description=readme(),
   url='https://github.com/virgesmith/UKCensusAPI',

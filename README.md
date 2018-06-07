@@ -4,6 +4,15 @@
 [![JOSS status](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a/status.svg)](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a)
 [![DOI](https://zenodo.org/badge/99702514.svg)](https://zenodo.org/badge/latestdoi/99702514)
 
+> ## Update
+> This package is currently something of a misnomer currently as it only uses Nomisweb as its data source, which only provides census data for England & Wales.
+
+> Work is currently under way on version 1.1 of this package which will extend the coverage firstly to Scotland ("GBCensusAPI"). Northern Ireland will follow. 
+
+> Neither country provide a web API for their data so we have to resort to web scraping, which means the slicing-and-dicing and geographical query functionality may be more limited than it is for England & Wales.
+
+> For Scotland, data can be downloaded at country or Council Area level, at geographical resolutions of Council Area
+
 [Nomisweb](https://www.nomisweb.co.uk), run by Durham University, provides online access to the most detailed and up-to-date statistics from official sources for local areas throughout the UK, including census data.  
 
 This package provides both a `python` and an `R` wrapper around the nomisweb census data API, enabling:
