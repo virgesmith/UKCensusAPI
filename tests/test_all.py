@@ -6,6 +6,7 @@
 import os
 from unittest import TestCase
 from random import sample
+import numpy as np
 
 import ukcensusapi.Nomisweb as Api_EW
 import ukcensusapi.NRScotland as Api_SC
@@ -37,6 +38,33 @@ class Test(TestCase):
     # test 2001 codes
     result = self.api_ew.get_geo_codes([1946157127], Api_EW.Nomisweb.GeoCodeLookup["MSOA01"])
     self.assertEqual(result, '1279265050...1279265157')
+
+    # Scotland
+    lads = ['S12000033', 'S12000034', 'S12000041', 'S12000035', 'S12000026', 'S12000005',
+            'S12000039', 'S12000006', 'S12000042', 'S12000008', 'S12000045', 'S12000010',
+            'S12000011', 'S12000036', 'S12000014', 'S12000015', 'S12000046', 'S12000017',
+            'S12000018', 'S12000019', 'S12000020', 'S12000021', 'S12000044', 'S12000023',
+            'S12000024', 'S12000038', 'S12000027', 'S12000028', 'S12000029', 'S12000030',
+            'S12000040', 'S12000013'].sort()
+
+    msoa_ab = ['S02001275', 'S02001238', 'S02001237', 'S02001236', 'S02001278', 'S02001284',
+               'S02001247', 'S02001249', 'S02001246', 'S02001250', 'S02001261', 'S02001252',
+               'S02001251', 'S02001257', 'S02001258', 'S02001254', 'S02001256', 'S02001253',
+               'S02001248', 'S02001242', 'S02001240', 'S02001241', 'S02001239', 'S02001243',
+               'S02001259', 'S02001260', 'S02001264', 'S02001265', 'S02001268', 'S02001269',
+               'S02001267', 'S02001274', 'S02001266', 'S02001263', 'S02001262', 'S02001245',
+               'S02001270', 'S02001272', 'S02001273', 'S02001271', 'S02001244', 'S02001279',
+               'S02001282', 'S02001281', 'S02001280', 'S02001276', 'S02001277', 'S02001283',
+               'S02001255'].sort()
+
+    result = self.api_sc.get_geog("S92000003", "LAD").sort()
+    self.assertTrue(np.array_equal(result, lads))    
+    result = self.api_sc.get_geog("S12000033", "MSOA11").sort()
+    self.assertTrue(np.array_equal(result, msoa_ab))    
+    result = self.api_sc.get_geog("S12000033", "LSOA11")
+    self.assertTrue(len(result) == 283)    
+    result = self.api_sc.get_geog("S12000033", "OA11")
+    self.assertTrue(len(result) == 1992)    
 
   def test_get_metadata(self):
     meta = self.api_ew.get_metadata("NONEXISTENT")

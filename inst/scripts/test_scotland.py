@@ -9,6 +9,11 @@ census = NRScotland.NRScotland("~/.ukpopulation/cache")
 meta = census.get_metadata("KS401SC", "LAD")
 print(meta)
 
+# KS401 no data at LSOA level, yet there is data at OA?
+# compression format of OA data not supported by zipfile
+
+data = census.get_data("KS401SC", "LAD", "S92000003", category_filters={"KS401SC_0_CODE": 0})
+print(data.head())
 meta = census.get_metadata("DC1117SC", "LAD")
 print(meta)
 meta = census.get_metadata("DC2101SC", "LAD")

@@ -17,6 +17,25 @@ import ukcensusapi.utils as utils
 # Data zone (LSOA)
 # Output area
 
+
+# assumes all areas in coverage are the same type
+def _coverage_type(code):
+  if isinstance(code, list):
+    code = code[0]
+  if code == "S92000003":
+    return "ALL"
+  elif code[:3] == "S12":
+    return "LAD"
+  elif code[:3] == "S02":
+    return "MSOA11"
+  elif code[:3] == "S01":
+    return "LSOA11"
+  elif code[:3] == "S00":
+    return "OA11"
+  else:
+    raise ValueError("Invalid code: {}".format(code))
+
+
 class NRScotland:
   """
   NRScotland web data scraper.
@@ -57,6 +76,35 @@ class NRScotland:
     # checks exists and is writable, creates if necessary
     self.cache_dir = utils.init_cache_dir(cache_dir)
 
+    # download the lookup if not present
+    lookup_file = self.cache_dir / "sc_lookup.csv"
+    if not os.path.isfile(str(lookup_file)):
+      lookup_url = "http://www.gov.scot/Resource/0046/00462936.csv"
+      response = requests.get(lookup_url)
+      with open(str(lookup_file), 'wb') as fd:
+        for chunk in response.iter_content(chunk_size=1024):
+          fd.write(chunk)
+
+    self.area_lookup = pd.read_csv(str(self.cache_dir / "sc_lookup.csv")) 
+
+    # TODO use a map (just in case col order changes)
+    self.area_lookup.columns = ["OA11", "LSOA11", "MSOA11", "LAD"]
+
+  def get_geog(self, coverage, resolution):
+    """
+    Returns all areas at resolution in coverage
+    """
+    # assumes all areas in coverage are the same type
+    coverage_type = _coverage_type(coverage)
+    if coverage_type == "ALL":
+      return self.area_lookup[resolution].unique()
+
+    # ensure list
+    if isinstance(coverage, str):
+      coverage = [coverage]
+
+    return self.area_lookup[self.area_lookup[coverage_type].isin(coverage)][resolution].unique()
+
   def get_metadata(self, table, resolution):
     """
     Returns the table metadata
@@ -70,12 +118,15 @@ class NRScotland:
     z = zipfile.ZipFile(str(self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]])))
     #print(z.namelist())   
     raw_data = pd.read_csv(z.open(table + ".csv"))
+
+    # more sophisticate way to check for no data?
+    if raw_data.shape == (2,1):
+      raise ValueError("Table {}: data not available at {} resolution.".format(table, resolution))
     # assumes:
     # - first column is geography (unnamed)
     # - any subsequent columns are categorical
     # - named columns are categories   
     raw_cols = raw_data.columns.tolist()
-
     fields = {}
 
     col_index = 1
@@ -93,10 +144,11 @@ class NRScotland:
     return (meta, raw_data)
     #print(data.head())
 
-  def get_data(self, table, resolution, geography, category_filters={}):
+  def get_data(self, table, resolution, coverage, category_filters={}):
     """
     Returns a table with categories in columns, filtered by geography and (optionally) category values 
     """
+    geography = self.get_geog(coverage, resolution)
     meta, raw_data = self.__get_rawdata(table, resolution)
     raw_data = raw_data.replace("-", 0)
     # assumes the first n are (unnamed) columns we don't want to melt, geography coming first: n = geog + num categories - 1 (the one to melt) 
