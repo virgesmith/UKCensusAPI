@@ -13,7 +13,7 @@
 
 > For Scotland, data can be downloaded at country or Council Area (~LAD) level, at geographical resolutions of Council Area, Data Zone (~LSOA) and Output Area. Intermediate Area (~MSOA) data will eventually be provided.
 
-> The two main functions are `NRScotland.get_metadata()` for metadata, and NRScotland.get_data() for the actual data. Examples will be provided in due course. 
+> The principal functions are `NRScotland.get_metadata()` for metadata, `NRScotland.get_data()` for the actual data, and `NRScotland.contextify()` to annotate the data using the metadata. Examples will be provided in due course, for now see [test_scotland.py](inst/examples/test_scotland.py). 
  
 [Nomisweb](https://www.nomisweb.co.uk), run by Durham University, provides online access to the most detailed and up-to-date statistics from official sources for local areas throughout the UK, including census data.  
 

@@ -93,7 +93,7 @@ class NRScotland:
     return (meta, raw_data)
     #print(data.head())
 
-  def get_data(self, table, resolution, geography, category_filters=None):
+  def get_data(self, table, resolution, geography, category_filters={}):
     """
     Returns a table with categories in columns, filtered by geography and (optionally) category values 
     """
