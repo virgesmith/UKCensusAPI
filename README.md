@@ -11,8 +11,10 @@
 
 > Neither country provide a web API for their data so we have to resort to web scraping, which means the slicing-and-dicing and geographical query functionality may be more limited than it is for England & Wales.
 
-> For Scotland, data can be downloaded at country or Council Area level, at geographical resolutions of Council Area
+> For Scotland, data can be downloaded at country or Council Area (~LAD) level, at geographical resolutions of Council Area, Data Zone (~LSOA) and Output Area. Intermediate Area (~MSOA) data will eventually be provided.
 
+> The two main functions are `NRScotland.get_metadata()` for metadata, and NRScotland.get_data() for the actual data. Examples will be provided in due course. 
+ 
 [Nomisweb](https://www.nomisweb.co.uk), run by Durham University, provides online access to the most detailed and up-to-date statistics from official sources for local areas throughout the UK, including census data.  
 
 This package provides both a `python` and an `R` wrapper around the nomisweb census data API, enabling:
