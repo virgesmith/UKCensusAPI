@@ -148,6 +148,13 @@ class NRScotland:
     """
     Returns a table with categories in columns, filtered by geography and (optionally) category values 
     """
+
+    # No data is available for Intermediate zones (~MSOA) so we get Data Zone (LSOA) then aggregate
+    msoa_workaround = False
+    if resolution == "MSOA11":
+      msoa_workaround = True
+      resolution = "LSOA11"
+
     geography = self.get_geog(coverage, resolution)
     meta, raw_data = self.__get_rawdata(table, resolution)
     raw_data = raw_data.replace("-", 0)
@@ -159,8 +166,6 @@ class NRScotland:
       id_vars.append(table + "_" + str(i) + "_CODE")
     cols = id_vars.copy()
     cols.extend(list(range(0,len(lookup))))
-    # print(id_vars)
-    # print(cols)
 
     raw_data.columns = cols
     raw_data = raw_data.melt(id_vars=id_vars)
@@ -180,8 +185,18 @@ class NRScotland:
     if isinstance(geography, str):
       geography = [geography]
 
+    # filter by geography
     data = raw_data[raw_data.GEOGRAPHY_CODE.isin(geography)]
-    
+
+    # If we actually requested MSOA-level data, aggregrate the LSOAs within each MSOA
+    if msoa_workaround:
+      data = data.reset_index(drop=True)
+      lookup = self.area_lookup[self.area_lookup.LSOA11.isin(data.GEOGRAPHY_CODE)]
+      lookup = pd.Series(lookup.MSOA11.values, index=lookup.LSOA11).to_dict()
+      data.GEOGRAPHY_CODE = data.GEOGRAPHY_CODE.map(lookup)
+      cols = list(data.columns[:-1]) #[1:]#.remove("GEOGRAPHY_CODE")
+      data = data.groupby(cols).sum().reset_index()
+
     # multi-category filters
     for category in category_filters:
       filter = category_filters[category]
@@ -190,9 +205,6 @@ class NRScotland:
       data = data[data[category].isin(filter)]
 
     return data.reset_index(drop=True)
-    # # filter by geography and category
-    # return raw_data[(raw_data.GEOGRAPHY_CODE.isin(geography)) & (raw_data[table + "_CODE"].isin(category_filter))].reset_index(drop=True)
-#    return raw_data[raw_data.GEOGRAPHY_CODE.isin(geography)].reset_index(drop=True)
 
   # TODO this is very close to duplicating the code in Nomisweb.py - refactor
   def contextify(self, table, meta, colname):
