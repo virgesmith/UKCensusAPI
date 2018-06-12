@@ -39,3 +39,8 @@ print(table.shape)
 table = census.contextify(table, meta, "DC2101SC_2_CODE")
 print(table)
 
+# this table has comma thousands separator in raw data
+meta = census.get_metadata("KS201SC", "LAD")
+print(meta)
+data = census.get_data("KS201SC", "LAD", "S12000033")#, category_filters={"DC2101SC_1_CODE": [0], "DC2101SC_2_CODE": 0})
+print(data)

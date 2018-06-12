@@ -157,7 +157,11 @@ class NRScotland:
 
     geography = self.get_geog(coverage, resolution)
     meta, raw_data = self.__get_rawdata(table, resolution)
-    raw_data = raw_data.replace("-", 0)
+    # Clean up the mess:
+    # - some csv files contain numbers with comma thousands separators (!)
+    # - rather than using 0 to represent zero, hyphen is used
+    raw_data.replace("-", 0, inplace=True)
+    raw_data.replace(",", "", inplace=True, regex=True)
     # assumes the first n are (unnamed) columns we don't want to melt, geography coming first: n = geog + num categories - 1 (the one to melt) 
     lookup = raw_data.columns.tolist()[len(meta["fields"]):]
 
@@ -171,6 +175,9 @@ class NRScotland:
     raw_data = raw_data.melt(id_vars=id_vars)
     id_vars.extend([table + "_0_CODE", "OBS_VALUE"])
     raw_data.columns = id_vars
+
+    # ensure OBS_VALUE is numeric
+    raw_data["OBS_VALUE"] = pd.to_numeric(raw_data["OBS_VALUE"])
 
     # convert categories to numeric values
     for i in range(1,len(meta["fields"])):
