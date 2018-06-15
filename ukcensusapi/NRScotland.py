@@ -131,7 +131,8 @@ class NRScotland:
 
     col_index = 1
     while raw_cols[col_index][:8] == "Unnamed:":
-      fields[table + "_" + str(col_index) + "_CODE"] = raw_data[raw_cols[col_index]].unique()
+      # lists format better than numpy arrays
+      fields[table + "_" + str(col_index) + "_CODE"] = raw_data[raw_cols[col_index]].unique().tolist()
       col_index = col_index + 1
 
     fields[table + "_0_CODE"] = raw_data.columns.tolist()[col_index:]
