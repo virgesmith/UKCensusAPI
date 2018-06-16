@@ -3,8 +3,7 @@
 context("UKCensusAPI")
 library(reticulate)
 
-api = UKCensusAPI::instance("/tmp/UKCensusAPI")
-
+apiEW = UKCensusAPI::instance("/tmp/UKCensusAPI")
 # TODO not sure we need this now (since above works)
 # helper function to skip tests if we don't have the python module
 skip_if_no_python_api = function() {
@@ -14,18 +13,27 @@ skip_if_no_python_api = function() {
 
 # simply checks we can get nomis geo codes back
 test_that("geoCodeLookup", {
-  expect_true(UKCensusAPI::geoCodeLookup(api, "MSOA11") == "TYPE297")
-  expect_true(UKCensusAPI::geoCodeLookup(api, "LSOA01") == "TYPE304")
-  expect_true(UKCensusAPI::geoCodeLookup(api, "LAD") == "TYPE464")
-  expect_true(UKCensusAPI::geoCodeLookup(api, "EnglandWales") == "2092957703")
+  expect_true(UKCensusAPI::geoCodeLookup(apiEW, "MSOA11") == "TYPE297")
+  expect_true(UKCensusAPI::geoCodeLookup(apiEW, "LSOA01") == "TYPE304")
+  expect_true(UKCensusAPI::geoCodeLookup(apiEW, "LAD") == "TYPE464")
+  expect_true(UKCensusAPI::geoCodeLookup(apiEW, "EnglandWales") == "2092957703")
 })
 
-# simply checks we get data back
+# simply checks we get data back# simply checks we get data back
 test_that("getMetadata", {
   skip_if_no_python_api()
   table = "KS401EW"
-  expect_true(class(UKCensusAPI::getMetadata(api, table)) == "list")
+  expect_true(class(UKCensusAPI::getMetadata(apiEW, table)) == "list")
 })
+
+# simply checks we get data back# simply checks we get data back
+# test_that("getMetadataSC", {
+#   skip_if_no_python_api()
+#   table = "KS401SC"
+#   apiSC$getMetadata("KS401EW", "LAD")
+#
+#   expect_true(class(NRScotland$getMetadata(table, "LAD")) == "list")
+# })
 
 # simply checks we get a data frame back
 test_that("getData", {
@@ -37,7 +45,7 @@ test_that("getData", {
                RURAL_URBAN="0",
                measures = "20100",
                select = "GEOGRAPHY_CODE,CELL,OBS_VALUE")
-  expect_true(class(UKCensusAPI::getData(api, table, query)) == "data.frame")
+  expect_true(class(UKCensusAPI::getData(apiEW, table, query)) == "data.frame")
 })
 
 # simply checks we get a data frame back
@@ -50,25 +58,25 @@ test_that("getOdData", {
                place_of_work = "1249934756...1249934758,1249934760,1249934761",
                measures = "20100",
                select = "currently_residing_in_code,place_of_work_code,OBS_VALUE")
-  expect_true(class(UKCensusAPI::getData(api, table, query)) == "data.frame")
+  expect_true(class(UKCensusAPI::getData(apiEW, table, query)) == "data.frame")
 })
 
 test_that("getLADCodes", {
   skip_if_no_python_api()
-  expect_true(length(getLADCodes(api, c())) == 0)
-  expect_true(length(getLADCodes(api, c("Framley"))) == 0)
-  expect_true(getLADCodes(api, c("Leeds")) == 1946157127)
-  expect_true(getLADCodes(api, c("Leeds")) == c(1946157127))
+  expect_true(length(getLADCodes(apiEW, c())) == 0)
+  expect_true(length(getLADCodes(apiEW, c("Framley"))) == 0)
+  expect_true(getLADCodes(apiEW, c("Leeds")) == 1946157127)
+  expect_true(getLADCodes(apiEW, c("Leeds")) == c(1946157127))
 
-  codes = getLADCodes(api, c("Leeds", "Bradford", "Kirklees", "Wakefield", "Calderdale"))
+  codes = getLADCodes(apiEW, c("Leeds", "Bradford", "Kirklees", "Wakefield", "Calderdale"))
   # == returns a bool vector, so check that its sum is its length
   expect_true(sum(codes == c(1946157127, 1946157124, 1946157126, 1946157128, 1946157125)) == length(codes))
 
-  codes = getLADCodes(api, c("Leeds", "Bradford", "Skipdale", "Wakefield", "Calderdale"))
+  codes = getLADCodes(apiEW, c("Leeds", "Bradford", "Skipdale", "Wakefield", "Calderdale"))
   # == returns a bool vector, so check that its sum is its length
   expect_true(sum(codes == c(1946157127, 1946157124, 1946157128, 1946157125)) == length(codes))
 
-  codes = getLADCodes(api, c("Trumpton", "Camberwick Green", "Chigley"))
+  codes = getLADCodes(apiEW, c("Trumpton", "Camberwick Green", "Chigley"))
   # == returns a bool vector, so check that its sum is its length
   expect_true(length(codes) == 0)
 })
@@ -76,32 +84,32 @@ test_that("getLADCodes", {
 
 test_that("geoCodes empty", {
   skip_if_no_python_api()
-  expect_true(geoCodes(api, c(), "TYPE999") == "")
+  expect_true(geoCodes(apiEW, c(), "TYPE999") == "")
 })
 
 test_that("geoCodes invalid", {
   skip_if_no_python_api()
-  expect_true(geoCodes(api, c(999), "TYPE999") == "")
+  expect_true(geoCodes(apiEW, c(999), "TYPE999") == "")
 })
 
 test_that("geoCodes single LA", {
   skip_if_no_python_api()
-  expect_true(geoCodes(api, 1946157124, "TYPE464") == "1946157124")
+  expect_true(geoCodes(apiEW, 1946157124, "TYPE464") == "1946157124")
 })
 
 test_that("geoCodes multi MSOA", {
   skip_if_no_python_api()
-  expect_true(geoCodes(api, c(1946157124, 1946157128), "TYPE297") == "1245710411...1245710471,1245710661...1245710705")
+  expect_true(geoCodes(apiEW, c(1946157124, 1946157128), "TYPE297") == "1245710411...1245710471,1245710661...1245710705")
 })
 
 test_that("geoCodes multi LSOA", {
   skip_if_no_python_api()
-  expect_true(geoCodes(api, c(1946157124, 1946157128), "TYPE298") == "1249912854...1249913154,1249913980...1249914188,1249935357...1249935365")
+  expect_true(geoCodes(apiEW, c(1946157124, 1946157128), "TYPE298") == "1249912854...1249913154,1249913980...1249914188,1249935357...1249935365")
 })
 
 test_that("geoCodes single OA", {
   skip_if_no_python_api()
-  expect_true(geoCodes(api, 1946157124, "TYPE299") == "1254148629...1254150034,1254267588...1254267709")
+  expect_true(geoCodes(apiEW, 1946157124, "TYPE299") == "1254148629...1254150034,1254267588...1254267709")
 })
 
 test_that("contextify", {
@@ -113,10 +121,10 @@ test_that("contextify", {
                RURAL_URBAN="0",
                measures = "20100",
                select = "GEOGRAPHY_CODE,CELL,OBS_VALUE")
-  data = UKCensusAPI::getData(api, table, query)
+  data = UKCensusAPI::getData(apiEW, table, query)
   column = "CELL"
 
-  data = contextify(api, table, column, data)
+  data = contextify(apiEW, table, column, data)
   # check table has column
   expect_true("CELL_NAME" %in% colnames(data))
   # then check values
@@ -168,7 +176,7 @@ test_that("code snippet", {
 
   # generate a code snippet
   table = "KS401EW"
-  meta = getMetadata(api, table)
+  meta = getMetadata(apiEW, table)
   queryParams = list(
     CELL = "7...13",
     geography = "1245710558...1245710560",
@@ -177,11 +185,11 @@ test_that("code snippet", {
     RURAL_URBAN = "0",
     MEASURES = "20100"
   )
-  query = UKCensusAPI::queryInstance(api)
+  query = UKCensusAPI::queryInstance(apiEW)
   query$write_code_snippets(table, meta, queryParams)
 
   # run the R snippet in a separate process
-  script = paste0(R.home("bin"), "/Rscript ", api$cache_dir, "/", table, ".R")
+  script = paste0(R.home("bin"), "/Rscript ", apiEW$cache_dir, "/", table, ".R")
   ret = system(script)
   expect_true(ret == 0)
 })

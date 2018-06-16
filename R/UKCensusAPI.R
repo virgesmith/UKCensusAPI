@@ -52,6 +52,7 @@
 NULL
 
 Api <- NULL
+ApiSC <- NULL
 Query <- NULL
 
 .onLoad <- function(libname, pkgname) {
