@@ -4,6 +4,8 @@ context("UKCensusAPI")
 library(reticulate)
 
 apiEW = UKCensusAPI::instance("/tmp/UKCensusAPI")
+apiSC = UKCensusAPI::instance("/tmp/UKCensusAPI", "SC")
+
 # TODO not sure we need this now (since above works)
 # helper function to skip tests if we don't have the python module
 skip_if_no_python_api = function() {
@@ -26,14 +28,12 @@ test_that("getMetadata", {
   expect_true(class(UKCensusAPI::getMetadata(apiEW, table)) == "list")
 })
 
-# simply checks we get data back# simply checks we get data back
-# test_that("getMetadataSC", {
-#   skip_if_no_python_api()
-#   table = "KS401SC"
-#   apiSC$getMetadata("KS401EW", "LAD")
-#
-#   expect_true(class(NRScotland$getMetadata(table, "LAD")) == "list")
-# })
+# simply checks we get data back
+test_that("getMetadataSC", {
+  skip_if_no_python_api()
+  table = "KS401SC"
+  expect_true(class(apiSC$getMetadata(table, "LAD")) == "list")
+})
 
 # simply checks we get a data frame back
 test_that("getData", {
@@ -46,6 +46,16 @@ test_that("getData", {
                measures = "20100",
                select = "GEOGRAPHY_CODE,CELL,OBS_VALUE")
   expect_true(class(UKCensusAPI::getData(apiEW, table, query)) == "data.frame")
+})
+
+# simply checks we get a data frame back
+test_that("getDataSC", {
+  skip_if_no_python_api()
+  table = "KS401SC"
+  region = "S12000033"
+  resolution = "LAD"
+  filter = list("KS401SC_0_CODE" = c(0,1,2,3))
+  expect_true(class(apiSC$getData(table, resolution, region, filter)) == "data.frame")
 })
 
 # simply checks we get a data frame back
@@ -81,7 +91,6 @@ test_that("getLADCodes", {
   expect_true(length(codes) == 0)
 })
 
-
 test_that("geoCodes empty", {
   skip_if_no_python_api()
   expect_true(geoCodes(apiEW, c(), "TYPE999") == "")
@@ -111,6 +120,14 @@ test_that("geoCodes single OA", {
   skip_if_no_python_api()
   expect_true(geoCodes(apiEW, 1946157124, "TYPE299") == "1254148629...1254150034,1254267588...1254267709")
 })
+test_that("geoCodes SC", {
+  skip_if_no_python_api()
+  expect_true(length(apiSC$getGeog("S12000033", "MSOA11")) == 49)
+  expect_true(length(apiSC$getGeog("S12000033", "LSOA11")) == 283)
+  expect_true(length(apiSC$getGeog("S12000033", "OA11")) == 1992)
+})
+
+
 
 test_that("contextify", {
   skip_if_no_python_api()

@@ -51,8 +51,27 @@
 #' @name UKCensusAPI
 NULL
 
+NRScotland <- setRefClass(
+  "NRScotland",
+  fields=c("api"),
+  methods=list(
+    getGeog = function(region, resolution) {
+      return (api$get_geog(region, resolution))
+    },
+    getMetadata = function(table, geog) {
+      return (api$get_metadata(table, geog))
+    },
+    getData = function(table, resolution, coverage, category_filters=list()) {
+      data = api$get_data(table, resolution, coverage, category_filters)
+      # reassemble into R data frame
+      df = data.frame(data$values)
+      colnames(df)=data$columns
+      return (df)
+    }
+  )
+)
+
 Api <- NULL
-ApiSC <- NULL
 Query <- NULL
 
 .onLoad <- function(libname, pkgname) {
@@ -63,11 +82,16 @@ Query <- NULL
 #' get an instance of the python API (required to call any of the functions)
 #'
 #' @param cacheDir directory to cache data
+#' @param country either "EW" (default, nomisweb API), "SC" (NRScotland bulk data), "NI" (NISRA bulk data)
 #' @return an instance of the ukcensusweb api
 #' @export
-instance = function(cacheDir) {
+instance = function(cacheDir, country = "EW") {
   # TODO can we have a function-static variable here?
-  api = Api$Nomisweb(cacheDir)
+  if (country == "SC") {
+    api = NRScotland$new(api=reticulate::import("ukcensusapi.NRScotland")$NRScotland(cacheDir))
+  } else {
+    api = Api$Nomisweb(cacheDir)
+  }
   return(api)
 }
 

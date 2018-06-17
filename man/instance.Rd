@@ -4,10 +4,12 @@
 \alias{instance}
 \title{get an instance of the python API (required to call any of the functions)}
 \usage{
-instance(cacheDir)
+instance(cacheDir, country = "EW")
 }
 \arguments{
 \item{cacheDir}{directory to cache data}
+
+\item{country}{either "EW" (default, nomisweb API), "SC" (NRScotland bulk data), "NI" (NISRA bulk data)}
 }
 \value{
 an instance of the ukcensusweb api

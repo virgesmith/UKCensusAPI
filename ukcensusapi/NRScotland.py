@@ -59,7 +59,7 @@ class NRScotland:
 
   GeoCodeLookup = {
     # give meaning to some common nomis geography types/codes
-    "LAD": 0, #"Council Area blk", , 
+    "LAD": 0, #"Council Area blk", ,
     # MSOA (intermediate zone)?
     "LSOA11": 1, #"SNS Data Zone 2011 blk"
     "OA11": 2, #"Output Area blk"
@@ -85,7 +85,7 @@ class NRScotland:
         for chunk in response.iter_content(chunk_size=1024):
           fd.write(chunk)
 
-    self.area_lookup = pd.read_csv(str(self.cache_dir / "sc_lookup.csv")) 
+    self.area_lookup = pd.read_csv(str(self.cache_dir / "sc_lookup.csv"))
 
     # TODO use a map (just in case col order changes)
     self.area_lookup.columns = ["OA11", "LSOA11", "MSOA11", "LAD"]
@@ -116,7 +116,7 @@ class NRScotland:
     Gets the raw csv data and metadata
     """
     z = zipfile.ZipFile(str(self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]])))
-    #print(z.namelist())   
+    #print(z.namelist())
     raw_data = pd.read_csv(z.open(table + ".csv"))
 
     # more sophisticate way to check for no data?
@@ -125,7 +125,7 @@ class NRScotland:
     # assumes:
     # - first column is geography (unnamed)
     # - any subsequent columns are categorical
-    # - named columns are categories   
+    # - named columns are categories
     raw_cols = raw_data.columns.tolist()
     fields = {}
 
@@ -145,9 +145,13 @@ class NRScotland:
     return (meta, raw_data)
     #print(data.head())
 
-  def get_data(self, table, resolution, coverage, category_filters={}):
+  
+  
+  def get_data(self, table, resolution, coverage, category_filters={}, r_compat=False):
     """
-    Returns a table with categories in columns, filtered by geography and (optionally) category values 
+    Returns a table with categories in columns, filtered by geography and (optionally) category values
+    If r_compat==True, instead of returning a pandas dataframe it returns a dict raw value data and column names
+    that can be converted into an R data.frame 
     """
 
     # No data is available for Intermediate zones (~MSOA) so we get Data Zone (LSOA) then aggregate
@@ -163,7 +167,7 @@ class NRScotland:
     # - rather than using 0 to represent zero, hyphen is used
     raw_data.replace("-", 0, inplace=True)
     raw_data.replace(",", "", inplace=True, regex=True)
-    # assumes the first n are (unnamed) columns we don't want to melt, geography coming first: n = geog + num categories - 1 (the one to melt) 
+    # assumes the first n are (unnamed) columns we don't want to melt, geography coming first: n = geog + num categories - 1 (the one to melt)
     lookup = raw_data.columns.tolist()[len(meta["fields"]):]
 
     id_vars = ["GEOGRAPHY_CODE"]
@@ -186,7 +190,7 @@ class NRScotland:
       category_values = meta["fields"][category_name]
       # make sure metadata has same no. of categories
       assert len(category_values) == len(raw_data[category_name].unique())
-      category_map = { k: v for v, k in enumerate(category_values)} 
+      category_map = { k: v for v, k in enumerate(category_values)}
       raw_data[category_name] = raw_data[category_name].map(category_map)
 
     # geography (and category_filter) must be lists
@@ -212,7 +216,11 @@ class NRScotland:
         filter = [filter]
       data = data[data[category].isin(filter)]
 
-    return data.reset_index(drop=True)
+    data = data.reset_index(drop=True)
+    if r_compat:
+      return {"columns": data.columns.values, "values": data.values}
+    else:
+      return data
 
   # TODO this is very close to duplicating the code in Nomisweb.py - refactor
   def contextify(self, table, meta, colname):
@@ -221,7 +229,7 @@ class NRScotland:
     """
     lookup = meta["fields"][colname]
     # convert list into dict keyed on list index
-    mapping = { k: v for k, v in enumerate(lookup)} 
+    mapping = { k: v for k, v in enumerate(lookup)}
     category_name = colname.replace("_CODE", "_NAME")
 
     table[category_name] = table[colname].map(mapping)
