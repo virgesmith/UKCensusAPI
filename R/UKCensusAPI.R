@@ -79,6 +79,11 @@ Query <- NULL
   Query <<- reticulate::import("ukcensusapi.Query", delay_load = TRUE)
 }
 
+getApiSC = function(cacheDir) {
+  module=reticulate::import("ukcensusapi.NRScotland")
+  return (module$NRScotland(cacheDir))
+}
+
 #' get an instance of the python API (required to call any of the functions)
 #'
 #' @param cacheDir directory to cache data
@@ -86,9 +91,8 @@ Query <- NULL
 #' @return an instance of the ukcensusweb api
 #' @export
 instance = function(cacheDir, country = "EW") {
-  # TODO can we have a function-static variable here?
   if (country == "SC") {
-    api = NRScotland$new(api=reticulate::import("ukcensusapi.NRScotland")$NRScotland(cacheDir))
+    api = NRScotland$new(api=getApiSC(cacheDir))
   } else {
     api = Api$Nomisweb(cacheDir)
   }
