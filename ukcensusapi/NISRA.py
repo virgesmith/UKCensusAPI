@@ -38,6 +38,10 @@ class NISRA:
 
   NIGeoCodes = [ "LGD", "WARD", "SOA", "SA" ]
 
+  source_map = { "LC": 2, "DC": 0, "KS": 1, "QS": 3 } 
+
+  res_map = { "OA11": "SMALL AREAS", "LSOA11": "SUPER OUTPUT AREAS"}
+
   LADs = {
     "95AA":	"Antrim",
     "95BB":	"Ards",
@@ -82,33 +86,43 @@ class NISRA:
     lookup_file = self.cache_dir / "ni_lookup.csv"
     if not os.path.isfile(str(lookup_file)):
       z = zipfile.ZipFile(str(self.__source_to_zip(NISRA.data_sources[2])))
-      area_lookup = pd.read_csv(z.open("All_Geographies_Code_Files/NI_HIERARCHY.csv"))
+      # TODO line countinuation?
+      pd.read_csv(z.open("All_Geographies_Code_Files/NI_HIERARCHY.csv")) \
+        .drop(["NUTS3","HSCT","ELB","COUNTRY"], axis=1) \
+        .to_csv(str(lookup_file), index=False)
+
       # TODO use a map (just in case col order changes)
       #area_lookup.columns = ["OA11", "LSOA11", "MSOA11", "LAD"]
-      area_lookup.drop(["NUTS3","HSCT","ELB","COUNTRY"], axis=1).to_csv(str(lookup_file), index=False)
 
+    # load the area lookup
     self.area_lookup = pd.read_csv(str(lookup_file))
-    
-    #pd.read_csv(str(self.cache_dir / "sc_lookup.csv"))
+  
+  def get_metadata(self, table, resolution):
 
-    # TODO use a map (just in case col order changes)
-    #self.area_lookup.columns = ["OA11", "LSOA11", "MSOA11", "LAD"]
+    if not resolution in NISRA.res_map:
+      raise ValueError("resolution '{}' is not available".format(resolution))
 
+    zfile = self.__source_to_zip(NISRA.data_sources[NISRA.source_map[table[:2]]])
+    print(str(zfile))
+    z = zipfile.ZipFile(zfile)
+    raw_meta = pd.read_csv(z.open(NISRA.res_map[resolution]+"/"+table+"DESC0.CSV")).set_index("ColumnVariableCode")
+    # TODO convert ColumnVariableCode to int
+    # TODO map to ColumnVariableDescription
+    return raw_meta
 
   # TODO this could be merged with the Scottish version
   def __source_to_zip(self, source_name):
     """
     Downloads if necessary and returns the name of the locally cached zip file of the source data (replacing spaces with _)
     """
-    zip = self.cache_dir / source_name.replace(" ", "_")
-    print(zip)
-    if not os.path.isfile(str(zip)):
+    zipfile = self.cache_dir / source_name.replace(" ", "_")
+    if not os.path.isfile(str(zipfile)):
       # The URL must have %20 for space (only)
       ni_src = NISRA.URL + source_name.replace(" ", "%20")
-      print(ni_src, " -> ", self.cache_dir / zip, "...", end="")
+      print(ni_src, " -> ", zipfile, "...", end="")
       response = requests.get(ni_src)
-      with open(str(zip), 'wb') as fd:
+      with open(str(zipfile), 'wb') as fd:
         for chunk in response.iter_content(chunk_size=1024):
           fd.write(chunk)
       print("OK")
-    return zip
+    return zipfile
