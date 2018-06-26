@@ -30,7 +30,7 @@ class NISRA:
                   "Quick Statistics Tables (statistical geographies).zip"]
 
   GeoCodeLookup = {
-    "LAD": 0 # LGD
+    "LAD": 0, # LGD
     "MSOA11": 1, # WARD
     "LSOA11": 2, # SOA
     "OA11": 3 # SA
@@ -84,8 +84,8 @@ class NISRA:
       z = zipfile.ZipFile(str(self.__source_to_zip(NISRA.data_sources[2])))
       area_lookup = pd.read_csv(z.open("All_Geographies_Code_Files/NI_HIERARCHY.csv"))
       # TODO use a map (just in case col order changes)
-      #self.area_lookup.columns = ["OA11", "LSOA11", "MSOA11", "LAD"]
-      area_lookup.to_csv(str(lookup_file), index=False)
+      #area_lookup.columns = ["OA11", "LSOA11", "MSOA11", "LAD"]
+      area_lookup.drop(["NUTS3","HSCT","ELB","COUNTRY"], axis=1).to_csv(str(lookup_file), index=False)
 
     self.area_lookup = pd.read_csv(str(lookup_file))
     
