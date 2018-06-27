@@ -10,13 +10,16 @@ import numpy as np
 
 import ukcensusapi.Nomisweb as Api_EW
 import ukcensusapi.NRScotland as Api_SC
+import ukcensusapi.NISRA as Api_NI
 import ukcensusapi.Query as Census
 
 # test methods only run if prefixed with "test"
 class Test(TestCase):
   """ Test harness """
-  api_ew = Api_EW.Nomisweb("/tmp/UKCensusAPI")
-  api_sc = Api_SC.NRScotland("/tmp/UKCensusAPI")
+  cache_dir = "/tmp/UKCensusAPI"
+  api_ew = Api_EW.Nomisweb(cache_dir)
+  api_sc = Api_SC.NRScotland(cache_dir)
+  api_ni = Api_NI.NISRA(cache_dir)
   query = Census.Query(api_ew)
 
   def test_get_lad_codes(self):
@@ -27,7 +30,7 @@ class Test(TestCase):
   def test_cache_dir_invalid(self):
     self.assertRaises(PermissionError, Api_EW.Nomisweb, "/home/invalid")
     self.assertRaises(PermissionError, Api_SC.NRScotland, "/bin")
-    self.assertRaises(PermissionError, Api_SC.NRScotland, "/bin/ls")
+    self.assertRaises(PermissionError, Api_NI.NISRA, "/bin/ls")
 
   # This overlaps test_getGeographyFromCodes
   def test_geo_codes(self):

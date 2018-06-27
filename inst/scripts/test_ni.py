@@ -8,7 +8,11 @@ census = NISRA.NISRA("~/.ukpopulation/cache")
 
 print(census.area_lookup.head())
 
-print(census.get_metadata("LC1101NI", "OA11").head())
+print(census.get_metadata("LC1101NI", "OA11"))
+d = census.get_data("LC1101NI", "95AA", "LSOA11")
+print(d.head())
+print(len(d))
+#print(census.get_metadata("DC1101NI", "LSOA11"))
 
 # meta = census.get_metadata("KS401SC", "LAD")
 # print(meta)

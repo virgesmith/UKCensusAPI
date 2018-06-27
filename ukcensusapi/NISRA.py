@@ -40,7 +40,7 @@ class NISRA:
 
   source_map = { "LC": 2, "DC": 0, "KS": 1, "QS": 3 } 
 
-  res_map = { "OA11": "SMALL AREAS", "LSOA11": "SUPER OUTPUT AREAS"}
+  res_map = { "SA": "SMALL AREAS", "SOA": "SUPER OUTPUT AREAS"}
 
   LADs = {
     "95AA":	"Antrim",
@@ -99,16 +99,57 @@ class NISRA:
   
   def get_metadata(self, table, resolution):
 
-    if not resolution in NISRA.res_map:
-      raise ValueError("resolution '{}' is not available".format(resolution))
+    resolution = NISRA.__ni_resolution(resolution)
 
-    zfile = self.__source_to_zip(NISRA.data_sources[NISRA.source_map[table[:2]]])
-    print(str(zfile))
-    z = zipfile.ZipFile(zfile)
-    raw_meta = pd.read_csv(z.open(NISRA.res_map[resolution]+"/"+table+"DESC0.CSV")).set_index("ColumnVariableCode")
-    # TODO convert ColumnVariableCode to int
-    # TODO map to ColumnVariableDescription
-    return raw_meta
+    z = zipfile.ZipFile(str(self.__source_to_zip(NISRA.data_sources[NISRA.source_map[table[:2]]])))
+    raw_meta = pd.read_csv(z.open(NISRA.res_map[resolution]+"/"+table+"DESC0.CSV")) \
+                 .drop(["ColumnVariableMeasurementUnit", "ColumnVariableStatisticalUnit"], axis=1)
+    # convert ColumnVariableCode to int (must be done before setting this col as the index)
+    raw_meta['ColumnVariableCode'] = raw_meta['ColumnVariableCode'].map(lambda x: int(x[-4:]))
+    raw_meta.set_index("ColumnVariableCode", drop=True, inplace=True) 
+
+    # map to ColumnVariableDescription
+    meta = { "table": table,
+             "description": "",
+             "geography": resolution,
+             "fields": raw_meta.to_dict()["ColumnVariableDescription"] }
+
+    return meta
+
+  def get_data(self, table, region, resolution, category_filters={}, r_compat=False):
+
+    resolution = NISRA.__ni_resolution(resolution)
+
+    area_codes = self.get_geog(region, resolution)
+
+    z = zipfile.ZipFile(str(self.__source_to_zip(NISRA.data_sources[NISRA.source_map[table[:2]]])))
+    id_vars = ["GeographyCode"]
+    raw_data = pd.read_csv(z.open(NISRA.res_map[resolution]+"/"+table+"DATA0.CSV")) \
+                 .melt(id_vars=id_vars)
+    raw_data.columns = ["GEOGRAPHY_CODE", table, "OBS_VALUE"]
+    raw_data = raw_data[raw_data["GEOGRAPHY_CODE"].isin(area_codes)]
+    # convert to numeric code 
+    raw_data[table] = raw_data[table].map(lambda x: int(x[-4:]))
+    return raw_data
+
+  def get_geog(self, region, resolution):
+
+    resolution = NISRA.__ni_resolution(resolution)
+    return self.area_lookup[self.area_lookup["LGD"] == region][resolution]
+
+  # TODO this is very close to duplicating the code in Nomisweb.py/NRScotland.py - refactor
+  def contextify(self, table, meta, colname):
+    """
+    Replaces the numeric category codes with the descriptive strings from the metadata
+    """
+    lookup = meta["fields"][colname]
+    # convert list into dict keyed on list index
+    mapping = { k: v for k, v in enumerate(lookup)}
+    category_name = colname.replace("_CODE", "_NAME")
+
+    table[category_name] = table[colname].map(mapping)
+
+    return table
 
   # TODO this could be merged with the Scottish version
   def __source_to_zip(self, source_name):
@@ -126,3 +167,17 @@ class NISRA:
           fd.write(chunk)
       print("OK")
     return zipfile
+
+  def __ni_resolution(resolution):
+    """
+    Maps E&W statictical geography codes to their closest NI equvalents
+    """
+    # check if already an NI code
+    if resolution in NISRA.NIGeoCodes:
+      return resolution
+
+    if not resolution in NISRA.GeoCodeLookup:
+      raise ValueError("resolution '{}' is not available".format(resolution))
+
+    return NISRA.NIGeoCodes[NISRA.GeoCodeLookup[resolution]]
+
