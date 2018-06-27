@@ -13,10 +13,7 @@ import ukcensusapi.utils as utils
 
 class NISRA:
   """
-  http://www.ninis2.nisra.gov.uk/Download/Census%202011/Detailed%20Characteristics%20Tables%20(statistical%20geographies).zip
-  http://www.ninis2.nisra.gov.uk/Download/Census%202011/Key%20Statistics%20Tables%20(statistical%20geographies).zip
-  http://www.ninis2.nisra.gov.uk/Download/Census%202011/Local%20Characteristic%20Tables%20(statistical%20geographies).zip
-  http://www.ninis2.nisra.gov.uk/Download/Census%202011/Quick%20Statistics%20Tables%20(statistical%20geographies).zip
+  Scrapes and refomats NI 2011 census data from NISRA website
   """
   # static constants
   URL = "http://www.ninis2.nisra.gov.uk/Download/Census%202011/"
@@ -107,15 +104,20 @@ class NISRA:
     z = zipfile.ZipFile(str(self.__source_to_zip(NISRA.data_sources[NISRA.source_map[table[:2]]])))
     raw_meta = pd.read_csv(z.open(NISRA.res_map[resolution]+"/"+table+"DESC0.CSV")) \
                  .drop(["ColumnVariableMeasurementUnit", "ColumnVariableStatisticalUnit"], axis=1)
-    # if every field has the same number of commas we split, otherwise assume a single category
-    commas = raw_meta["ColumnVariableDescription"].str.count(",").unique()    
-    if len(commas) == 1:
-      raw_meta = pd.concat([raw_meta["ColumnVariableCode"], raw_meta["ColumnVariableDescription"].str.split(", ", expand=True)], axis=1)
+    # if every field has the same number of commas we split, otherwise assume number of categories
+    # is the minimum. Warn that category names may be messed up 
+    commas = raw_meta["ColumnVariableDescription"].str.count(",").unique()
+    min_categories = min(commas)
+    if len(commas) > 1 and min_categories > 0:
+      print("WARNING: it apprears that {} is multivariate and some category descriptions appear to contain a comma. ".format(table) + \
+            "This makes the individual category names ambiguous. Be aware that category names may have been be incorrectly interpreted.")
+
+    # str.split interprets 0 as split on all instances
+    if min_categories > 0:
+      raw_meta = pd.concat([raw_meta["ColumnVariableCode"], raw_meta["ColumnVariableDescription"].str.split(", ", n=min_categories, expand=True)], axis=1)
     else:
-      # TODO better 
-      print("WARNING: some category descriptions in {} appear to contain a comma, ".format(table) + \
-            "which makes the individual category names ambiguous. Assuming table is univariate.")
       raw_meta.rename({"ColumnVariableDescription": 0}, axis=1, inplace=True)
+
     #raw_meta['ColumnVariableCode'] = raw_meta['ColumnVariableCode'].map(lambda x: int(x[-4:]))
     raw_meta = raw_meta.set_index("ColumnVariableCode", drop=True) 
 
