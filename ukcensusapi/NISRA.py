@@ -98,27 +98,52 @@ class NISRA:
     self.area_lookup = pd.read_csv(str(lookup_file))
   
   def get_metadata(self, table, resolution):
+    return self.__get_metadata_impl(table, resolution)[0]
 
-    resolution = NISRA.__ni_resolution(resolution)
+  def __get_metadata_impl(self, table, resolution):
+
+    resolution = _ni_resolution(resolution)
 
     z = zipfile.ZipFile(str(self.__source_to_zip(NISRA.data_sources[NISRA.source_map[table[:2]]])))
     raw_meta = pd.read_csv(z.open(NISRA.res_map[resolution]+"/"+table+"DESC0.CSV")) \
                  .drop(["ColumnVariableMeasurementUnit", "ColumnVariableStatisticalUnit"], axis=1)
-    # convert ColumnVariableCode to int (must be done before setting this col as the index)
-    raw_meta['ColumnVariableCode'] = raw_meta['ColumnVariableCode'].map(lambda x: int(x[-4:]))
-    raw_meta.set_index("ColumnVariableCode", drop=True, inplace=True) 
+    # if every field has the same number of commas we split, otherwise assume a single category
+    commas = raw_meta["ColumnVariableDescription"].str.count(",").unique()    
+    if len(commas) == 1:
+      raw_meta = pd.concat([raw_meta["ColumnVariableCode"], raw_meta["ColumnVariableDescription"].str.split(", ", expand=True)], axis=1)
+    else:
+      # TODO better 
+      print("WARNING: some category descriptions in {} appear to contain a comma, ".format(table) + \
+            "which makes the individual category names ambiguous. Assuming table is univariate.")
+      raw_meta.rename({"ColumnVariableDescription": 0}, axis=1, inplace=True)
+    #raw_meta['ColumnVariableCode'] = raw_meta['ColumnVariableCode'].map(lambda x: int(x[-4:]))
+    raw_meta = raw_meta.set_index("ColumnVariableCode", drop=True) 
 
-    # map to ColumnVariableDescription
     meta = { "table": table,
              "description": "",
              "geography": resolution,
-             "fields": raw_meta.to_dict()["ColumnVariableDescription"] }
+             "fields": {} }
 
-    return meta
+    text_columns = range(0,len(raw_meta.columns)) 
+    for text_column in text_columns:
+      raw_meta[text_column] = raw_meta[text_column].astype("category")
+      code_column = table + "_" + str(text_column) + "_CODE"
+      raw_meta[code_column] = raw_meta[text_column].cat.codes
+      meta["fields"][code_column] = dict(enumerate(raw_meta[text_column].cat.categories))
+
+    # now remove text columns
+    raw_meta.drop(text_columns, axis=1, inplace=True)
+
+#    print(raw_meta.head())
+#    print(raw_meta.tail())
+
+    return (meta, raw_meta)
 
   def get_data(self, table, region, resolution, category_filters={}, r_compat=False):
 
-    resolution = NISRA.__ni_resolution(resolution)
+    resolution = _ni_resolution(resolution)
+
+    (meta, raw_meta) = self.__get_metadata_impl(table, resolution)
 
     area_codes = self.get_geog(region, resolution)
 
@@ -127,15 +152,28 @@ class NISRA:
     raw_data = pd.read_csv(z.open(NISRA.res_map[resolution]+"/"+table+"DATA0.CSV")) \
                  .melt(id_vars=id_vars)
     raw_data.columns = ["GEOGRAPHY_CODE", table, "OBS_VALUE"]
+
+    # Filter by region
     raw_data = raw_data[raw_data["GEOGRAPHY_CODE"].isin(area_codes)]
-    # convert to numeric code 
-    raw_data[table] = raw_data[table].map(lambda x: int(x[-4:]))
-    return raw_data
+
+    # join with raw metadata and drop the combo code
+    data = raw_data.join(raw_meta, on=table).drop([table], axis=1)
+
+    # Filter by category
+    for category in category_filters:
+      filter = category_filters[category]
+      if isinstance(filter, int):
+        filter = [filter]
+      data = data[data[category].isin(filter)]
+
+    # TODO r_compat
+
+    return data.reset_index(drop=True)
 
   def get_geog(self, region, resolution):
 
-    resolution = NISRA.__ni_resolution(resolution)
-    return self.area_lookup[self.area_lookup["LGD"] == region][resolution]
+    resolution = _ni_resolution(resolution)
+    return self.area_lookup[self.area_lookup["LGD"] == region][resolution].unique()
 
   # TODO this is very close to duplicating the code in Nomisweb.py/NRScotland.py - refactor
   def contextify(self, table, meta, colname):
@@ -168,16 +206,16 @@ class NISRA:
       print("OK")
     return zipfile
 
-  def __ni_resolution(resolution):
-    """
-    Maps E&W statictical geography codes to their closest NI equvalents
-    """
-    # check if already an NI code
-    if resolution in NISRA.NIGeoCodes:
-      return resolution
+def _ni_resolution(resolution):
+  """
+  Maps E&W statictical geography codes to their closest NI equvalents
+  """
+  # check if already an NI code
+  if resolution in NISRA.NIGeoCodes:
+    return resolution
 
-    if not resolution in NISRA.GeoCodeLookup:
-      raise ValueError("resolution '{}' is not available".format(resolution))
+  if not resolution in NISRA.GeoCodeLookup:
+    raise ValueError("resolution '{}' is not available".format(resolution))
 
-    return NISRA.NIGeoCodes[NISRA.GeoCodeLookup[resolution]]
+  return NISRA.NIGeoCodes[NISRA.GeoCodeLookup[resolution]]
 

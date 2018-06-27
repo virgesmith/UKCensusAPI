@@ -33,7 +33,7 @@ class Test(TestCase):
     self.assertRaises(PermissionError, Api_NI.NISRA, "/bin/ls")
 
   # This overlaps test_getGeographyFromCodes
-  def test_geo_codes(self):
+  def test_geo_codes_ew(self):
     result = self.api_ew.get_geo_codes([Api_EW.Nomisweb.GeoCodeLookup["EnglandWales"]], Api_EW.Nomisweb.GeoCodeLookup["LAD"])
     self.assertEqual(result, '1946157057...1946157404')
     result = self.api_ew.get_geo_codes([1946157127], Api_EW.Nomisweb.GeoCodeLookup["OA11"])
@@ -42,34 +42,45 @@ class Test(TestCase):
     result = self.api_ew.get_geo_codes([1946157127], Api_EW.Nomisweb.GeoCodeLookup["MSOA01"])
     self.assertEqual(result, '1279265050...1279265157')
 
-    # Scotland
-    lads = ['S12000033', 'S12000034', 'S12000041', 'S12000035', 'S12000026', 'S12000005',
-            'S12000039', 'S12000006', 'S12000042', 'S12000008', 'S12000045', 'S12000010',
-            'S12000011', 'S12000036', 'S12000014', 'S12000015', 'S12000046', 'S12000017',
-            'S12000018', 'S12000019', 'S12000020', 'S12000021', 'S12000044', 'S12000023',
-            'S12000024', 'S12000038', 'S12000027', 'S12000028', 'S12000029', 'S12000030',
-            'S12000040', 'S12000013'].sort()
+  def test_geo_codes_sc(self):
+    lads = sorted(['S12000033', 'S12000034', 'S12000041', 'S12000035', 'S12000026', 'S12000005',
+                   'S12000039', 'S12000006', 'S12000042', 'S12000008', 'S12000045', 'S12000010',
+                   'S12000011', 'S12000036', 'S12000014', 'S12000015', 'S12000046', 'S12000017',
+                   'S12000018', 'S12000019', 'S12000020', 'S12000021', 'S12000044', 'S12000023',
+                   'S12000024', 'S12000038', 'S12000027', 'S12000028', 'S12000029', 'S12000030',
+                   'S12000040', 'S12000013'])
 
-    msoa_ab = ['S02001275', 'S02001238', 'S02001237', 'S02001236', 'S02001278', 'S02001284',
-               'S02001247', 'S02001249', 'S02001246', 'S02001250', 'S02001261', 'S02001252',
-               'S02001251', 'S02001257', 'S02001258', 'S02001254', 'S02001256', 'S02001253',
-               'S02001248', 'S02001242', 'S02001240', 'S02001241', 'S02001239', 'S02001243',
-               'S02001259', 'S02001260', 'S02001264', 'S02001265', 'S02001268', 'S02001269',
-               'S02001267', 'S02001274', 'S02001266', 'S02001263', 'S02001262', 'S02001245',
-               'S02001270', 'S02001272', 'S02001273', 'S02001271', 'S02001244', 'S02001279',
-               'S02001282', 'S02001281', 'S02001280', 'S02001276', 'S02001277', 'S02001283',
-               'S02001255'].sort()
+    msoa_ab = sorted(['S02001275', 'S02001238', 'S02001237', 'S02001236', 'S02001278', 'S02001284',
+                      'S02001247', 'S02001249', 'S02001246', 'S02001250', 'S02001261', 'S02001252',
+                      'S02001251', 'S02001257', 'S02001258', 'S02001254', 'S02001256', 'S02001253',
+                      'S02001248', 'S02001242', 'S02001240', 'S02001241', 'S02001239', 'S02001243',
+                      'S02001259', 'S02001260', 'S02001264', 'S02001265', 'S02001268', 'S02001269',
+                      'S02001267', 'S02001274', 'S02001266', 'S02001263', 'S02001262', 'S02001245',
+                      'S02001270', 'S02001272', 'S02001273', 'S02001271', 'S02001244', 'S02001279',
+                      'S02001282', 'S02001281', 'S02001280', 'S02001276', 'S02001277', 'S02001283',
+                      'S02001255'])
 
-    result = self.api_sc.get_geog("S92000003", "LAD").sort()
+    result = sorted(self.api_sc.get_geog("S92000003", "LAD"))
     self.assertTrue(np.array_equal(result, lads))    
-    result = self.api_sc.get_geog("S12000033", "MSOA11").sort()
+    result = sorted(self.api_sc.get_geog("S12000033", "MSOA11"))
     self.assertTrue(np.array_equal(result, msoa_ab))    
     result = self.api_sc.get_geog("S12000033", "LSOA11")
-    self.assertTrue(len(result) == 283)    
+    self.assertEqual(len(result), 283)    
     result = self.api_sc.get_geog("S12000033", "OA11")
-    self.assertTrue(len(result) == 1992)    
+    self.assertEqual(len(result), 1992)  
 
-  def test_get_metadata(self):
+  def test_geo_codes_ni(self):
+    # NI data
+    lsoa_95aa = ['95AA01S1', '95AA01S2', '95AA01S3', '95AA02W1', '95AA03W1', '95AA04W1', '95AA05W1', '95AA06S1', '95AA06S2', '95AA07W1', '95AA08W1', 
+                 '95AA09W1', '95AA10W1', '95AA11S1', '95AA11S2', '95AA12W1', '95AA13S1', '95AA13S2', '95AA14W1', '95AA15S1', '95AA15S2', '95AA16W1', 
+                 '95AA17W1', '95AA18W1', '95AA19W1']
+
+    result = sorted(self.api_ni.get_geog("95AA", "LSOA11"))
+    self.assertTrue(np.array_equal(result, lsoa_95aa))    
+    result = sorted(self.api_ni.get_geog("95AA", "OA11"))
+    self.assertEqual(len(result), 129)    
+
+  def test_get_metadata_ew(self):
     meta = self.api_ew.get_metadata("NONEXISTENT")
     self.assertFalse(meta)
     meta = self.api_ew.get_metadata("KS401EW")
@@ -80,10 +91,20 @@ class Test(TestCase):
     self.assertEqual(meta["description"], 'UV070 - Communal Establishments')
     self.assertEqual(meta["nomis_table"], 'NM_1686_1')
 
+  def test_get_metadata_sc(self):
+    # Scotland
     meta = self.api_sc.get_metadata("KS401SC", "LAD")
     self.assertEqual(meta["table"], 'KS401SC')
     self.assertEqual(meta["geography"], 'LAD')
     self.assertTrue('KS401SC_0_CODE' in meta["fields"])
+
+  def test_get_metadata_ni(self):
+    # NI
+    meta = self.api_ni.get_metadata("QS401NI", "LSOA11")
+    self.assertEqual(meta["table"], 'QS401NI')
+    self.assertEqual(meta["geography"], 'SOA')
+    self.assertTrue('QS401NI_0_CODE' in meta["fields"])
+    self.assertEqual(len(meta["fields"]['QS401NI_0_CODE']), 12)
 
   def test_get_url(self):
     table = "NM_618_1"
