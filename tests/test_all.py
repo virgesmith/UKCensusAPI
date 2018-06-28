@@ -17,7 +17,7 @@ import ukcensusapi.Query as Census
 class Test(TestCase):
   """ Test harness """
   cache_dir = "/tmp/UKCensusAPI"
-  api_ew = Api_EW.Nomisweb(cache_dir)
+  api_ew = Api_EW.Nomisweb(cache_dir, verbose=True)
   api_sc = Api_SC.NRScotland(cache_dir)
   api_ni = Api_NI.NISRA(cache_dir)
   query = Census.Query(api_ew)
@@ -117,7 +117,7 @@ class Test(TestCase):
     query_params["MEASURES"] = "20100"
     self.assertEqual(self.api_ew.get_url(table, query_params), "https://www.nomisweb.co.uk/api/v01/dataset/NM_618_1.data.tsv?CELL=7...13&MEASURES=20100&RURAL_URBAN=0&date=latest&geography=1245710558...1245710660%2C1245714998...1245714998%2C1245715007...1245715007%2C1245715021...1245715022&select=GEOGRAPHY_CODE%2CCELL%2COBS_VALUE")
 
-  def test_get_data(self):
+  def test_get_data_ew(self):
     table_name = "KS401EW"
 #    table_internal = "NM_618_1"
     query_params = {}
@@ -131,10 +131,11 @@ class Test(TestCase):
     self.assertEqual(table.shape, (21, 3))
     self.assertEqual(sum(table.OBS_VALUE), 8214)
 
+  def test_get_data_sc(self):
     table_name = "KS401SC"
     geography = "S12000033" # Aberdeen
     categories = { "KS401SC_0_CODE": range(8,15) }
-    table = self.api_sc.get_data(table_name, "LAD", geography, categories)
+    table = self.api_sc.get_data(table_name, geography, "LAD", categories)
     self.assertEqual(table.shape, (7, 3))
     self.assertEqual(sum(table.OBS_VALUE), 108153)
 
@@ -143,10 +144,26 @@ class Test(TestCase):
     categories = { "DC2101SC_0_CODE": 4, # White Irish 
                    "DC2101SC_1_CODE": [1,2], # M+F
                    "DC2101SC_2_CODE": [6,7,8,9,10,11,12] } # 18-49
-    table = self.api_sc.get_data(table_name, "LAD", geography, categories)
+    table = self.api_sc.get_data(table_name, geography, "LAD", categories)
     self.assertEqual(table.shape, (14, 5))
     self.assertEqual(sum(table.OBS_VALUE), 1732)
     
+  def test_get_data_ni(self):
+    table_name = "QS401NI"
+    geography = "95AA" # Antrim
+    categories = { "QS401NI_0_CODE": [1,6,8,9,10] }
+    table = self.api_ni.get_data(table_name, geography, "LAD", categories)
+    self.assertEqual(table.shape, (5, 3))
+    self.assertEqual(sum(table.OBS_VALUE), 52454)
+
+    table_name = "QS202NI"
+    geography = "95ZZ" # Strabane
+    categories = { "QS202NI_0_CODE": [1,2,3,4,5,6] } 
+    table = self.api_ni.get_data(table_name, geography, "MSOA11", categories)
+    self.assertEqual(table.shape, (96, 3))
+    self.assertEqual(sum(table.OBS_VALUE), 14817)
+    
+  #'table': 'QS202NI', 'description': '', 'geography': 'SOA', 'fields': {'QS202NI_0_CODE': {0: 'All Household Reference Persons (HRPs)', 1: 'Ethnic group of HRP: Black', 2: 'Ethnic group of HRP: Chinese', 3: 'Ethnic group of HRP: Mixed', 4: 'Ethnic group of HRP: Other', 5: 'Ethnic group of HRP: Other Asian', 6: 'Ethnic group of HRP: White'}}}
 
   # OD data is structured differently
   def test_get_od_data(self):

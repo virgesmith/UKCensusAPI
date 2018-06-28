@@ -147,7 +147,7 @@ class NRScotland:
 
   
   
-  def get_data(self, table, resolution, coverage, category_filters={}, r_compat=False):
+  def get_data(self, table, coverage, resolution, category_filters={}, r_compat=False):
     """
     Returns a table with categories in columns, filtered by geography and (optionally) category values
     If r_compat==True, instead of returning a pandas dataframe it returns a dict raw value data and column names

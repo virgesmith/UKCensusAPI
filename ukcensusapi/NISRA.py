@@ -101,6 +101,10 @@ class NISRA:
 
     resolution = _ni_resolution(resolution)
 
+    # If request at LGD/WARD level we will need to aggregate finer data
+    if resolution == "LGD" or resolution == "WARD":
+      resolution = "SOA"
+
     z = zipfile.ZipFile(str(self.__source_to_zip(NISRA.data_sources[NISRA.source_map[table[:2]]])))
     raw_meta = pd.read_csv(z.open(NISRA.res_map[resolution]+"/"+table+"DESC0.CSV")) \
                  .drop(["ColumnVariableMeasurementUnit", "ColumnVariableStatisticalUnit"], axis=1)
@@ -145,6 +149,13 @@ class NISRA:
 
     resolution = _ni_resolution(resolution)
 
+    # No data is available for Ward/LGD (~MSOA/LAD) so we get SOA (LSOA) then aggregate
+    agg_workaround = False
+    if resolution == "LGD" or resolution == "WARD":
+      agg_workaround = True
+      actual_resolution = resolution
+      resolution = "SOA"
+
     (meta, raw_meta) = self.__get_metadata_impl(table, resolution)
 
     area_codes = self.get_geog(region, resolution)
@@ -160,6 +171,19 @@ class NISRA:
 
     # join with raw metadata and drop the combo code
     data = raw_data.join(raw_meta, on=table).drop([table], axis=1)
+
+    # If we actually requested MSOA-level data, aggregrate the LSOAs within each MSOA
+    if agg_workaround:
+      data = data.reset_index(drop=True)
+      lookup = self.area_lookup[self.area_lookup[resolution].isin(data.GEOGRAPHY_CODE)]
+      lookup = pd.Series(lookup[actual_resolution].values, index=lookup[resolution]).to_dict()
+      data.GEOGRAPHY_CODE = data.GEOGRAPHY_CODE.map(lookup)
+      cols = list(data.columns)
+      # remove acts in-place and has no return value so can't chain it 
+      cols.remove("OBS_VALUE")
+      #print(data.columns.values.tolist().remove("OBS_VALUE"))
+      print(cols)
+      data = data.groupby(cols).sum().reset_index()
 
     # Filter by category
     for category in category_filters:

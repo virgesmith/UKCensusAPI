@@ -92,7 +92,7 @@ class Nomisweb:
   }
 
   # initialise, supplying a location to cache downloads
-  def __init__(self, cache_dir):
+  def __init__(self, cache_dir, verbose=False):
     """Constructor.
     Args:
         cache_dir: cache directory
@@ -100,6 +100,7 @@ class Nomisweb:
         an instance.
     """
     self.cache_dir = utils.init_cache_dir(cache_dir)
+    self.verbose = verbose
 
     self.key = _get_api_key(self.cache_dir)
 
@@ -109,7 +110,7 @@ class Nomisweb:
                          "Set the key value in the environment variable NOMIS_API_KEY.\n" \
                          "Register at www.nomisweb.co.uk to obtain a key")
 
-    print("Cache directory: ", self.cache_dir)
+    if self.verbose: print("Cache directory: ", self.cache_dir)
 
     # TODO how best to deal with site unavailable...
     try:
@@ -205,7 +206,7 @@ class Nomisweb:
 
     # retrieve if not in cache
     if not os.path.isfile(str(filename)):
-      print("Downloading and cacheing data: " + str(filename))
+      if self.verbose: print("Downloading and cacheing data: " + str(filename))
       request.urlretrieve(query_string, str(filename)) #, timeout = Nomisweb.Timeout)
 
       # check for empty file, if so delete it and report error
@@ -217,7 +218,7 @@ class Nomisweb:
         print(errormsg)
         return
     else:
-      print("Using cached data: " + str(filename))
+      if self.verbose: print("Using cached data: " + str(filename))
 
     # now load from cache and return
     if r_compat:
@@ -318,10 +319,10 @@ class Nomisweb:
     filename = self.cache_dir / (table_name + "_metadata.json")
     # if file not there, get from nomisweb
     if not os.path.isfile(str(filename)):
-      print(filename, "not found, downloading...")
+      if self.verbose: print(filename, "not found, downloading...")
       return self.get_metadata(table_name)
     else:
-      print(filename, "found, using cached metadata...")
+      if self.verbose: print(filename, "found, using cached metadata...")
       with open(str(filename)) as metafile:
         meta = json.load(metafile)
 
@@ -335,7 +336,7 @@ class Nomisweb:
     filename = self.cache_dir / "lad_codes.json"
 
     if not os.path.isfile(str(filename)):
-      print(filename, "not found, downloading LAD codes...")
+      if self.verbose: print(filename, "not found, downloading LAD codes...")
 
       data = self.__fetch_json("api/v01/dataset/NM_144_1/geography/" \
           + str(Nomisweb.GeoCodeLookup["EnglandWales"]) + Nomisweb.GeoCodeLookup["LAD"] + ".def.sdmx.json?", {})
@@ -347,14 +348,14 @@ class Nomisweb:
       for rawfield in rawfields:
         codes[rawfield["description"]["value"]] = rawfield["value"]
         codes[rawfield["annotations"]["annotation"][2]["annotationtext"]] = rawfield["value"]
-      print("Writing LAD codes to ", filename)
+      if self.verbose: print("Writing LAD codes to ", filename)
 
       # save LAD codes
       with open(str(filename), "w") as metafile:
         json.dump(codes, metafile, indent=2)
 
     else:
-      print("using cached LAD codes:", filename)
+      if self.verbose: print("using cached LAD codes:", filename)
       with open(str(filename)) as cached_ladcodes:
         codes = json.load(cached_ladcodes)
     return codes
@@ -389,7 +390,7 @@ class Nomisweb:
     """
 
     filename = self.cache_dir / (table + "_metadata.json")
-    print("Writing metadata to ", str(filename))
+    if self.verbose: print("Writing metadata to ", str(filename))
     with open(str(filename), "w") as metafile:
       json.dump(meta, metafile, indent=2)
 

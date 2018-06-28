@@ -25,3 +25,29 @@ print(data.head())
 
 
 print(census.get_metadata("QS401NI", "SOA"))
+
+# {
+#   'table': 'QS401NI', 
+#   'description': '', 
+#   'geography': 'SOA', 
+#   'fields': {
+#     'QS401NI_0_CODE': {
+#       0: 'All usual residents in households', 
+#       1: 'Shared dwelling', 
+#       2: 'Unshared dwelling: Caravan or othermobile or temporary structure', 
+#       3: 'Unshared dwelling: Flat, maisonette or apartment: In a commercial building', 
+#       4: 'Unshared dwelling: Flat, maisonette or apartment: Part of a converted or shared house (including bed-sits)', 
+#       5: 'Unshared dwelling: Flat, maisonette or apartment: Purpose-built block of flats or tenement', 
+#       6: 'Unshared dwelling: Flat, maisonette or apartment: Total', 
+#       7: 'Unshared dwelling: Total', 
+#       8: 'Unshared dwelling: Whole house or bungalow: Detached', 
+#       9: 'Unshared dwelling: Whole house or bungalow: Semi-detached', 
+#       10: 'Unshared dwelling: Whole house or bungalow: Terraced (including end-terrace)', 
+#       11: 'Unshared dwelling: Whole house or bungalow: Total'
+#     }
+#   }
+# }
+
+print(census.get_data("QS401NI", "95AA", "LAD"))
+
+print(census.get_metadata("QS202NI", "MSOA11"))
