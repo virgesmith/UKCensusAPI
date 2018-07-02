@@ -194,7 +194,7 @@ class Test(TestCase):
 
     table = self.api_ew.get_data(table_internal, query_params)
     self.assertEqual(table.shape, (364, 4))
-    self.assertEqual(sum(table.OBS_VALUE), 591572)
+    self.assertEqual(sum(table.OBS_VALUE), 592012)
 
   def test_get_and_add_descriptive_column(self):
 
