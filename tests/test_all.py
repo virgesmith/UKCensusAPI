@@ -61,24 +61,24 @@ class Test(TestCase):
                       'S02001255'])
 
     result = sorted(self.api_sc.get_geog("S92000003", "LAD"))
-    self.assertTrue(np.array_equal(result, lads))    
+    self.assertTrue(np.array_equal(result, lads))
     result = sorted(self.api_sc.get_geog("S12000033", "MSOA11"))
-    self.assertTrue(np.array_equal(result, msoa_ab))    
+    self.assertTrue(np.array_equal(result, msoa_ab))
     result = self.api_sc.get_geog("S12000033", "LSOA11")
-    self.assertEqual(len(result), 283)    
+    self.assertEqual(len(result), 283)
     result = self.api_sc.get_geog("S12000033", "OA11")
-    self.assertEqual(len(result), 1992)  
+    self.assertEqual(len(result), 1992)
 
   def test_geo_codes_ni(self):
     # NI data
-    lsoa_95aa = ['95AA01S1', '95AA01S2', '95AA01S3', '95AA02W1', '95AA03W1', '95AA04W1', '95AA05W1', '95AA06S1', '95AA06S2', '95AA07W1', '95AA08W1', 
-                 '95AA09W1', '95AA10W1', '95AA11S1', '95AA11S2', '95AA12W1', '95AA13S1', '95AA13S2', '95AA14W1', '95AA15S1', '95AA15S2', '95AA16W1', 
+    lsoa_95aa = ['95AA01S1', '95AA01S2', '95AA01S3', '95AA02W1', '95AA03W1', '95AA04W1', '95AA05W1', '95AA06S1', '95AA06S2', '95AA07W1', '95AA08W1',
+                 '95AA09W1', '95AA10W1', '95AA11S1', '95AA11S2', '95AA12W1', '95AA13S1', '95AA13S2', '95AA14W1', '95AA15S1', '95AA15S2', '95AA16W1',
                  '95AA17W1', '95AA18W1', '95AA19W1']
 
     result = sorted(self.api_ni.get_geog("95AA", "LSOA11"))
-    self.assertTrue(np.array_equal(result, lsoa_95aa))    
+    self.assertTrue(np.array_equal(result, lsoa_95aa))
     result = sorted(self.api_ni.get_geog("95AA", "OA11"))
-    self.assertEqual(len(result), 129)    
+    self.assertEqual(len(result), 129)
 
   def test_get_metadata_ew(self):
     meta = self.api_ew.get_metadata("NONEXISTENT")
@@ -141,13 +141,13 @@ class Test(TestCase):
 
     table_name = "DC2101SC"
     geography = "S12000033" # Aberdeen
-    categories = { "DC2101SC_0_CODE": 4, # White Irish 
+    categories = { "DC2101SC_0_CODE": 4, # White Irish
                    "DC2101SC_1_CODE": [1,2], # M+F
                    "DC2101SC_2_CODE": [6,7,8,9,10,11,12] } # 18-49
     table = self.api_sc.get_data(table_name, geography, "LAD", categories)
     self.assertEqual(table.shape, (14, 5))
     self.assertEqual(sum(table.OBS_VALUE), 1732)
-    
+
   def test_get_data_ni(self):
     table_name = "QS401NI"
     geography = "95AA" # Antrim
@@ -158,11 +158,11 @@ class Test(TestCase):
 
     table_name = "QS202NI"
     geography = "95ZZ" # Strabane
-    categories = { "QS202NI_0_CODE": [1,2,3,4,5,6] } 
+    categories = { "QS202NI_0_CODE": [1,2,3,4,5,6] }
     table = self.api_ni.get_data(table_name, geography, "MSOA11", categories)
     self.assertEqual(table.shape, (96, 3))
     self.assertEqual(sum(table.OBS_VALUE), 14817)
-    
+
   #'table': 'QS202NI', 'description': '', 'geography': 'SOA', 'fields': {'QS202NI_0_CODE': {0: 'All Household Reference Persons (HRPs)', 1: 'Ethnic group of HRP: Black', 2: 'Ethnic group of HRP: Chinese', 3: 'Ethnic group of HRP: Mixed', 4: 'Ethnic group of HRP: Other', 5: 'Ethnic group of HRP: Other Asian', 6: 'Ethnic group of HRP: White'}}}
 
   # OD data is structured differently
@@ -194,7 +194,7 @@ class Test(TestCase):
 
     table = self.api_ew.get_data(table_internal, query_params)
     self.assertEqual(table.shape, (364, 4))
-    self.assertEqual(sum(table.OBS_VALUE), 591572)   
+    self.assertEqual(sum(table.OBS_VALUE), 591572)
 
   def test_get_and_add_descriptive_column(self):
 
@@ -276,20 +276,20 @@ class Test(TestCase):
     n = list(range(1,21))
 
     for _ in range(0,100):
-      short = Api_EW._shorten(sample(n, len(n))) 
+      short = Api_EW._shorten(sample(n, len(n)))
       self.assertEqual(short, "1...20")
 
     del(n[3])
     for _ in range(0,100):
-      short = Api_EW._shorten(sample(n, len(n))) 
+      short = Api_EW._shorten(sample(n, len(n)))
       self.assertEqual(short, "1...3,5...20")
 
     del(n[16])
     for _ in range(0,100):
-      short = Api_EW._shorten(sample(n, len(n))) 
+      short = Api_EW._shorten(sample(n, len(n)))
       self.assertEqual(short, "1...3,5...17,19...20")
 
     del(n[16])
     for _ in range(0,100):
-      short = Api_EW._shorten(sample(n, len(n))) 
+      short = Api_EW._shorten(sample(n, len(n)))
       self.assertEqual(short, "1...3,5...17,20")

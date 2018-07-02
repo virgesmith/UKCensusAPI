@@ -61,8 +61,28 @@ NRScotland <- setRefClass(
     getMetadata = function(table, geog) {
       return (api$get_metadata(table, geog))
     },
-    getData = function(table, resolution, coverage, category_filters=list()) {
-      data = api$get_data(table, resolution, coverage, category_filters)
+    getData = function(table, coverage, resolution, category_filters=list()) {
+      data = api$get_data(table, coverage, resolution, category_filters)
+      # reassemble into R data frame
+      df = data.frame(data$values)
+      colnames(df)=data$columns
+      return (df)
+    }
+  )
+)
+
+NISRA <- setRefClass(
+  "NISRA",
+  fields=c("api"),
+  methods=list(
+    getGeog = function(region, resolution) {
+      return (api$get_geog(region, resolution))
+    },
+    getMetadata = function(table, geog) {
+      return (api$get_metadata(table, geog))
+    },
+    getData = function(table, coverage, resolution, category_filters=list()) {
+      data = api$get_data(table, coverage, resolution, category_filters)
       # reassemble into R data frame
       df = data.frame(data$values)
       colnames(df)=data$columns
@@ -84,6 +104,11 @@ getApiSC = function(cacheDir) {
   return (module$NRScotland(cacheDir))
 }
 
+getApiNI = function(cacheDir) {
+  module=reticulate::import("ukcensusapi.NISRA")
+  return (module$NISRA(cacheDir))
+}
+
 #' get an instance of the python API (required to call any of the functions)
 #'
 #' @param cacheDir directory to cache data
@@ -91,7 +116,9 @@ getApiSC = function(cacheDir) {
 #' @return an instance of the ukcensusweb api
 #' @export
 instance = function(cacheDir, country = "EW") {
-  if (country == "SC") {
+  if (country == "NI") {
+    api = NISRA$new(api=getApiNI(cacheDir))
+  } else if (country == "SC") {
     api = NRScotland$new(api=getApiSC(cacheDir))
   } else {
     api = Api$Nomisweb(cacheDir)

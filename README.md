@@ -7,13 +7,19 @@
 > ## Update
 > This package is currently something of a misnomer currently as it only uses Nomisweb as its data source, which only provides census data for England & Wales.
 
-> Work is currently under way on version 1.1 of this package which will extend the coverage firstly to Scotland ("GBCensusAPI"). Northern Ireland will follow. 
+> Work is currently well under way on version 1.1 of this package which extends the coverage to Scotland and Northern Ireland. The aim is to make the data (and the meta) consistent across all nations.
 
 > Neither country provide a web API for their data so we have to resort to web scraping, which means the slicing-and-dicing and geographical query functionality may be more limited than it is for England & Wales.
 
-> For Scotland, data can be downloaded at country or Council Area (~LAD) level, at geographical resolutions of Council Area, Data Zone (~LSOA) and Output Area. Intermediate Area (~MSOA) data will eventually be provided.
+> For Scotland, data can be downloaded at country or Council Area (~LAD) level, at geographical resolutions of Council Area, Data Zone (~LSOA) and Output Area. Intermediate Area (~MSOA) data can be aggregated (only) where the data is available at higher geographical resolution.
 
+> For Northern Ireland, data can be downloaded at country or Local Government District (~LAD) level, at geographical resolutions of Super Output Area (~LSOA) and Small Area (OA). Ward (~MSOA) (~MSOA) data can be aggregated (only) where the data is available at higher geographical resolution.
+
+> ### Scotland
 > The principal functions are `NRScotland.get_metadata()` for metadata, `NRScotland.get_data()` for the actual data, and `NRScotland.contextify()` to annotate the data using the metadata. Examples will be provided in due course, for now see [test_scotland.py](inst/examples/test_scotland.py). 
+
+> ### Northern Ireland
+> The principal functions are `NISRA.get_metadata()` for metadata, `NISRA.get_data()` for the actual data, and `NISRA.contextify()` to annotate the data using the metadata. Examples will be provided in due course, for now see [test_ni.py](inst/examples/test_ni.py). 
  
 [Nomisweb](https://www.nomisweb.co.uk), run by Durham University, provides online access to the most detailed and up-to-date statistics from official sources for local areas throughout the UK, including census data.  
 

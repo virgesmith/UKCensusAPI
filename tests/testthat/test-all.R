@@ -5,13 +5,7 @@ library(reticulate)
 
 apiEW = UKCensusAPI::instance("/tmp/UKCensusAPI")
 apiSC = UKCensusAPI::instance("/tmp/UKCensusAPI", "SC")
-
-# TODO not sure we need this now (since above works)
-# helper function to skip tests if we don't have the python module
-skip_if_no_python_api = function() {
-  if (!py_module_available("ukcensusapi.Nomisweb"))
-    skip("python module ukcensusapi.Nomisweb not available, skipping test")
-}
+apiNI = UKCensusAPI::instance("/tmp/UKCensusAPI", "NI")
 
 # simply checks we can get nomis geo codes back
 test_that("geoCodeLookup", {
@@ -23,21 +17,23 @@ test_that("geoCodeLookup", {
 
 # simply checks we get data back# simply checks we get data back
 test_that("getMetadata", {
-  skip_if_no_python_api()
   table = "KS401EW"
   expect_true(class(UKCensusAPI::getMetadata(apiEW, table)) == "list")
 })
 
 # simply checks we get data back
 test_that("getMetadataSC", {
-  skip_if_no_python_api()
   table = "KS401SC"
   expect_true(class(apiSC$getMetadata(table, "LAD")) == "list")
 })
 
+test_that("getMetadataNI", {
+  table = "KS401NI"
+  expect_true(class(apiNI$getMetadata(table, "LAD")) == "list")
+})
+
 # simply checks we get a data frame back
 test_that("getData", {
-  skip_if_no_python_api()
   table = "KS401EW"
   query = list(date = "latest",
                geography = "1245714681...1245714688",
@@ -50,17 +46,24 @@ test_that("getData", {
 
 # simply checks we get a data frame back
 test_that("getDataSC", {
-  skip_if_no_python_api()
   table = "KS401SC"
   region = "S12000033"
   resolution = "LAD"
   filter = list("KS401SC_0_CODE" = c(0,1,2,3))
-  expect_true(class(apiSC$getData(table, resolution, region, filter)) == "data.frame")
+  expect_true(class(apiSC$getData(table, region, resolution, filter)) == "data.frame")
+})
+
+# simply checks we get a data frame back
+test_that("getDataNI", {
+  table = "KS401NI"
+  region = "95AA"
+  resolution = "LAD"
+  filter = list("KS401NI_0_CODE" = c(0,1,2,3))
+  expect_true(class(apiNI$getData(table, region, resolution, filter)) == "data.frame")
 })
 
 # simply checks we get a data frame back
 test_that("getOdData", {
-  skip_if_no_python_api()
   table = "WF01BEW"
   query = list(date = "latest",
                # OD are 5 LSOAs in central Leeds
@@ -72,7 +75,6 @@ test_that("getOdData", {
 })
 
 test_that("getLADCodes", {
-  skip_if_no_python_api()
   expect_true(length(getLADCodes(apiEW, c())) == 0)
   expect_true(length(getLADCodes(apiEW, c("Framley"))) == 0)
   expect_true(getLADCodes(apiEW, c("Leeds")) == 1946157127)
@@ -92,36 +94,29 @@ test_that("getLADCodes", {
 })
 
 test_that("geoCodes empty", {
-  skip_if_no_python_api()
   expect_true(geoCodes(apiEW, c(), "TYPE999") == "")
 })
 
 test_that("geoCodes invalid", {
-  skip_if_no_python_api()
   expect_true(geoCodes(apiEW, c(999), "TYPE999") == "")
 })
 
 test_that("geoCodes single LA", {
-  skip_if_no_python_api()
   expect_true(geoCodes(apiEW, 1946157124, "TYPE464") == "1946157124")
 })
 
 test_that("geoCodes multi MSOA", {
-  skip_if_no_python_api()
   expect_true(geoCodes(apiEW, c(1946157124, 1946157128), "TYPE297") == "1245710411...1245710471,1245710661...1245710705")
 })
 
 test_that("geoCodes multi LSOA", {
-  skip_if_no_python_api()
   expect_true(geoCodes(apiEW, c(1946157124, 1946157128), "TYPE298") == "1249912854...1249913154,1249913980...1249914188,1249935357...1249935365")
 })
 
 test_that("geoCodes single OA", {
-  skip_if_no_python_api()
   expect_true(geoCodes(apiEW, 1946157124, "TYPE299") == "1254148629...1254150034,1254267588...1254267709")
 })
 test_that("geoCodes SC", {
-  skip_if_no_python_api()
   expect_true(length(apiSC$getGeog("S12000033", "MSOA11")) == 49)
   expect_true(length(apiSC$getGeog("S12000033", "LSOA11")) == 283)
   expect_true(length(apiSC$getGeog("S12000033", "OA11")) == 1992)
@@ -130,7 +125,6 @@ test_that("geoCodes SC", {
 
 
 test_that("contextify", {
-  skip_if_no_python_api()
   table = "KS401EW"
   query = list(date = "latest",
                geography = "1245714681...1245714688",
@@ -155,7 +149,6 @@ test_that("contextify", {
 })
 
 test_that("geoquery example", {
-  skip_if_no_python_api()
   # hack to get test to run as part of checks
   if (dir.exists("../../inst/examples")) {
     path = "../../inst/examples/"
@@ -172,7 +165,6 @@ test_that("geoquery example", {
 })
 
 test_that("contextify example", {
-  skip_if_no_python_api()
   # hack to get test to run as part of checks
   if (dir.exists("../../inst/examples")) {
     path = "../../inst/examples/"
@@ -189,7 +181,6 @@ test_that("contextify example", {
 })
 
 test_that("code snippet", {
-  skip_if_no_python_api()
 
   # generate a code snippet
   table = "KS401EW"

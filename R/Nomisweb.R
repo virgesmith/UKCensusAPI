@@ -78,7 +78,11 @@ getMetadata = function(api, tableName) {
 getData = function(api, tableName, query) {
   # returned value is filename (or error) to avoid data frame compatibility issues
   filename = api$get_data(tableName, query, TRUE)
-  # TODO check that string isnt an error!
+  # check that filename string isnt an error message!
+  if (!file.exists(filename)) {
+    print(paste("Error getting data:", filename))
+    return(data.frame(stringsAsFactors = F))
+  }
   data = read.csv(filename, sep="\t", stringsAsFactors = FALSE)
   if (nrow(data) == 1000000) {
     warning("Download has reached nomisweb's single query limit. Truncation is extremely likely")

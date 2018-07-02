@@ -83,13 +83,9 @@ class NISRA:
     lookup_file = self.cache_dir / "ni_lookup.csv"
     if not os.path.isfile(str(lookup_file)):
       z = zipfile.ZipFile(str(self.__source_to_zip(NISRA.data_sources[2])))
-      # TODO line countinuation?
       pd.read_csv(z.open("All_Geographies_Code_Files/NI_HIERARCHY.csv")) \
         .drop(["NUTS3","HSCT","ELB","COUNTRY"], axis=1) \
         .to_csv(str(lookup_file), index=False)
-
-      # TODO use a map (just in case col order changes)
-      #area_lookup.columns = ["OA11", "LSOA11", "MSOA11", "LAD"]
 
     # load the area lookup
     self.area_lookup = pd.read_csv(str(lookup_file))
