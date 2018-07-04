@@ -116,13 +116,19 @@ test_that("geoCodes multi LSOA", {
 test_that("geoCodes single OA", {
   expect_true(geoCodes(apiEW, 1946157124, "TYPE299") == "1254148629...1254150034,1254267588...1254267709")
 })
+
 test_that("geoCodes SC", {
   expect_true(length(apiSC$getGeog("S12000033", "MSOA11")) == 49)
   expect_true(length(apiSC$getGeog("S12000033", "LSOA11")) == 283)
   expect_true(length(apiSC$getGeog("S12000033", "OA11")) == 1992)
 })
 
-
+test_that("geoCodes NI", {
+  expect_true(length(apiNI$getGeog("95AA", "LAD")) == 1)
+  expect_true(length(apiNI$getGeog("95AA", "MSOA11")) == 19)
+  expect_true(length(apiNI$getGeog("95AA", "LSOA11")) == 25)
+  expect_true(length(apiNI$getGeog("95AA", "OA11")) == 129)
+})
 
 test_that("contextify", {
   table = "KS401EW"

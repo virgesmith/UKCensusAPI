@@ -113,7 +113,7 @@ getApiNI = function(cacheDir) {
 #'
 #' @param cacheDir directory to cache data
 #' @param country either "EW" (default, nomisweb API), "SC" (NRScotland bulk data), "NI" (NISRA bulk data)
-#' @return an instance of the ukcensusweb api
+#' @return an instance of one of the python apis
 #' @export
 instance = function(cacheDir, country = "EW") {
   if (country == "NI") {

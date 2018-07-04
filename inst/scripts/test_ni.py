@@ -6,6 +6,21 @@ import ukcensusapi.NISRA as NISRA
 
 census = NISRA.NISRA("~/.ukpopulation/cache")
 
+# print(NISRA._ni_resolution("LAD"))
+# print(NISRA._ni_resolution("LGD"))
+# print(NISRA._ni_resolution("WARD"))
+# print(NISRA._ni_resolution("MSOA11"))
+# print(NISRA._ni_resolution("SOA"))
+# print(NISRA._ni_resolution("LSOA11"))
+# print(NISRA._ni_resolution("SA"))
+# print(NISRA._ni_resolution("OA11"))
+
+result = sorted(census.get_geog("N92000002", "LAD"))
+print(result)
+result = sorted(census.get_geog("95AA", "LAD"))
+print(result)
+result = sorted(census.get_geog("95AA", "MSOA11"))
+print(result)
 result = sorted(census.get_geog("95AA", "LSOA11"))
 print(result)
 result = sorted(census.get_geog("95AA", "OA11"))

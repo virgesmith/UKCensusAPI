@@ -11,6 +11,24 @@ import requests
 
 import ukcensusapi.utils as utils
 
+# assumes all areas in coverage are the same type
+def _coverage_type(code):
+  if isinstance(code, list):
+    code = code[0]
+  if code == "N92000002":
+    return "ALL"
+  # TODO regex?
+  elif len(code) == 4: # e.g. 95AA
+    return "LGD"
+  elif len(code) == 6: # e.g. 95AA01 (ward)
+    return "WARD"
+  elif len(code) == 8: # e.g. 95AA01S1
+    return "SOA"
+  elif code[:3] == "N00":
+    return "OA"
+  else:
+    raise ValueError("Invalid code: {}".format(code))
+
 class NISRA:
   """
   Scrapes and refomats NI 2011 census data from NISRA website
@@ -89,7 +107,26 @@ class NISRA:
 
     # load the area lookup
     self.area_lookup = pd.read_csv(str(lookup_file))
-  
+
+  # TODO this is very close to duplicating the code in NRScotland.py - refactor?
+  def get_geog(self, coverage, resolution):
+    """
+    Returns all areas at resolution in coverage
+    """
+
+    resolution = _ni_resolution(resolution)
+
+    # assumes all areas in coverage are the same type
+    coverage_type = _coverage_type(coverage)
+    if coverage_type == "ALL":
+      return self.area_lookup[resolution].unique()
+
+    # ensure list
+    if isinstance(coverage, str):
+      coverage = [coverage]
+
+    return self.area_lookup[self.area_lookup[coverage_type].isin(coverage)][resolution].unique()
+
   def get_metadata(self, table, resolution):
     return self.__get_metadata_impl(table, resolution)[0]
 
@@ -188,14 +225,12 @@ class NISRA:
         filter = [filter]
       data = data[data[category].isin(filter)]
 
-    # TODO r_compat
-
-    return data.reset_index(drop=True)
-
-  def get_geog(self, region, resolution):
-
-    resolution = _ni_resolution(resolution)
-    return self.area_lookup[self.area_lookup["LGD"] == region][resolution].unique()
+    # for R (which doesnt understand a pandas dataframe), we return np.arrays
+    data.reset_index(drop=True, inplace=True)
+    if r_compat:
+      return {"columns": data.columns.values, "values": data.values}
+    else:
+      return data
 
   # TODO this is very close to duplicating the code in Nomisweb.py/NRScotland.py - refactor
   def contextify(self, table, meta, colname):
@@ -230,7 +265,7 @@ class NISRA:
 
 def _ni_resolution(resolution):
   """
-  Maps E&W statictical geography codes to their closest NI equvalents
+  Maps E&W statistical geography codes to their closest NI equvalents
   """
   # check if already an NI code
   if resolution in NISRA.NIGeoCodes:
