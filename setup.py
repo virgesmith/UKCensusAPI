@@ -7,7 +7,7 @@ def readme():
     return f.read()
 
 setup(name='ukcensusapi',
-  version='1.1.0',
+  version='1.1.2',
   description='UK census data query automation',
   long_description=readme(),
   url='https://github.com/virgesmith/UKCensusAPI',
@@ -15,7 +15,6 @@ setup(name='ukcensusapi',
   author_email='a.p.smith@leeds.ac.uk',
   license='MIT',
   packages=['ukcensusapi'],
-  install_requires=['numpy', 'pandas'],
   python_requires='>=3',
   zip_safe=False,
   test_suite='nose.collector',

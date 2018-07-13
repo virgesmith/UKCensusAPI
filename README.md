@@ -5,25 +5,22 @@
 [![DOI](https://zenodo.org/badge/99702514.svg)](https://zenodo.org/badge/latestdoi/99702514)
 
 > ## Update
-> This package is currently something of a misnomer currently as it only uses Nomisweb as its data source, which only provides census data for England & Wales.
+> This package has been something of a misnomer as it only used Nomisweb as its data source, which only provides full census data for England & Wales. (They do provide some UK key statistics and quick statistics tables).
 
-> Work is currently well under way on version 1.1 of this package which extends the coverage to Scotland and Northern Ireland. The aim is to make the data (and the meta) consistent across all nations.
-
-> Neither country provide a web API for their data so we have to resort to web scraping, which means the slicing-and-dicing and geographical query functionality may be more limited than it is for England & Wales.
-
-> For Scotland, data can be downloaded at country or Council Area (~LAD) level, at geographical resolutions of Council Area, Data Zone (~LSOA) and Output Area. Intermediate Area (~MSOA) data can be aggregated (only) where the data is available at higher geographical resolution.
-
-> For Northern Ireland, data can be downloaded at country or Local Government District (~LAD) level, at geographical resolutions of Super Output Area (~LSOA) and Small Area (OA). Ward (~MSOA) (~MSOA) data can be aggregated (only) where the data is available at higher geographical resolution.
+> Version 1.1.x of this package extends the 2011 census data coverage for Scotland and Northern Ireland. The aim is to make the data (and the metadata) consistent across all nations, but as neither country provide a web API for their data we have to resort to web scraping. This means the slicing-and-dicing and geographical query functionality may be more limited than it is for England & Wales. Note also that category values in equivalent tables may differ slightly.
 
 > ### Scotland
-> The principal functions are `NRScotland.get_metadata()` for metadata, `NRScotland.get_data()` for the actual data, and `NRScotland.contextify()` to annotate the data using the metadata. Examples will be provided in due course, for now see [test_scotland.py](inst/examples/test_scotland.py). 
+> For Scotland, data can be downloaded at country or Council Area (~LAD) level, at geographical resolutions of Council Area, Data Zone (~LSOA) and Output Area. Intermediate Area (~MSOA) data can be aggregated (only) where the data is available at a higher geographical resolution.
+
+> The principal functions are `NRScotland.get_metadata()` for metadata, `NRScotland.get_data()` for the actual data, and `NRScotland.contextify()` to annotate the data using the metadata. 
 
 > ### Northern Ireland
-> The principal functions are `NISRA.get_metadata()` for metadata, `NISRA.get_data()` for the actual data, and `NISRA.contextify()` to annotate the data using the metadata. Examples will be provided in due course, for now see [test_ni.py](inst/examples/test_ni.py). 
+> For Northern Ireland, data can be downloaded at country or Local Government District (~LAD) level, at geographical resolutions of Super Output Area (~LSOA) and Small Area (OA). Ward (~MSOA) (~MSOA) data can be aggregated (only) where the data is available at higher geographical resolution.
+> The principal functions are `NISRA.get_metadata()` for metadata, `NISRA.get_data()` for the actual data, and `NISRA.contextify()` to annotate the data using the metadata. 
  
 [Nomisweb](https://www.nomisweb.co.uk), run by Durham University, provides online access to the most detailed and up-to-date statistics from official sources for local areas throughout the UK, including census data.  
 
-This package provides both a `python` and an `R` wrapper around the nomisweb census data API, enabling:
+This package provides both a `python` and an `R` wrapper around the nomisweb census data API, the NRScotland and NISRA websites, enabling:
 
 - querying table metadata
 - autogenerating customised python and R query code for future use
@@ -33,7 +30,7 @@ This package provides both a `python` and an `R` wrapper around the nomisweb cen
 
 Queries can be customised on geographical coverage, geographical resolution, and table fields, the latter can be filtered to include only the category values you require.
 
-The package generates reusable code snippets that can be inserted into applications. Such applications will work seamlessly for any user as long as they have installed this package, and possess their own nomisweb API key.   
+The package can generate reusable code snippets that can be inserted into applications. Such applications will work seamlessly for any user as long as they have installed this package, and possess their own nomisweb API key.   
 
 Since census data is essentially static, it makes little sense to download the data every time it is requested: all data downloads are cached.
 
@@ -62,10 +59,15 @@ This package will look for the key in the following places (in order):
    ```
 - globally: the environment variable NOMIS_API_KEY. R users can store the key in their `.Renviron` file: R will set the environment on startup, which will be visible to a python session instantiated from R.
 
-Initialisation will fail if the key is not defined in one of these locations. Note: it doesn't need to be a valid key, and in fact for testing it is quite useful to define the key to an invalid value.
+Initialisation will fail if the key is not defined in one of these locations. Note: if for some reason you cannot register with nomisweb, you must still define an API key - just set it to an obviously invalid value.
 
 ## Installation
 
+### python (from PyPI)
+```
+user@host:~$ python3 -m pip install UKCensusAPI
+```
+(NB This will install only the basic package without the scripts and examples.)
 ### python (from github)
 ```
 user@host:~$ pip install git+https://github.com/virgesmith/UKCensusAPI.git
