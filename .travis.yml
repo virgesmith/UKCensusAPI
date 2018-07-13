@@ -68,7 +68,9 @@ matrix:
         - python setup.py test
 
 allow_failures:
-  - python: 3.7-dev
+  - r: oldrel
+  - r: release
+  - r: devel
 
 warnings_are_errors: false
 
