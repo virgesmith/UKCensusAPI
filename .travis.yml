@@ -67,10 +67,10 @@ matrix:
       script:
         - python setup.py test
 
-allow_failures:
-  - r: oldrel
-  - r: release
-  - r: devel
+  allow_failures:
+    - r: oldrel
+    - r: release
+    - r: devel
 
 warnings_are_errors: false
 
