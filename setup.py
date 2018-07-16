@@ -1,27 +1,28 @@
 #!/usr/bin/env python3
 
-from setuptools import setup
+import setuptools
 
 def readme():
   with open('README.md') as f:
     return f.read()
 
-setup(name='ukcensusapi',
-  version='1.1.2',
+setuptools.setup(name='ukcensusapi',
+  version='1.1.3',
   description='UK census data query automation',
   long_description=readme(),
+  long_description_content_type="text/markdown",
   url='https://github.com/virgesmith/UKCensusAPI',
   author='Andrew P Smith',
   author_email='a.p.smith@leeds.ac.uk',
-  license='MIT',
-  packages=['ukcensusapi'],
-  python_requires='>=3',
-  zip_safe=False,
+  packages=setuptools.find_packages(),
+  install_requires=['numpy',
+                    'pandas',
+                    'requests'],
+  classifiers=(
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+  ),
   test_suite='nose.collector',
   tests_require=['nose'],
-  package_data = {
-    # paths relative to the package directory
-    'ukcensusapi': ['../README.md'],
-  },
-  include_package_data=True
 )

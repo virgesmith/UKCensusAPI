@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/virgesmith/UKCensusAPI.png?branch=master)](https://travis-ci.org/virgesmith/UKCensusAPI) [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
 [![JOSS status](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a/status.svg)](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a)
 [![DOI](https://zenodo.org/badge/99702514.svg)](https://zenodo.org/badge/latestdoi/99702514)
+[![PyPI version](https://badge.fury.io/py/ukcensusapi.svg)](https://badge.fury.io/py/ukcensusapi)
 
 > ## Update
 > This package has been something of a misnomer as it only used Nomisweb as its data source, which only provides full census data for England & Wales. (They do provide some UK key statistics and quick statistics tables).

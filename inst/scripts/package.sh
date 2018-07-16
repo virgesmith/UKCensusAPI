@@ -9,7 +9,8 @@ twine upload --repository-url https://test.pypi.org/legacy/ dist/ukcensusapi-$ve
 #twine upload --repository-url https://upload.pypi.org/legacy/ dist/ukcensusapi-$version*
 
 # test package in tmp env
-virtualenv /tmp/env
+# segregrated env PYTHONPATH="" to be certain
+virtualenv -p python3 --no-site-packages /tmp/env
 source /tmp/env/bin/activate
 
 # local wheel
