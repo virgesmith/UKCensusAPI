@@ -7,7 +7,7 @@ def readme():
     return f.read()
 
 setuptools.setup(name='ukcensusapi',
-  version='1.1.3',
+  version='1.1.4',
   description='UK census data query automation',
   long_description=readme(),
   long_description_content_type="text/markdown",
