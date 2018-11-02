@@ -6,7 +6,6 @@
 [![PyPI version](https://badge.fury.io/py/ukcensusapi.svg)](https://badge.fury.io/py/ukcensusapi)
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/ukcensusapi/badges/version.svg)](https://anaconda.org/conda-forge/ukcensusapi)
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/ukcensusapi/badges/downloads.svg)](https://anaconda.org/conda-forge/ukcensusapi)
-
 > ## Update
 > This package has been something of a misnomer as it only used Nomisweb as its data source, which only provides full census data for England & Wales. (They do provide some UK key statistics and quick statistics tables).
 
