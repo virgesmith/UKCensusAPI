@@ -50,10 +50,7 @@ class NRScotland:
 #  'S12000044' 'S12000045' 'S12000046']
 
   # static constants
-  URL = "http://www.scotlandscensus.gov.uk/ods-web/download/getDownloadFile.html"
-
-  # timeout for http requests
-  Timeout = 15
+  URL = "https://www.scotlandscensus.gov.uk/ods-web/download/getDownloadFile.html"
 
   data_sources = ["Council Area blk", "SNS Data Zone 2011 blk", "Output Area blk"]
 
@@ -79,7 +76,7 @@ class NRScotland:
     # download the lookup if not present
     lookup_file = self.cache_dir / "sc_lookup.csv"
     if not os.path.isfile(str(lookup_file)):
-      lookup_url = "http://www.gov.scot/Resource/0046/00462936.csv"
+      lookup_url = "https://www2.gov.scot/Resource/0046/00462936.csv"
       response = requests.get(lookup_url)
       with open(str(lookup_file), 'wb') as fd:
         for chunk in response.iter_content(chunk_size=1024):

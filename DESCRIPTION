@@ -1,6 +1,6 @@
 Package: UKCensusAPI
 Title: Automated Query and Download of UK Census Data  
-Version: 1.1.0
+Version: 1.1.5
 Authors@R: person("Andrew", "Smith", email = "a.p.smith@leeds.ac.uk", role = c("aut", "cre"))
 Description: This package provides an R interface to the www.nomisweb.co.uk census data API. It enables:
     - querying table metadata

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version=1.1.2
+version=1.1.5
 
 # package
 python3 setup.py sdist bdist_wheel
