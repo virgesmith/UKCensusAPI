@@ -146,7 +146,7 @@ class NISRA:
     commas = raw_meta["ColumnVariableDescription"].str.count(",").unique()
     min_categories = min(commas)
     if len(commas) > 1 and min_categories > 0:
-      print("WARNING: it apprears that {} is multivariate and some category descriptions appear to contain a comma. ".format(table) + \
+      print("WARNING: it appears that {} is multivariate and some category descriptions contain a comma. ".format(table) + \
             "This makes the individual category names ambiguous. Be aware that category names may have been be incorrectly interpreted.")
 
     # str.split interprets 0 as split on all instances
@@ -172,9 +172,6 @@ class NISRA:
 
     # now remove text columns
     raw_meta.drop(text_columns, axis=1, inplace=True)
-
-#    print(raw_meta.head())
-#    print(raw_meta.tail())
 
     return (meta, raw_meta)
 
@@ -214,8 +211,6 @@ class NISRA:
       cols = list(data.columns)
       # remove acts in-place and has no return value so can't chain it 
       cols.remove("OBS_VALUE")
-      #print(data.columns.values.tolist().remove("OBS_VALUE"))
-      print(cols)
       data = data.groupby(cols).sum().reset_index()
 
     # Filter by category
