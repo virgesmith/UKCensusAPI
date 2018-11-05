@@ -242,9 +242,7 @@ class NRScotland:
       # The URL must have %20 (not "+") for space
       scotland_src = NRScotland.URL + "?downloadFileIds=" + urllib.parse.quote(source_name)
       print(scotland_src, " -> ", self.cache_dir / zip, "...", end="")
-      # workaround for SSL certificate issue
-      # emits: InsecureRequestWarning: Unverified HTTPS request is being made. 
-      response = requests.get(scotland_src, verify=False)
+      response = requests.get(scotland_src)
       with open(str(zip), 'wb') as fd:
         for chunk in response.iter_content(chunk_size=1024):
           fd.write(chunk)
