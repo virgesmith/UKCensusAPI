@@ -73,11 +73,7 @@ user@host:~$ python3 -m pip install UKCensusAPI
 
 ### python (from conda-forge)
 ```bash
-$ conda install ukpopulation
-```
-This assumes you have added the conda-forge channel, which can be done with
-```bash
-$ conda config --add channels conda-forge
+$ conda install -c conda-forge ukcensusapi
 ```
 (NB This will install only the core package without the examples.)
 
@@ -185,7 +181,7 @@ If you're unsure about which table to query, Nomisweb provide a useful [table fi
 Run the script. You'll be prompted to enter the name of the census table of interest:
 
 <pre>
-$ ukcensus-query
+$ ukcensus-query .
 Nomisweb census data interactive query builder
 See README.md for details on how to use this package
 Census table: <b>KS401EW</b>
@@ -279,13 +275,11 @@ You will then be prompted to choose whether to download the data immediately. If
 Get data now? (y/N): y
 
 Getting data...
-Writing metadata to  /tmp/UKCensusAPI/KS401EW_metadata.json
-Downloading and cacheing data: /tmp/UKCensusAPI/KS401EW_2d17ead209999cbc7a1e7f5a299ccba5.tsv
 
-Writing python code snippet to /tmp/UKCensusAPI/KS401EW.py
+Writing python code snippet to KS401EW.py
 
-Writing R code snippet to /tmp/UKCensusAPI/KS401EW.R
-user@host:~$
+Writing R code snippet to KS401EW.R
+$
 ```
 Regardless of whether you selected geography, or downloaded the data, the query builder will generate python and R code snippets for later use.
 
