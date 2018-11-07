@@ -69,7 +69,18 @@ Initialisation will fail if the key is not defined in one of these locations. No
 ```
 user@host:~$ python3 -m pip install UKCensusAPI
 ```
-(NB This will install only the basic package without the scripts and examples.)
+(NB This will install only the core package without the examples.)
+
+### python (from conda-forge)
+```bash
+$ conda install ukpopulation
+```
+This assumes you have added the conda-forge channel, which can be done with
+```bash
+$ conda config --add channels conda-forge
+```
+(NB This will install only the core package without the examples.)
+
 ### python (from github)
 ```
 user@host:~$ pip install git+https://github.com/virgesmith/UKCensusAPI.git
@@ -109,9 +120,9 @@ Queries have three distinct subtypes:
 - geography: retrieve a list of area codes of a particular type within a given region of another (larger) type.
 - data: retrieve data from a table using a query built from the metadata and geography.
 
-Data and metadata are cached locally to minimise requests to nomisweb.co.uk.
+Data and metadata are cached locally to minimise requests to the data providers.
 
-Using the interactive query builder, and a known table, you can constuct a programmatically reusable query selecting categories, specific category values, and (optionally) geography, See example below. 
+Using the interactive query builder, and a known table, you can construct a programmatically reusable query selecting categories, specific category values, and (optionally) geography, See example below. 
 
 Queries can subsequently be programmatically modified to switched to a different geographical region and/or resolution.
 
@@ -123,13 +134,17 @@ Once done you'll be prompted to (optionally) specify a geography for the data - 
 
 Finally, if you've specified the geography, the script will ask if you want to download (and cache) the data immediately.
 
-The script then produces the following files:
+This can be run using this script:
+```bash
+$ ukcensus-query <cache-dir> [--no-api-key]
+```
+An API key must be specified (see [above](#api-key)) unless the `--no-api-key` flag has been set.
+
+The script will produce the following files (in the supplied cache directory):
 
 - a json file containing the table metadata
 - python and R code snippets that build the query and call this package to download the data 
-- (optionally, depending on above selections) the data itself (which is cached)
-
-These files are all saved in the cache directory (default is `/tmp/UKCensusAPI`).
+- (optionally, depending on above selections) the data itself
 
 The code snippets are designed to be copy/pasted into user code. The (cached) data and metadata can simply be loaded by user code as required.
 
@@ -170,19 +185,14 @@ If you're unsure about which table to query, Nomisweb provide a useful [table fi
 Run the script. You'll be prompted to enter the name of the census table of interest:
 
 <pre>
-user@host ~/dev/UKCensusAPI $ inst/scripts/interactive.py 
-Cache directory:  /tmp/UKCensusAPI/
-Cacheing local authority codes
+$ ukcensus-query
 Nomisweb census data interactive query builder
 See README.md for details on how to use this package
 Census table: <b>KS401EW</b>
+KS401EW - Dwellings, household spaces and accommodation type
 </pre>
 
-The table description is displayed. The script then iterates through the available fields.
-```
-KS401EW - Dwellings, household spaces and accommodation type
-```
-You are now prompted to select the categories you require. For the purposes of this example let's say we only want a subset of the fields. Required values should be comma separated, or where contiguous, separated by '...'.
+The table description is displayed. The script then iterates through the available fields and you are prompted to select the categories you require. For the purposes of this example let's say we only want a subset of the fields: just some of the dwelling types. Required values should be comma separated, or where contiguous, separated by '...'.
 
 <pre>
 CELL:
@@ -235,13 +245,39 @@ Add geography? (y/N): <b>y</b>
 Geographical coverage
 E/EW/GB/UK or LA code(s)/name(s), comma separated: <b>Leeds</b>
 </pre>
-Now select the geographical resolution required. Currently supports local authority, and both 2001 and 2011 MSOA, LSOA, and OAs:
+All the available geographies for the data are displayed. Select the geographical resolution required.
 <pre>
-Resolution (LAD/MSOA11/LSOA11/OA11/MSOA01/LSOA01/OA01): <b>MSOA11</b>
+TYPE265 NHS area teams
+TYPE266 clinical commissioning groups
+TYPE267 built-up areas including subdivisions
+TYPE269 built-up areas
+TYPE273 national assembly for wales electoral regions 2010
+TYPE274 postcode areas
+TYPE275 postcode districts
+TYPE276 postcode sectors
+TYPE277 national assembly for wales constituencies 2010
+TYPE279 parishes 2011
+TYPE282 2011 local health boards
+TYPE283 2011 primary care trusts
+TYPE284 2011 strategic health authorities
+TYPE295 2011 wards
+TYPE297 2011 super output areas - middle layer
+TYPE298 2011 super output areas - lower layer
+TYPE299 2011 output areas
+TYPE459 local enterprise partnerships (as of April 2017)
+TYPE460 parliamentary constituencies 2010
+TYPE462 former metropolitan counties
+TYPE463 local authorities: county / unitary (prior to April 2015)
+TYPE464 local authorities: district / unitary (prior to April 2015)
+TYPE480 regions
+TYPE499 countries
+Select Resolution: <b>TYPE297</b>
 </pre>
-You will then be prompted to choose whether to download the data immediately. If so, the query builder assembles the query and computes an md5 hash of it. It then checks the cache directory if a file with this name exists and will load the data from the file if so. If not, the query builder downloads the data and save the data in the cache directory. 
 
+You will then be prompted to choose whether to download the data immediately. If so, the query builder assembles the query and computes an md5 hash of it. It then checks the cache directory if a file with this name exists and will load the data from the file if so. If not, the query builder downloads the data and save the data in the cache directory. 
 ```
+Get data now? (y/N): y
+
 Getting data...
 Writing metadata to  /tmp/UKCensusAPI/KS401EW_metadata.json
 Downloading and cacheing data: /tmp/UKCensusAPI/KS401EW_2d17ead209999cbc7a1e7f5a299ccba5.tsv
@@ -311,34 +347,28 @@ Users can then copy and paste the generated code snippets into their models, mod
 
 ```
 {
+  "nomis_table": "NM_618_1",
   "description": "KS401EW - Dwellings, household spaces and accommodation type",
   "fields": {
+    "GEOGRAPHY": {
+      "2092957703": "England and Wales",
+      "2092957699": "England",
+      "2092957700": "Wales"
+    },
     "RURAL_URBAN": {
       "0": "Total",
-      "1": "Urban city and town in a sparse setting",
+      "100": "Urban (total)",
       "2": "Urban major conurbation",
       "3": "Urban minor conurbation",
       "4": "Urban city and town",
+      "1": "Urban city and town in a sparse setting",
       "101": "Rural (total)",
-      "6": "Rural village in a sparse setting",
-      "7": "Rural hamlet and isolated dwellings in a sparse setting",
       "8": "Rural town and fringe",
+      "5": "Rural town and fringe in a sparse setting",
       "9": "Rural village",
+      "6": "Rural village in a sparse setting",
       "10": "Rural hamlet and isolated dwellings",
-      "100": "Urban (total)",
-      "5": "Rural town and fringe in a sparse setting"
-    },
-    "FREQ": {
-      "A": "Annually"
-    },
-    "GEOGRAPHY": {
-      "2092957699": "England",
-      "2092957700": "Wales",
-      "2092957703": "England and Wales"
-    },
-    "MEASURES": {
-      "20100": "value",
-      "20301": "percent"
+      "7": "Rural hamlet and isolated dwellings in a sparse setting"
     },
     "CELL": {
       "0": "All categories: Dwelling type",
@@ -355,12 +385,44 @@ Users can then copy and paste the generated code snippets into their models, mod
       "11": "Flat, maisonette or apartment: Part of a converted or shared house (including bed-sits)",
       "12": "Flat, maisonette or apartment: In a commercial building",
       "13": "Caravan or other mobile or temporary structure"
+    },
+    "MEASURES": {
+      "20100": "value",
+      "20301": "percent"
+    },
+    "FREQ": {
+      "A": "Annually"
     }
   },
-  "nomis_table": "NM_618_1"
+  "geographies": {
+    "TYPE265": "NHS area teams",
+    "TYPE266": "clinical commissioning groups",
+    "TYPE267": "built-up areas including subdivisions",
+    "TYPE269": "built-up areas",
+    "TYPE273": "national assembly for wales electoral regions 2010",
+    "TYPE274": "postcode areas",
+    "TYPE275": "postcode districts",
+    "TYPE276": "postcode sectors",
+    "TYPE277": "national assembly for wales constituencies 2010",
+    "TYPE279": "parishes 2011",
+    "TYPE282": "2011 local health boards",
+    "TYPE283": "2011 primary care trusts",
+    "TYPE284": "2011 strategic health authorities",
+    "TYPE295": "2011 wards",
+    "TYPE297": "2011 super output areas - middle layer",
+    "TYPE298": "2011 super output areas - lower layer",
+    "TYPE299": "2011 output areas",
+    "TYPE459": "local enterprise partnerships (as of April 2017)",
+    "TYPE460": "parliamentary constituencies 2010",
+    "TYPE462": "former metropolitan counties",
+    "TYPE463": "local authorities: county / unitary (prior to April 2015)",
+    "TYPE464": "local authorities: district / unitary (prior to April 2015)",
+    "TYPE480": "regions",
+    "TYPE499": "countries"
+  }
 }
 ```
-If you've selected to download the data, a tsv file (like csv but with a tab separator) called `KS401EW_24e10481f275c9c65cda1afc53adaa2d.tsv` will be saved in the cache directory: 
+If you've selected to download the data, a tsv file (like csv but with a tab separator) called `KS401EW_8a13b34bade69f230b62ce0875c47437.tsv` will be saved in the cache directory: 
 
 ```
 "GEOGRAPHY_CODE"	"CELL"	"OBS_VALUE"

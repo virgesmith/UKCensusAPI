@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+
+# Disable "Invalid constant name"
+# pylint: disable=C0103
+
+# -*- coding: utf-8 -*-
+"""
+interactive census table query
+"""
+import os
+
+import argparse
+
+import ukcensusapi.Nomisweb as CensusApi
+import ukcensusapi.Query as Census
+
+
+def main(cache_dir):
+  # intialise the API using current directory as the cache directory
+  api = CensusApi.Nomisweb(cache_dir)
+
+  # initialise the census query
+  census = Census.Query(api)
+
+  # run the interactive query
+  census.table()
+
+if __name__ == "__main__":
+  parser = argparse.ArgumentParser(description="ukcensus interactive query builder")
+  parser.add_argument("cache_dir", type=str, help="the directory in which to cache data (optionally containing API key")
+  parser.add_argument("--no-api-key", action='store_const', const=True, default=False, help="use a dummy nomisweb API key")
+
+  args = parser.parse_args()
+  # set a dummy API key if requested
+  if args.no_api_key:
+    print("WARNING: Using a dummy nomisweb API key, data downloads are truncated at 25000 rows")
+    os.environ["NOMIS_API_KEY"] = "DUMMY"
+  main(args.cache_dir)

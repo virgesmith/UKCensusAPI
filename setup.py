@@ -7,7 +7,7 @@ def readme():
     return f.read()
 
 setuptools.setup(name='ukcensusapi',
-  version='1.1.5',
+  version='1.1.6',
   description='UK census data query automation',
   long_description=readme(),
   long_description_content_type="text/markdown",
@@ -23,6 +23,7 @@ setuptools.setup(name='ukcensusapi',
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
   ),
+  scripts=['inst/scripts/ukcensus-query'],
   test_suite='nose.collector',
   tests_require=['nose'],
 )
