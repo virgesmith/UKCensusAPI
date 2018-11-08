@@ -20,7 +20,7 @@ class Test(TestCase):
   api_ew = Api_EW.Nomisweb(cache_dir, verbose=True)
   api_sc = Api_SC.NRScotland(cache_dir)
   api_ni = Api_NI.NISRA(cache_dir)
-  query = Census.Query(api_ew)
+  query = Census.Query(cache_dir)
 
   def test_get_lad_codes(self):
     self.assertTrue(self.api_ew.get_lad_codes("Royston Vasey") == [])

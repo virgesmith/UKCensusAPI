@@ -3,15 +3,38 @@ Nomisweb census data interactive query builder
 See README.md for details on how to use this package
 """
 
-import ukcensusapi.Nomisweb as Api
+import ukcensusapi.Nomisweb as ApiEW
+import ukcensusapi.NRScotland as ApiSC
+import ukcensusapi.NISRA as ApiNI
+
+def _get_scni(table, api, codes):
+  meta = { "geographies": {}}
+  for k in codes:
+    try:
+      raw = api.get_metadata(table, k)
+      meta["table"] = raw["table"]
+      meta["description"] = raw["description"]
+      #meta["geographies"] = {}
+      meta["geographies"][raw["geography"]] = raw["fields"]
+    except ValueError:
+      pass
+  return meta
+
+def _print_scni(meta):
+  for k in meta["geographies"].keys():
+    print("Geography: %s" % k)
+    for c in meta["geographies"][k]:
+      print("  %s:" % c)
+      for i, v in meta["geographies"][k][c].items():
+        print("    %3d: %s" %(i, v))
 
 class Query:
   """
   Census query functionality
   """
-
-  def __init__(self, api):
-    self.api = api
+  def __init__(self, cache_dir):
+    self.cache_dir = cache_dir
+    self.api = ApiEW.Nomisweb(cache_dir)
 
   def table(self):
     """
@@ -22,6 +45,19 @@ class Query:
     print("See README.md for details on how to use this package")
 
     table = input("Census table: ")
+
+    # only init Sc/NI APIs if required (large initial download)
+    if table.endswith("SC"):
+      api_sc = ApiSC.NRScotland(self.cache_dir)
+      print("Data source: NRScotland")
+      _print_scni(_get_scni(table, api_sc, ApiSC.NRScotland.GeoCodeLookup.keys()))
+      return
+    elif table.endswith("NI"):
+      api_ni = ApiNI.NISRA(self.cache_dir)
+      print("Data source: NISRA")
+      _print_scni(_get_scni(table, api_ni, ApiNI.NISRA.GeoCodeLookup.keys()))
+      return
+    print("Data source: nomisweb (default)")
 
     query_params = {}
     query_params["date"] = "latest"

@@ -17,10 +17,9 @@ import ukcensusapi.Query as Census
 
 def main(cache_dir):
   # intialise the API using current directory as the cache directory
-  api = CensusApi.Nomisweb(cache_dir)
 
   # initialise the census query
-  census = Census.Query(api)
+  census = Census.Query(cache_dir)
 
   # run the interactive query
   census.table()
