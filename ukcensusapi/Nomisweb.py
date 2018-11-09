@@ -207,6 +207,7 @@ class Nomisweb:
     # retrieve if not in cache
     if not os.path.isfile(str(filename)):
       if self.verbose: print("Downloading and cacheing data: " + str(filename))
+      #'TODO migrate to requests package
       request.urlretrieve(query_string, str(filename)) #, timeout = Nomisweb.Timeout)
 
       # check for empty file, if so delete it and report error

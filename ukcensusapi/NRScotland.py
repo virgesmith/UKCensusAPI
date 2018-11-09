@@ -80,6 +80,7 @@ class NRScotland:
     if not os.path.isfile(str(lookup_file)):
       lookup_url = "https://www2.gov.scot/Resource/0046/00462936.csv"
       response = requests.get(lookup_url)
+      response.raise_for_status()
       with open(str(lookup_file), 'wb') as fd:
         for chunk in response.iter_content(chunk_size=1024):
           fd.write(chunk)
@@ -246,6 +247,7 @@ class NRScotland:
       scotland_src = NRScotland.URL + "?downloadFileIds=" + urllib.parse.quote(source_name)
       print(scotland_src, " -> ", self.cache_dir / zip, "...", end="")
       response = requests.get(scotland_src)
+      response.raise_for_status()
       with open(str(zip), 'wb') as fd:
         for chunk in response.iter_content(chunk_size=1024):
           fd.write(chunk)

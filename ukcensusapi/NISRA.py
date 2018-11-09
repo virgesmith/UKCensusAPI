@@ -252,6 +252,7 @@ class NISRA:
       ni_src = NISRA.URL + source_name.replace(" ", "%20")
       print(ni_src, " -> ", zipfile, "...", end="")
       response = requests.get(ni_src)
+      response.raise_for_status()
       with open(str(zipfile), 'wb') as fd:
         for chunk in response.iter_content(chunk_size=1024):
           fd.write(chunk)
