@@ -20,7 +20,7 @@ matrix:
       r: release
       env:
         - NOMIS_API_KEY=DUMMY
-        - RETICULATE_PYTHON=$(which python3)
+        - RETICULATE_PYTHON=/usr/bin/python3.5
       # install the python package first
       before_install:
         - sudo apt-get update && sudo apt-get install -y python3.5 python3.5-dev python3-pip
