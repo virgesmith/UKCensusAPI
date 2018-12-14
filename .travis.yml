@@ -24,7 +24,7 @@ matrix:
       # install the python package first
       before_install:
         - sudo apt-get update && sudo apt-get install -y python3-pip
-        - python3 -m pip install -U numpy pandas
+        - sudo python3 -m pip install numpy pandas
         - ./setup.py install --user
       dist: trusty
 
