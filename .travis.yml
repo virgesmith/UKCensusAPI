@@ -26,7 +26,7 @@ matrix:
         - sudo apt-get update && sudo apt-get install -y python3-pip
         - sudo python3 -m pip install numpy pandas
         - ./setup.py install --user
-      dist: trusty
+      dist: xenial
 
     - language: r
       r: devel
