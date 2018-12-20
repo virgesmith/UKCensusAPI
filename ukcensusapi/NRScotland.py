@@ -75,7 +75,7 @@ class NRScotland:
     # checks exists and is writable, creates if necessary
     self.cache_dir = utils.init_cache_dir(cache_dir)
 
-    self.offline_mode = not utils.check_online(self.URL)
+    self.offline_mode = not utils.check_online("https://www.scotlandscensus.gov.uk/ods-web/data-warehouse.html")
     if self.offline_mode:
       print("Unable to contact %s, operating in offline mode - pre-cached data only" % self.URL)
 
