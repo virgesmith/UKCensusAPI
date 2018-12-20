@@ -97,6 +97,10 @@ class NISRA:
     # checks exists and is writable, creates if necessary
     self.cache_dir = utils.init_cache_dir(cache_dir)
 
+    self.offline_mode = not utils.check_online(self.URL)
+    if self.offline_mode:
+      print("Unable to contact %s, operating in offline mode - pre-cached data only" % self.URL)
+
     # download the lookup if not present
     lookup_file = self.cache_dir / "ni_lookup.csv"
     if not os.path.isfile(str(lookup_file)):

@@ -3,6 +3,10 @@ Common utility/helpers
 """
 import os
 from pathlib import Path
+from urllib import request
+from urllib.error import HTTPError
+from urllib.error import URLError
+from socket import timeout
 
 def _expand_home(path):
   """
@@ -29,3 +33,10 @@ def init_cache_dir(directory):
     raise PermissionError(str(directory) + " is not writable")
 
   return directory
+
+def check_online(url, t=5):
+  try:
+    request.urlopen(url, timeout=t)
+    return True
+  except (HTTPError, URLError, timeout) as error:
+    return False

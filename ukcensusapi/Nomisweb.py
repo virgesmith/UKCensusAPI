@@ -101,22 +101,21 @@ class Nomisweb:
     """
     self.cache_dir = utils.init_cache_dir(cache_dir)
     self.verbose = verbose
+    self.offline_mode = True
+
+    # how best to deal with site unavailable...  
+    self.offline_mode = not utils.check_online(self.URL, Nomisweb.Timeout)
+    if self.offline_mode:
+      print("Unable to contact %s, operating in offline mode - pre-cached data only" % self.URL)
 
     self.key = _get_api_key(self.cache_dir)
-
-    if self.key is None:
+    if not self.offline_mode and self.key is None:
       raise RuntimeError("No API key found. Whilst downloads still work, they may be truncated,\n" \
                          "causing potentially unforseen problems in any modelling/analysis.\n" \
                          "Set the key value in the environment variable NOMIS_API_KEY.\n" \
                          "Register at www.nomisweb.co.uk to obtain a key")
 
     if self.verbose: print("Cache directory: ", self.cache_dir)
-
-    # TODO how best to deal with site unavailable...
-    try:
-      request.urlopen(self.URL, timeout=Nomisweb.Timeout)
-    except (HTTPError, URLError, timeout) as error:
-      print('ERROR: ', error, ' accessing', self.URL)
 
     # static member
     Nomisweb.cached_lad_codes = self.__cache_lad_codes()
@@ -193,6 +192,7 @@ class Nomisweb:
     Args:
        table: ONS table name, or nomisweb table code if no explicit ONS name 
        query_params: table query parameters
+       r_compat: return values suitable for R 
     Returns:
         a dataframe containing the data. If downloaded, the data is also cached to a file
     """
@@ -236,6 +236,9 @@ class Nomisweb:
     Returns:
       a dictionary containing information about the table contents including categories and category values.
     """
+    # see if already downloaded
+
+
     if not table_name.startswith("NM_"):
       path = "api/v01/dataset/def.sdmx.json?"
       query_params = {"search": "*"+table_name+"*"}
@@ -384,10 +387,11 @@ class Nomisweb:
   def write_metadata(self, table, meta):
     """method.
     Args:
-        arg: argument
+        table: name of table
+        meta: the metadata
         ...
     Returns:
-        a return value.
+        nothing.
     """
 
     filename = self.cache_dir / (table + "_metadata.json")
