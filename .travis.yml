@@ -8,12 +8,12 @@ matrix:
       r: oldrel
       env:
         - NOMIS_API_KEY=DUMMY
-        - RETICULATE_PYTHON=$(which python3)
+        - RETICULATE_PYTHON=/usr/bin/python3.5
       # install the python package first
       before_install:
-        - pyenv shell 3.6
-        - pip3 install numpy pandas
-        - ./setup.py install
+        - sudo apt-get update && sudo apt-get install -y python3.5 python3.5-dev python3-pip
+        - sudo python3.5 -m pip install numpy pandas
+        - python3.5 setup.py install --user
       dist: trusty
 
     - language: r
@@ -32,12 +32,12 @@ matrix:
       r: devel
       env:
         - NOMIS_API_KEY=DUMMY
-        - RETICULATE_PYTHON=$(which python3)
+        - RETICULATE_PYTHON=/usr/bin/python3.5
       # install the python package first
       before_install:
-        - pyenv shell 3.6
-        - pip3 install numpy pandas
-        - ./setup.py install
+        - sudo apt-get update && sudo apt-get install -y python3.5 python3.5-dev python3-pip
+        - sudo python3.5 -m pip install numpy pandas
+        - python3.5 setup.py install --user
       dist: trusty
 
     - language: python
@@ -78,4 +78,4 @@ notifications:
   email:
     on_success: change
     on_failure: change
-
+  slack: spenser-workspace:QzyXfMnQd5tUJaFZPK6Psl4M
