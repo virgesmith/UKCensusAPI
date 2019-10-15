@@ -79,6 +79,10 @@ $ conda install -c conda-forge ukcensusapi
 
 ### python (from github)
 ```
+user@host:~$ pip install git+https://github.com/BenjaminIsaac0111/UKCensusAPI.git
+```
+Use this git link to install from the original repo by A.Smith.
+```
 user@host:~$ pip install git+https://github.com/virgesmith/UKCensusAPI.git
 ``` 
 ### python (from cloned repo):
