@@ -30,9 +30,9 @@ table = census.get_data("DC1117SC", "S12000033", "LAD")
 print(table)
 
 table = census.get_data("DC2101SC", "S12000033", "LAD", category_filters={
-  "DC2101SC_0_CODE": 4, # white irish
-  "DC2101SC_1_CODE": [1,2], # male & female
-  "DC2101SC_2_CODE": range(6,13) # 18-49
+  "DC2101SC_0_CODE": 4,  # white irish
+  "DC2101SC_1_CODE": [1, 2],  # male & female
+  "DC2101SC_2_CODE": range(6, 13)  # 18-49
   })
 print(table.shape)
 
@@ -42,5 +42,5 @@ print(table)
 # this table has comma thousands separator in raw data
 meta = census.get_metadata("KS201SC", "LAD")
 print(meta)
-data = census.get_data("KS201SC", "S12000033", "LAD")#, category_filters={"DC2101SC_1_CODE": [0], "DC2101SC_2_CODE": 0})
+data = census.get_data("KS201SC", "S12000033", "LAD")  # , category_filters={"DC2101SC_1_CODE": [0], "DC2101SC_2_CODE": 0})
 print(data)

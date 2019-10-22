@@ -31,9 +31,9 @@ table = census.get_data("DC1117SC", "LAD", "S12000033")
 print(table)
 
 table = census.get_data("DC2101SC", "LAD", "S12000033", category_filters={
-  "DC2101SC_0_CODE": 4, # white irish
-  "DC2101SC_1_CODE": [1,2], # male & female
-  "DC2101SC_2_CODE": range(6,13) # 18-49
+  "DC2101SC_0_CODE": 4,  # white irish
+  "DC2101SC_1_CODE": [1, 2],  # male & female
+  "DC2101SC_2_CODE": range(6, 13)  # 18-49
   })
 print(table.shape)
 

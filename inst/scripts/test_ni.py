@@ -27,15 +27,15 @@ result = sorted(census.get_geog("95AA", "OA11"))
 print(len(result))
 
 
-#print(census.get_metadata("LC1101NI", "OA11"))
-#d = census.get_data("LC1101NI", "95AA", "LSOA11")
-#print(d.head())
-#print(len(d))
+# print(census.get_metadata("LC1101NI", "OA11"))
+# d = census.get_data("LC1101NI", "95AA", "LSOA11")
+# print(d.head())
+# print(len(d))
 meta = census.get_metadata("DC1101NI", "LSOA11")
 
-#print(meta)
+# print(meta)
 
-data = census.get_data("DC1101NI", "95AA", "LSOA11", category_filters={"DC1101NI_0_CODE": 0, "DC1101NI_1_CODE": [1,2], "DC1101NI_2_CODE": [1,2]})
+data = census.get_data("DC1101NI", "95AA", "LSOA11", category_filters={"DC1101NI_0_CODE": 0, "DC1101NI_1_CODE": [1, 2], "DC1101NI_2_CODE": [1, 2]})
 print(data.head())
 
 
@@ -49,7 +49,7 @@ print(census.get_metadata("QS401NI", "SOA"))
 #     'QS401NI_0_CODE': {
 #       0: 'All usual residents in households', 
 #       1: 'Shared dwelling', 
-#       2: 'Unshared dwelling: Caravan or othermobile or temporary structure', 
+#       2: 'Unshared dwelling: Caravan or other mobile or temporary structure',
 #       3: 'Unshared dwelling: Flat, maisonette or apartment: In a commercial building', 
 #       4: 'Unshared dwelling: Flat, maisonette or apartment: Part of a converted or shared house (including bed-sits)', 
 #       5: 'Unshared dwelling: Flat, maisonette or apartment: Purpose-built block of flats or tenement', 
