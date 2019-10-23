@@ -8,6 +8,7 @@ import urllib.parse
 import zipfile
 import pandas as pd
 import requests
+import subprocess
 
 import ukcensusapi.utils as utils
 
@@ -68,11 +69,11 @@ class NRScotland:
     # initialise, supplying a location to cache downloads
     def __init__(self, cache_dir):
         """Constructor.
-    Args:
-        cache_dir: cache directory
-    Returns:
-        an instance.
-    """
+        Args:
+            cache_dir: cache directory
+        Returns:
+            an instance.
+        """
         # checks exists and is writable, creates if necessary
         self.cache_dir = utils.init_cache_dir(cache_dir)
 
@@ -97,8 +98,8 @@ class NRScotland:
 
     def get_geog(self, coverage, resolution):
         """
-    Returns all areas at resolution in coverage
-    """
+        Returns all areas at resolution in coverage
+        """
         # assumes all areas in coverage are the same type
         coverage_type = _coverage_type(coverage)
         if coverage_type == "ALL":
@@ -120,9 +121,11 @@ class NRScotland:
         """
         Gets the raw csv data and metadata
         """
-        z = zipfile.ZipFile(str(self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]])))
-        # print(z.namelist())
-        raw_data = pd.read_csv(z.open(table + ".csv"))
+        # TODO This depends on the os being linux (developed on mint) as well as having 7zip installed.
+        zip_path = str(self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]]))
+        subprocess.check_output(['7z', 'e', zip_path, str(table + '.csv'), '-o./cache/'])
+        raw_data = pd.read_csv(str('./cache/' + table + '.csv'))
+        subprocess.check_output(['rm', './cache/' + str(table + '.csv')])
 
         # more sophisticate way to check for no data?
         if raw_data.shape == (2, 1):
@@ -148,16 +151,15 @@ class NRScotland:
                 "geography": resolution,
                 "fields": fields
                 }
-        return (meta, raw_data)
-
-    # print(data.head())
+        return meta, raw_data
+        # print(data.head())
 
     def get_data(self, table, coverage, resolution, category_filters={}, r_compat=False):
         """
-    Returns a table with categories in columns, filtered by geography and (optionally) category values
-    If r_compat==True, instead of returning a pandas dataframe it returns a dict raw value data and column names
-    that can be converted into an R data.frame 
-    """
+        Returns a table with categories in columns, filtered by geography and (optionally) category values
+        If r_compat==True, instead of returning a pandas dataframe it returns a dict raw value data and column names
+        that can be converted into an R data.frame
+        """
 
         # No data is available for Intermediate zones (~MSOA) so we get Data Zone (LSOA) then aggregate
         msoa_workaround = False
@@ -172,7 +174,8 @@ class NRScotland:
         # - rather than using 0 to represent zero, hyphen is used
         raw_data.replace("-", 0, inplace=True)
         raw_data.replace(",", "", inplace=True, regex=True)
-        # assumes the first n are (unnamed) columns we don't want to melt, geography coming first: n = geog + num categories - 1 (the one to melt)
+        # assumes the first n are (unnamed) columns we don't want to melt, geography coming first: n = geog + num
+        # categories - 1 (the one to melt)
         lookup = raw_data.columns.tolist()[len(meta["fields"]):]
 
         id_vars = ["GEOGRAPHY_CODE"]
@@ -205,7 +208,7 @@ class NRScotland:
         # filter by geography
         data = raw_data[raw_data.GEOGRAPHY_CODE.isin(geography)]
 
-        # If we actually requested MSOA-level data, aggregate the LSOAs within each MSOA
+        # If we actually requested MSOA-level data, aggregrate the LSOAs within each MSOA
         if msoa_workaround:
             data = data.reset_index(drop=True)
             lookup = self.area_lookup[self.area_lookup.LSOA11.isin(data.GEOGRAPHY_CODE)]
@@ -230,8 +233,8 @@ class NRScotland:
     # TODO this is very close to duplicating the code in Nomisweb.py - refactor
     def contextify(self, table, meta, colname):
         """
-    Replaces the numeric category codes with the descriptive strings from the metadata
-    """
+        Replaces the numeric category codes with the descriptive strings from the metadata
+        """
         lookup = meta["fields"][colname]
         # convert list into dict keyed on list index
         mapping = {k: v for k, v in enumerate(lookup)}
@@ -243,8 +246,8 @@ class NRScotland:
 
     def __source_to_zip(self, source_name):
         """
-    Downloads if necessary and returns the name of the locally cached zip file of the source data (replacing spaces with _)
-    """
+        Downloads if necessary and returns the name of the locally cached zip file of the source data (replacing spaces with _)
+        """
         zip = self.cache_dir / (source_name.replace(" ", "_") + ".zip")
         if not os.path.isfile(str(zip)):
             # The URL must have %20 (not "+") for space
