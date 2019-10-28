@@ -125,12 +125,11 @@ class NRScotland:
         if clear_cache:
             subprocess.check_output(['rm', './cache/' + str(table + '.csv')])
 
-        # TODO This depends on the os being linux(Debian) as well as having 7zip installed.
-        zip_path = str(self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]]))
-        table_csv_path = str('./cache/' + table + '.csv')
+        zip_path = Path(str(self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]])))
+        table_csv_path = Path(str('./cache/' + table + '.csv'))
         if not os.path.isfile(table_csv_path):
             print('Extracting...')
-            subprocess.check_output(['7z', 'e', zip_path, str(table + '.csv'), '-o./cache/'])
+            subprocess.check_output(['7z', 'e', zip_path, str(table + '.csv'), '-o'+Path('./cache/')])
 
         raw_data = pd.read_csv(table_csv_path)
 
