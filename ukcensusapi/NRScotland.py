@@ -117,15 +117,22 @@ class NRScotland:
         """
         return self.__get_rawdata(table, resolution)[0]
 
-    def __get_rawdata(self, table, resolution):
+    def __get_rawdata(self, table, resolution, clear_cache=False):
         """
         Gets the raw csv data and metadata
         """
-        # TODO This depends on the os being linux (developed on mint) as well as having 7zip installed.
+
+        if clear_cache:
+            subprocess.check_output(['rm', './cache/' + str(table + '.csv')])
+
+        # TODO This depends on the os being linux(Debian) as well as having 7zip installed.
         zip_path = str(self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]]))
-        subprocess.check_output(['7z', 'e', zip_path, str(table + '.csv'), '-o./cache/'])
-        raw_data = pd.read_csv(str('./cache/' + table + '.csv'))
-        subprocess.check_output(['rm', './cache/' + str(table + '.csv')])
+        table_csv_path = str('./cache/' + table + '.csv')
+        if not os.path.isfile(table_csv_path):
+            print('Extracting...')
+            subprocess.check_output(['7z', 'e', zip_path, str(table + '.csv'), '-o./cache/'])
+
+        raw_data = pd.read_csv(table_csv_path)
 
         # more sophisticate way to check for no data?
         if raw_data.shape == (2, 1):
