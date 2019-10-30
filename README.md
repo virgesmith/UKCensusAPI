@@ -46,7 +46,13 @@ Example code is also provided which:
 
 - python3.4 or higher, with pip, numpy and pandas. The dependencies should install automatically. Python 2 is not supported.
 - R version 3.3.3 or higher (optional, if using the R interface)
-
+- Z7ip version 16.02 or higher due to the use of some proprietary compression used by some data providers. On Linux systems, install ```p7zip-full```  via your chosen distributions package-manager. 
+  Verify the installation using ```7z -version```. 
+  
+  For Windows, 7Zip can be installed using relevant .exe download from [this page](https://www.7-zip.org/download.html).
+  After which the 7Zip installation location will need to be added to the PATH environment variable. Again, verify the installation using ```7z -version```.
+  
+  
 ### API key
 
 It is recommended that you register with [nomisweb](https://www.nomisweb.co.uk) before using this package and use the API key the supply you in all queries. Without a key, queries will be truncated (max 25000 rows). With a key, the row limit is 1000000 and this package will warn if a query generates data with this number of rows. 
