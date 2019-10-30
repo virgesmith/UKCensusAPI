@@ -117,19 +117,20 @@ class NRScotland:
         """
         return self.__get_rawdata(table, resolution)[0]
 
-    def __get_rawdata(self, table, resolution, clear_cache=False):
+    def __get_rawdata(self, table, resolution, clear_cache=True):
         """
         Gets the raw csv data and metadata
         """
 
-        if clear_cache:
-            subprocess.check_output(['rm', './cache/' + str(table + '.csv')])
+        zip_path = self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]])
+        table_csv_path = self.cache_dir / str(table + '.csv')
 
-        zip_path = Path(str(self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]])))
-        table_csv_path = Path(str('./cache/' + table + '.csv'))
+        if clear_cache and os.path.isfile(table_csv_path):
+            os.remove(table_csv_path)
+
         if not os.path.isfile(table_csv_path):
-            print('Extracting...')
-            subprocess.check_output(['7z', 'e', zip_path, str(table + '.csv'), '-o'+Path('./cache/')])
+            print('Extracting {}'.format(str(table_csv_path)))
+            subprocess.check_output(['7z', 'e', str(zip_path), str(table + '.csv'), '-o'+str(self.cache_dir)])
 
         raw_data = pd.read_csv(table_csv_path)
 
