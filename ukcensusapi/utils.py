@@ -13,7 +13,7 @@ def _expand_home(path):
   pathlib doesn't interpret ~/ as $HOME
   This doesnt deal with other user's homes e.g. ~another/dir is not changed
   """
-  return Path(path.replace("~/", str(Path.home()) + "/"))
+  return Path(str(path).replace("~/", str(Path.home()) + "/"))
 
 def init_cache_dir(directory):
   """
