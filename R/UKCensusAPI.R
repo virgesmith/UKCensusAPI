@@ -128,11 +128,11 @@ instance = function(cacheDir, country = "EW") {
 
 #' get an instance of the python query (required to call any of the functions)
 #'
-#' @param api an instance of the ukcensusapi
+#' @param cacheDir directory to cache data
 #' @return an instance of the query module
 #' @export
-queryInstance = function(api) {
+queryInstance = function(cacheDir) {
   # TODO can we have a function-static variable here?
-  query = Query$Query(api)
+  query = Query$Query(cacheDir)
   return(query)
 }

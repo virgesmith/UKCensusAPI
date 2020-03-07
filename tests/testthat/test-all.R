@@ -199,7 +199,7 @@ test_that("code snippet", {
     RURAL_URBAN = "0",
     MEASURES = "20100"
   )
-  query = UKCensusAPI::queryInstance(apiEW)
+  query = UKCensusAPI::queryInstance(apiEW$cache_dir)
   query$write_code_snippets(table, meta, queryParams)
 
   # run the R snippet in a separate process
