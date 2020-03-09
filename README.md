@@ -50,7 +50,7 @@ Example code is also provided which:
   Verify the installation using ```7z -version```. 
   
   For Windows, 7Zip can be installed using relevant .exe download from [this page](https://www.7-zip.org/download.html).
-  After which the 7Zip installation location will need to be added to the PATH environment variable. Again, verify the installation using ```7z -version```.
+  The 7Zip installation location will need to be added to the PATH environment variable. Again, verify the installation using ```7z -version```.
   
   
 ### API key
