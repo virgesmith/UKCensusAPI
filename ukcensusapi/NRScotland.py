@@ -122,6 +122,7 @@ class NRScotland:
         Gets the raw csv data and metadata
         """
 
+        # TODO  Extract into utils and use as try and catch in last resort?
         zip_path = self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]])
         table_csv_path = self.cache_dir / str(table + '.csv')
 
@@ -131,6 +132,7 @@ class NRScotland:
         if not os.path.isfile(table_csv_path):
             print('Extracting {}'.format(str(table_csv_path)))
             subprocess.check_output(['7z', 'e', str(zip_path), str(table + '.csv'), '-o'+str(self.cache_dir)])
+        # TODO end...
 
         raw_data = pd.read_csv(table_csv_path)
 
