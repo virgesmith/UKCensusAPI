@@ -119,10 +119,21 @@ class NRScotland:
     """
     Gets the raw csv data and metadata
     """
-    z = zipfile.ZipFile(str(self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]])))
-    #print(z.namelist())
-    raw_data = pd.read_csv(z.open(table + ".csv"))
 
+    if not os.path.exists(os.path.join(self.cache_dir, table + ".csv")):
+      z = zipfile.ZipFile(str(self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]])))
+      #print(z.namelist())
+      try:
+        raw_data = pd.read_csv(z.open(table + ".csv"))
+      except NotImplementedError:
+        print("Problem: The census data uses a proprietary compression algorithm (probably deflate64) and cannot be extracted by the python zip package.")
+        print("Solution: manually extract this archive using a non-python extraction tool: %s" % z.filename)
+        print("e.g. use 7zip, or (on linux):\n\n$ unzip %s\n" % z.filename)
+        print("or, if you only need a specfic table:\n\n$ unzip %s -d %s %s\n" % (z.filename, self.cache_dir, table + ".csv"))
+        print("Please also consider politely asking NRScotland to change the compression algorithm!\n")
+        exit(1)
+    else:
+      raw_data = pd.read_csv(os.path.join(self.cache_dir, table + ".csv"))
     # more sophisticate way to check for no data?
     if raw_data.shape == (2,1):
       raise ValueError("Table {}: data not available at {} resolution.".format(table, resolution))
