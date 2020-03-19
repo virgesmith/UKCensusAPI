@@ -120,7 +120,7 @@ class NRScotland:
     Gets the raw csv data and metadata
     """
 
-    if not os.path.exists(os.path.join(self.cache_dir, table + ".csv")):
+    if not os.path.exists(os.path.join(str(self.cache_dir), table + ".csv")):
       z = zipfile.ZipFile(str(self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]])))
       #print(z.namelist())
       try:
@@ -133,7 +133,7 @@ class NRScotland:
         print("Please also consider politely asking NRScotland to change the compression algorithm!\n")
         exit(1)
     else:
-      raw_data = pd.read_csv(os.path.join(self.cache_dir, table + ".csv"))
+      raw_data = pd.read_csv(os.path.join(str(self.cache_dir), table + ".csv"))
     # more sophisticate way to check for no data?
     if raw_data.shape == (2,1):
       raise ValueError("Table {}: data not available at {} resolution.".format(table, resolution))

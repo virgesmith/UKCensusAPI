@@ -3,7 +3,6 @@
 \docType{package}
 \name{UKCensusAPI}
 \alias{UKCensusAPI}
-\alias{UKCensusAPI-package}
 \title{UKCensusAPI}
 \description{
 R package for creating, and modifying, automated downloads of UK census data. See below for an overview of the package.

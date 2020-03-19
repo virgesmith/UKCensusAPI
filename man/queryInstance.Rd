@@ -4,10 +4,10 @@
 \alias{queryInstance}
 \title{get an instance of the python query (required to call any of the functions)}
 \usage{
-queryInstance(api)
+queryInstance(cacheDir)
 }
 \arguments{
-\item{api}{an instance of the ukcensusapi}
+\item{cacheDir}{directory to cache data}
 }
 \value{
 an instance of the query module
