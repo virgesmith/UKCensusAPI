@@ -16,6 +16,8 @@
 
 > The principal functions are `NRScotland.get_metadata()` for metadata, `NRScotland.get_data()` for the actual data, and `NRScotland.contextify()` to annotate the data using the metadata. 
 
+> **NB The OA-level Scotland data is provided in a zip compression format (deflate64) that python cannot extract. If this data is requested, you'll get an error message containing instructions on how to fix the issue by manually extracting the file(s) using unzip or 7zip.**
+
 > ### Northern Ireland
 > For Northern Ireland, data can be downloaded at country or Local Government District (~LAD) level, at geographical resolutions of Super Output Area (~LSOA) and Small Area (OA). Ward (~MSOA) (~MSOA) data can be aggregated (only) where the data is available at higher geographical resolution.
 > The principal functions are `NISRA.get_metadata()` for metadata, `NISRA.get_data()` for the actual data, and `NISRA.contextify()` to annotate the data using the metadata. 
