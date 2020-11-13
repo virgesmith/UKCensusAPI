@@ -49,7 +49,7 @@ matrix:
         - python setup.py test
 
     - language: python
-      python: 3.8-dev
+      python: 3.8
       env:
         - NOMIS_API_KEY=DUMMY
       install:
@@ -77,4 +77,3 @@ notifications:
   email:
     on_success: change
     on_failure: change
-  slack: spenser-workspace:QzyXfMnQd5tUJaFZPK6Psl4M
