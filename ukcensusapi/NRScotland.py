@@ -11,6 +11,29 @@ import requests
 
 import ukcensusapi.utils as utils
 
+# workaround for apparent bug in later versions of openssl (e.g. 1.1.1f on ubuntu focal)
+# that causes this issue: https://github.com/virgesmith/UKCensusAPI/issues/48
+def _ssl_get_workaround(url):
+  import ssl
+  from urllib3 import poolmanager
+  import warnings
+  # suppress ResourceWarning: unclosed <ssl.SSLSocket...
+  warnings.filterwarnings(action='ignore', category=ResourceWarning, message="unclosed <ssl.SSLSocket.*>")
+  class TLSAdapter(requests.adapters.HTTPAdapter):
+    def init_poolmanager(self, connections, maxsize, block=False):
+      """Create and initialize the urllib3 PoolManager."""
+      ctx = ssl.create_default_context()
+      ctx.set_ciphers('DEFAULT@SECLEVEL=1')
+      self.poolmanager = poolmanager.PoolManager(
+        num_pools=connections,
+        maxsize=maxsize,
+        block=block,
+        ssl_version=ssl.PROTOCOL_TLS,
+        ssl_context=ctx)
+  session = requests.session()
+  session.mount('https://', TLSAdapter())
+  return session.get(url)
+
 # Geographical area (EW equivalents)
 # Council area (LAD)
 # Intermediate zone (MSOA) ??
@@ -75,16 +98,17 @@ class NRScotland:
     # checks exists and is writable, creates if necessary
     self.cache_dir = utils.init_cache_dir(cache_dir)
 
-    self.offline_mode = not utils.check_online("https://www.scotlandscensus.gov.uk/ods-web/data-warehouse.html")
-    if self.offline_mode:
-      print("Unable to contact %s, operating in offline mode - pre-cached data only" % self.URL)
+    # self.offline_mode = not utils.check_online("https://www.scotlandscensus.gov.uk/ods-web/data-warehouse.html")
+    # if self.offline_mode:
+    #   print("Unable to contact %s, operating in offline mode - pre-cached data only" % self.URL)
 
     # download the lookup if not present
     lookup_file = self.cache_dir / "sc_lookup.csv"
     if not os.path.isfile(str(lookup_file)):
       lookup_url = "https://www2.gov.scot/Resource/0046/00462936.csv"
-      response = requests.get(lookup_url)
-      response.raise_for_status()
+      # response = requests.get(lookup_url)
+      # response.raise_for_status()
+      response = _ssl_get_workaround(lookup_url)
       with open(str(lookup_file), 'wb') as fd:
         for chunk in response.iter_content(chunk_size=1024):
           fd.write(chunk)
