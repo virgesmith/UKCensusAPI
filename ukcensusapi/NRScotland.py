@@ -106,38 +106,39 @@ class NRScotland:
     lookup_file = self.cache_dir / "sc_lookup.csv"
     if not os.path.isfile(str(lookup_file)):
 
-      oa_url = 'https://www.nrscotland.gov.uk/files//geography/2011-census/OA_DZ_IZ_2011.xlsx'
-      oa_headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:92.0) Gecko/20100101 Firefox/92.0'}
-      dz_url = 'https://statistics.gov.scot/downloads/file?id=262273ad-fd69-433f-982f-472f895a8a1b%2FDatazone2011lookup.csv'
+      oa_lad_url = 'https://www.nrscotland.gov.uk/files/geography/2011-census/geog-2011-cen-supp-info-oldoa-newoa-lookup.xls'
+      oa_dz_iz_url = 'https://www.nrscotland.gov.uk/files//geography/2011-census/OA_DZ_IZ_2011.xlsx'
+      headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:92.0) Gecko/20100101 Firefox/92.0'}
 
-      response = requests.get(oa_url, headers=oa_headers)
-      response.raise_for_status()
+      response = requests.get(oa_lad_url, headers=headers)
+      print(response.status_code)
+      with open(str(self.cache_dir / 'oldoa-newoa-lookup.xls'), 'wb') as fd:
+        for chunk in response.iter_content(chunk_size=1024):
+          fd.write(chunk)
 
+      response = requests.get(oa_dz_iz_url, headers=headers)
+      print(response.status_code)
       with open(str(self.cache_dir / 'OA_DZ_IZ_2011.xlsx'), 'wb') as fd:
         for chunk in response.iter_content(chunk_size=1024):
           fd.write(chunk)
 
-      response2 = requests.get(dz_url)
-      response2.raise_for_status()
-
-      with open(str(self.cache_dir / 'data_zone_lookup.csv'), 'wb') as fd:
-        for chunk in response2.iter_content(chunk_size=1024):
-          fd.write(chunk)
-
       # Now read in files and drop cols from dz
-      oa = pd.read_excel(self.cache_dir / 'OA_DZ_IZ_2011.xlsx', sheet_name=0, header=0)
-      dz = pd.read_csv(self.cache_dir / 'data_zone_lookup.csv')
-      dz = dz.loc[:, ['DZ2011_Code', 'LA_Code']]
+      oa_lad = pd.read_excel(self.cache_dir / 'oldoa-newoa-lookup.xls')
+      dz_iz = pd.read_excel(self.cache_dir / 'OA_DZ_IZ_2011.xlsx', sheet_name=0, header=0)
+      oa_lad = oa_lad.loc[:,['OutputArea2011Code', 'CouncilArea2011Code']]
       # merge
-      combined = oa.merge(right=dz,
-                          how='inner',
-                          left_on='DataZone2011Code',
-                          right_on='DZ2011_Code')
-      # drop extra DZ column and write to file
-      combined.drop(labels='DZ2011_Code', axis=1, inplace=True)
+      combined = oa_lad.merge(right=dz_iz,
+                              how='inner',
+                              left_on='OutputArea2011Code',
+                              right_on='OutputArea2011Code')
+      # reorder and rename columns
+      # reorder columns
+      combined = combined[['OutputArea2011Code', 'DataZone2011Code', 'IntermediateZone2011Code', 'CouncilArea2011Code']]
+      combined.columns = ["OutputArea", "DataZone", "InterZone", "Council"]
+      # write to file and delete intermediate files
       combined.to_csv(self.cache_dir / 'sc_lookup.csv', index=False)
       os.remove(self.cache_dir / 'OA_DZ_IZ_2011.xlsx')
-      os.remove(self.cache_dir / 'data_zone_lookup.csv')
+      os.remove(self.cache_dir / 'oldoa-newoa-lookup.xls')
       # lookup_url = "https://www2.gov.scot/Resource/0046/00462936.csv"
       # response = requests.get(lookup_url)
       # response.raise_for_status()
