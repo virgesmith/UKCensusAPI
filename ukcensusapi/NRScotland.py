@@ -32,7 +32,6 @@ def _ssl_get_workaround(url, headers):
         ssl_context=ctx)
   session = requests.session()
   session.mount('https://', TLSAdapter())
-  #session.headers.update(headers)
   return session.get(url, headers=headers)
 
 # Geographical area (EW equivalents)
