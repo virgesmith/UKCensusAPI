@@ -107,7 +107,7 @@ class NRScotland:
     # download the lookup if not present
     lookup_file = self.cache_dir / "sc_lookup.csv"
     if not os.path.isfile(str(lookup_file)):
-      self.__make_sc_lookup()
+      self.make_sc_lookup()
 
     self.area_lookup = pd.read_csv(str(self.cache_dir / "sc_lookup.csv"))
 
@@ -291,7 +291,7 @@ class NRScotland:
       print("OK")
     return zip
 
-  def __make_sc_lookup(self):
+  def make_sc_lookup(self):
     """
     Generates sc_lookup file if not already in cache directory.
     Generates from two separate lookup files from this page on nrscotland:
