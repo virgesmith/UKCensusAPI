@@ -1,6 +1,6 @@
 # UK Census Data API
 
-[![Build Status](https://travis-ci.org/virgesmith/UKCensusAPI.png?branch=master)](https://travis-ci.org/virgesmith/UKCensusAPI) [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://app.travis-ci.com/virgesmith/UKCensusAPI.svg?branch=master)](https://app.travis-ci.com/virgesmith/UKCensusAPI) [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
 [![JOSS status](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a/status.svg)](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a)
 [![DOI](https://zenodo.org/badge/99702514.svg)](https://zenodo.org/badge/latestdoi/99702514)
 [![PyPI version](https://badge.fury.io/py/ukcensusapi.svg)](https://badge.fury.io/py/ukcensusapi)
@@ -14,15 +14,15 @@
 > ### Scotland
 > For Scotland, data can be downloaded at country or Council Area (~LAD) level, at geographical resolutions of Council Area, Data Zone (~LSOA) and Output Area. Intermediate Area (~MSOA) data can be aggregated (only) where the data is available at a higher geographical resolution.
 
-> The principal functions are `NRScotland.get_metadata()` for metadata, `NRScotland.get_data()` for the actual data, and `NRScotland.contextify()` to annotate the data using the metadata. 
+> The principal functions are `NRScotland.get_metadata()` for metadata, `NRScotland.get_data()` for the actual data, and `NRScotland.contextify()` to annotate the data using the metadata.
 
 > **NB The OA-level Scotland data is provided in a zip compression format (deflate64) that python cannot extract. If this data is requested, you'll get an error message containing instructions on how to fix the issue by manually extracting the file(s) using unzip or 7zip.**
 
 > ### Northern Ireland
 > For Northern Ireland, data can be downloaded at country or Local Government District (~LAD) level, at geographical resolutions of Super Output Area (~LSOA) and Small Area (OA). Ward (~MSOA) (~MSOA) data can be aggregated (only) where the data is available at higher geographical resolution.
-> The principal functions are `NISRA.get_metadata()` for metadata, `NISRA.get_data()` for the actual data, and `NISRA.contextify()` to annotate the data using the metadata. 
- 
-[Nomisweb](https://www.nomisweb.co.uk), run by Durham University, provides online access to the most detailed and up-to-date statistics from official sources for local areas throughout the UK, including census data.  
+> The principal functions are `NISRA.get_metadata()` for metadata, `NISRA.get_data()` for the actual data, and `NISRA.contextify()` to annotate the data using the metadata.
+
+[Nomisweb](https://www.nomisweb.co.uk), run by Durham University, provides online access to the most detailed and up-to-date statistics from official sources for local areas throughout the UK, including census data.
 
 This package provides both a `python` and an `R` wrapper around the nomisweb census data API, the NRScotland and NISRA websites, enabling:
 
@@ -34,7 +34,7 @@ This package provides both a `python` and an `R` wrapper around the nomisweb cen
 
 Queries can be customised on geographical coverage, geographical resolution, and table fields, the latter can be filtered to include only the category values you require.
 
-The package can generate reusable code snippets that can be inserted into applications. Such applications will work seamlessly for any user as long as they have installed this package, and possess their own nomisweb API key.   
+The package can generate reusable code snippets that can be inserted into applications. Such applications will work seamlessly for any user as long as they have installed this package, and possess their own nomisweb API key.
 
 Since census data is essentially static, it makes little sense to download the data every time it is requested: all data downloads are cached.
 
@@ -51,7 +51,7 @@ Example code is also provided which:
 
 ### API key
 
-It is recommended that you register with [nomisweb](https://www.nomisweb.co.uk) before using this package and use the API key the supply you in all queries. Without a key, queries will be truncated (max 25000 rows). With a key, the row limit is 1000000 and this package will warn if a query generates data with this number of rows. 
+It is recommended that you register with [nomisweb](https://www.nomisweb.co.uk) before using this package and use the API key the supply you in all queries. Without a key, queries will be truncated (max 25000 rows). With a key, the row limit is 1000000 and this package will warn if a query generates data with this number of rows.
 
 Once registered, you will find your API key on [this page](https://www.nomisweb.co.uk/myaccount/webservice.asp). You should not divulge this key to others.
 
@@ -82,15 +82,15 @@ $ conda install -c conda-forge ukcensusapi
 ### python (from github)
 ```
 user@host:~$ pip install git+https://github.com/virgesmith/UKCensusAPI.git
-``` 
+```
 ### python (from cloned repo):
 ```
 user@host:~/dev/UKCensusAPI$ ./setup.py install
-``` 
+```
 and to test
 ```
 user@host:~/dev/UKCensusAPI$ ./setup.py test
-``` 
+```
 ### R
 ```
 > devtools::install_github("virgesmith/UKCensusAPI")
@@ -120,7 +120,7 @@ Queries have three distinct subtypes:
 
 Data and metadata are cached locally to minimise requests to the data providers.
 
-Using the interactive query builder, and a known table, you can construct a programmatically reusable query selecting categories, specific category values, and (optionally) geography, See example below. 
+Using the interactive query builder, and a known table, you can construct a programmatically reusable query selecting categories, specific category values, and (optionally) geography, See example below.
 
 Queries can subsequently be programmatically modified to switched to a different geographical region and/or resolution.
 
@@ -141,7 +141,7 @@ An API key must be specified (see [above](#api-key)) unless the `--no-api-key` f
 The script will produce the following files (in the supplied cache directory):
 
 - a json file containing the table metadata
-- python and R code snippets that build the query and call this package to download the data 
+- python and R code snippets that build the query and call this package to download the data
 - (optionally, depending on above selections) the data itself
 
 The code snippets are designed to be copy/pasted into user code. The (cached) data and metadata can simply be loaded by user code as required.
@@ -152,7 +152,7 @@ Note for R users - there is no direct R script for the interactive query largely
 
 Existing cached data is always used in preference to downloading. The data is stored locally using a filename based on the table name and md5 hash of the query used to download the data. This way, different queries on the same table can be stored.
 
-To force the data to be downloaded, just delete the cached data. 
+To force the data to be downloaded, just delete the cached data.
 
 ### Query Reuse
 
@@ -160,7 +160,7 @@ The code snippets can simply be inserted into user code, and the metadata (json)
 
 ### Switching Geography
 
-Existing queries can easily be modified to switch to a different geographical area and/or a different geographical resolution. 
+Existing queries can easily be modified to switch to a different geographical area and/or a different geographical resolution.
 
 This allows, for example, users to write models where the geographical coverage and resolution can be user inputs.
 
@@ -168,7 +168,7 @@ Examples of how to do this are in [`geoquery.py`](inst/examples/geoquery.py) and
 
 ### Annotating Data
 
-Queries will download data with a minimal memory footprint, but also metadata that provides meaning. Whilst this makes manipulating and querying the data efficient, it means that the data itself lacks human-readability. For this reason the package provides a way of annotating tables with contextual data derived from the table metadata. 
+Queries will download data with a minimal memory footprint, but also metadata that provides meaning. Whilst this makes manipulating and querying the data efficient, it means that the data itself lacks human-readability. For this reason the package provides a way of annotating tables with contextual data derived from the table metadata.
 
 Examples of how to do this are in [`contextify.py`](inst/examples/contextify.py) and [`contextify.R`](inst/examples/contextify.R).
 
@@ -272,7 +272,7 @@ TYPE499 countries
 Select Resolution: <b>TYPE297</b>
 </pre>
 
-You will then be prompted to choose whether to download the data immediately. If so, the query builder assembles the query and computes an md5 hash of it. It then checks the cache directory if a file with this name exists and will load the data from the file if so. If not, the query builder downloads the data and save the data in the cache directory. 
+You will then be prompted to choose whether to download the data immediately. If so, the query builder assembles the query and computes an md5 hash of it. It then checks the cache directory if a file with this name exists and will load the data from the file if so. If not, the query builder downloads the data and save the data in the cache directory.
 ```
 Get data now? (y/N): y
 
@@ -418,7 +418,7 @@ Users can then copy and paste the generated code snippets into their models, mod
   }
 }
 ```
-If you've selected to download the data, a tsv file (like csv but with a tab separator) called `KS401EW_8a13b34bade69f230b62ce0875c47437.tsv` will be saved in the cache directory: 
+If you've selected to download the data, a tsv file (like csv but with a tab separator) called `KS401EW_8a13b34bade69f230b62ce0875c47437.tsv` will be saved in the cache directory:
 
 ```
 "GEOGRAPHY_CODE"	"CELL"	"OBS_VALUE"
