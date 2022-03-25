@@ -43,3 +43,5 @@ jobs:
     - name: Test with unittest
       run: |
         python setup.py test
+      env:
+        NOMiS_AI_KEY: ${{ secrets.NOMiS_API_KEY }}
