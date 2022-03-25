@@ -26,6 +26,5 @@ setuptools.setup(name='ukcensusapi',
     "Operating System :: OS Independent",
   ),
   scripts=['inst/scripts/ukcensus-query'],
-  test_suite='nose.collector',
-  tests_require=['nose'],
+  tests_require=['pytest'],
 )

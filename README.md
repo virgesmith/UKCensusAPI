@@ -1,11 +1,13 @@
 # UK Census Data API
 
-[![Build Status](https://app.travis-ci.com/virgesmith/UKCensusAPI.svg?branch=master)](https://app.travis-ci.com/virgesmith/UKCensusAPI) [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
-[![JOSS status](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a/status.svg)](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a)
+[![PyPI version](https://badge.fury.io/py/ukcensusapi.svg)](https://badge.fury.io/py/ukcensusapi) [![Anaconda-Server Badge](https://anaconda.org/conda-forge/ukcensusapi/badges/version.svg)](https://anaconda.org/conda-forge/ukcensusapi) [![Anaconda-Server Badge](https://anaconda.org/conda-forge/ukcensusapi/badges/downloads.svg)](https://anaconda.org/conda-forge/ukcensusapi)
+
+[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)[![JOSS status](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a/status.svg)](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a)
 [![DOI](https://zenodo.org/badge/99702514.svg)](https://zenodo.org/badge/latestdoi/99702514)
-[![PyPI version](https://badge.fury.io/py/ukcensusapi.svg)](https://badge.fury.io/py/ukcensusapi)
-[![Anaconda-Server Badge](https://anaconda.org/conda-forge/ukcensusapi/badges/version.svg)](https://anaconda.org/conda-forge/ukcensusapi)
-[![Anaconda-Server Badge](https://anaconda.org/conda-forge/ukcensusapi/badges/downloads.svg)](https://anaconda.org/conda-forge/ukcensusapi)
+
+[![Python (pip) build](https://github.com/virgesmith/UKCensusAPI/actions/workflows/py-build-test.yml/badge.svg)](https://github.com/virgesmith/UKCensusAPI/actions/workflows/py-build-test.yml)
+[![R-CMD-check](https://github.com/virgesmith/UKCensusAPI/actions/workflows/R-build-test.yml/badge.svg)](https://github.com/virgesmith/UKCensusAPI/actions/workflows/R-build-test.yml)
+
 > ## Update
 > This package has been something of a misnomer as it only used Nomisweb as its data source, which only provides full census data for England & Wales. (They do provide some UK key statistics and quick statistics tables).
 
@@ -67,49 +69,65 @@ Initialisation will fail if the key is not defined in one of these locations. No
 
 ## Installation
 
-### python (from PyPI)
+### python release (from PyPI)
+
+```sh
+pip install UKCensusAPI
 ```
-user@host:~$ python3 -m pip install UKCensusAPI
+
+(NB This will install only the core package without the examples.)
+
+### python release (from conda-forge)
+
+```sh
+conda install -c conda-forge ukcensusapi
 ```
 (NB This will install only the core package without the examples.)
 
-### python (from conda-forge)
-```bash
-$ conda install -c conda-forge ukcensusapi
-```
-(NB This will install only the core package without the examples.)
+### python main branch (from github)
 
-### python (from github)
+```sh
+pip install git+https://github.com/virgesmith/UKCensusAPI.git
 ```
-user@host:~$ pip install git+https://github.com/virgesmith/UKCensusAPI.git
+
+or for local development, clone and separately install:
+
+```sh
+git clone git+https://github.com/<your-fork>/UKCensusAPI.git
+pip install -e .
 ```
-### python (from cloned repo):
+
+To test:
+
+```sh
+pytest
 ```
-user@host:~/dev/UKCensusAPI$ ./setup.py install
-```
-and to test
-```
-user@host:~/dev/UKCensusAPI$ ./setup.py test
-```
+
 ### R
-```
+
+```R
 > devtools::install_github("virgesmith/UKCensusAPI")
 ```
+
 Set the `RETICULATE_PYTHON` environment variable in your .Renviron file to the python3 interpreter, e.g. (for linux)
-```
+
+```sh
 RETICULATE_PYTHON=$(which python3)
 ```
 
 ## Usage
 
 In your Python code import the package like e.g.:
-```
+
+```py
 import ukcensusapi.Nomisweb as census_api
 ```
 And in R:
-```
+
+```R
 library(UKCensusAPI)
 ```
+
 ### Queries
 
 Queries have three distinct subtypes:
