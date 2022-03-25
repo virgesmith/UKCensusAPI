@@ -1,11 +1,13 @@
 # UK Census Data API
 
-[![Build Status](https://app.travis-ci.com/virgesmith/UKCensusAPI.svg?branch=master)](https://app.travis-ci.com/virgesmith/UKCensusAPI) [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
-[![JOSS status](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a/status.svg)](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a)
+[![PyPI version](https://badge.fury.io/py/ukcensusapi.svg)](https://badge.fury.io/py/ukcensusapi) [![Anaconda-Server Badge](https://anaconda.org/conda-forge/ukcensusapi/badges/version.svg)](https://anaconda.org/conda-forge/ukcensusapi) [![Anaconda-Server Badge](https://anaconda.org/conda-forge/ukcensusapi/badges/downloads.svg)](https://anaconda.org/conda-forge/ukcensusapi)
+
+[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)[![JOSS status](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a/status.svg)](http://joss.theoj.org/papers/40041a0ebb1364286d5eb144d333bb6a)
 [![DOI](https://zenodo.org/badge/99702514.svg)](https://zenodo.org/badge/latestdoi/99702514)
-[![PyPI version](https://badge.fury.io/py/ukcensusapi.svg)](https://badge.fury.io/py/ukcensusapi)
-[![Anaconda-Server Badge](https://anaconda.org/conda-forge/ukcensusapi/badges/version.svg)](https://anaconda.org/conda-forge/ukcensusapi)
-[![Anaconda-Server Badge](https://anaconda.org/conda-forge/ukcensusapi/badges/downloads.svg)](https://anaconda.org/conda-forge/ukcensusapi)
+
+[![Python (pip) build](https://github.com/virgesmith/UKCensusAPI/actions/workflows/py-build-test.yml/badge.svg)](https://github.com/virgesmith/UKCensusAPI/actions/workflows/py-build-test.yml)
+[![R-CMD-check](https://github.com/virgesmith/UKCensusAPI/actions/workflows/R-build-test.yml/badge.svg)](https://github.com/virgesmith/UKCensusAPI/actions/workflows/R-build-test.yml)
+
 > ## Update
 > This package has been something of a misnomer as it only used Nomisweb as its data source, which only provides full census data for England & Wales. (They do provide some UK key statistics and quick statistics tables).
 
