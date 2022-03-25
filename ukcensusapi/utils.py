@@ -3,10 +3,7 @@ Common utility/helpers
 """
 import os
 from pathlib import Path
-from urllib import request
-from urllib.error import HTTPError
-from urllib.error import URLError
-from socket import timeout
+import requests
 
 def _expand_home(path):
   """
@@ -36,7 +33,9 @@ def init_cache_dir(directory):
 
 def check_online(url, t=5):
   try:
-    request.urlopen(url, timeout=t)
+    headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:92.0) Gecko/20100101 Firefox/92.0'}
+    r = requests.get(url, timeout=t, headers=headers)
+    r.raise_for_status()
     return True
-  except (HTTPError, URLError, timeout) as error:
+  except (requests.exceptions.RequestException) as error:
     return False
