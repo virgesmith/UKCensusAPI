@@ -28,9 +28,9 @@ class Test(TestCase):
     self.assertTrue(self.api_ew.get_lad_codes(["Leeds", "Bradford"]) == [1946157127, 1946157124])
 
   def test_cache_dir_invalid(self):
-    self.assertRaises(PermissionError, Api_EW.Nomisweb, "/home/invalid")
-    self.assertRaises(PermissionError, Api_SC.NRScotland, "/bin")
-    self.assertRaises(PermissionError, Api_NI.NISRA, "/bin/ls")
+    self.assertRaises((OSError, PermissionError), Api_EW.Nomisweb, "/home/invalid")
+    self.assertRaises((OSError, PermissionError), Api_SC.NRScotland, "/bin")
+    self.assertRaises((OSError, PermissionError), Api_NI.NISRA, "/bin/ls")
 
   # This overlaps test_getGeographyFromCodes
   def test_geo_codes_ew(self):
@@ -71,10 +71,10 @@ class Test(TestCase):
 
   def test_geo_codes_ni(self):
     # NI data
-    lads = ['95AA', '95BB', '95CC', '95DD', '95EE', '95FF', '95GG', '95HH', '95II', '95JJ', '95KK', '95LL', '95MM', 
+    lads = ['95AA', '95BB', '95CC', '95DD', '95EE', '95FF', '95GG', '95HH', '95II', '95JJ', '95KK', '95LL', '95MM',
             '95NN', '95OO', '95PP', '95QQ', '95RR', '95SS', '95TT', '95UU', '95VV', '95WW', '95XX', '95YY', '95ZZ']
 
-    msoa_95aa = ['95AA01', '95AA02', '95AA03', '95AA04', '95AA05', '95AA06', '95AA07', '95AA08', '95AA09', '95AA10', '95AA11', '95AA12', 
+    msoa_95aa = ['95AA01', '95AA02', '95AA03', '95AA04', '95AA05', '95AA06', '95AA07', '95AA08', '95AA09', '95AA10', '95AA11', '95AA12',
                  '95AA13', '95AA14', '95AA15', '95AA16', '95AA17', '95AA18', '95AA19']
     lsoa_95aa = ['95AA01S1', '95AA01S2', '95AA01S3', '95AA02W1', '95AA03W1', '95AA04W1', '95AA05W1', '95AA06S1', '95AA06S2', '95AA07W1', '95AA08W1',
                  '95AA09W1', '95AA10W1', '95AA11S1', '95AA11S2', '95AA12W1', '95AA13S1', '95AA13S2', '95AA14W1', '95AA15S1', '95AA15S2', '95AA16W1',
@@ -276,7 +276,7 @@ class Test(TestCase):
     query_params["MEASURES"] = "20100"
 
     self.query.write_code_snippets(table, meta, query_params)
-    self.assertTrue(os.system("python3 " + str(self.api_ew.cache_dir / (table + ".py"))) == 0)
+    self.assertTrue(os.system("python " + str(self.api_ew.cache_dir / (table + ".py"))) == 0)
     # fails on travis because R isnt installed
     #self.assertTrue(os.system("Rscript " + self.api.cache_dir + table + ".R") == 0)
 

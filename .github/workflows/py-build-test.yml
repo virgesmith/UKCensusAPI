@@ -5,12 +5,11 @@ name: Python (pip) build
 
 on:
   push:
-    branches: [ '**' ]
+    branches: [ main ]
     tags: '**'
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
   schedule:
-    # 4:00 every saturday
     - cron:  '0 5 * * SAT'
 
 jobs:
