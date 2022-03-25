@@ -44,4 +44,4 @@ jobs:
       run: |
         python setup.py test
       env:
-        NOMiS_AI_KEY: ${{ secrets.NOMiS_API_KEY }}
+        NOMiS_API_KEY: ${{ secrets.NOMiS_API_KEY }}
