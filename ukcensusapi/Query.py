@@ -115,13 +115,13 @@ class Query:
     coverage = input("\nGeographical coverage\nE/EW/GB/UK or LAD codes(s)/name(s), comma separated: ")
 
     if coverage == "E":
-      coverage_codes = [Api.Nomisweb.GeoCodeLookup["England"]]
+      coverage_codes = [ApiEW.Nomisweb.GeoCodeLookup["England"]]
     elif coverage == "EW":
-      coverage_codes = [Api.Nomisweb.GeoCodeLookup["EnglandWales"]]
+      coverage_codes = [ApiEW.Nomisweb.GeoCodeLookup["EnglandWales"]]
     elif coverage == "GB":
-      coverage_codes = [Api.Nomisweb.GeoCodeLookup["GB"]]
+      coverage_codes = [ApiEW.Nomisweb.GeoCodeLookup["GB"]]
     elif coverage == "UK":
-      coverage_codes = [Api.Nomisweb.GeoCodeLookup["UK"]]
+      coverage_codes = [ApiEW.Nomisweb.GeoCodeLookup["UK"]]
     else:
       coverage_codes = self.api.get_lad_codes(coverage.split(","))
 
