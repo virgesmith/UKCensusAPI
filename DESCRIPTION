@@ -12,6 +12,6 @@ Depends: R (>= 3.3.3)
 Imports:
   reticulate,
   testthat,
-License: MIT + file LICENCE
+License: MIT + file LICENCE.md
 Encoding: UTF-8
 RoxygenNote: 7.0.2
