@@ -43,12 +43,12 @@ def test_cache_dir_invalid():
 
 # This overlaps test_getGeographyFromCodes
 def test_geo_codes_ew(api_ew):
-  result = api_ew.get_geo_codes([Api_EW.Nomisweb.GeoCodeLookup["EnglandWales"]], Api_EW.Nomisweb.GeoCodeLookup["LAD"])
+  result = api_ew.get_geo_codes([Api_EW.Nomisweb.GEOCODE_LOOKUP["EnglandWales"]], Api_EW.Nomisweb.GEOCODE_LOOKUP["LAD"])
   assert result == '1946157057...1946157404'
-  result = api_ew.get_geo_codes([1946157127], Api_EW.Nomisweb.GeoCodeLookup["OA11"])
+  result = api_ew.get_geo_codes([1946157127], Api_EW.Nomisweb.GEOCODE_LOOKUP["OA11"])
   assert result == '1254151943...1254154269,1254258198...1254258221,1254261711...1254261745,1254261853...1254261870,1254261894...1254261918,1254262125...1254262142,1254262341...1254262353,1254262394...1254262398,1254262498...1254262532,1254262620...1254262658,1254262922...1254262925'
   # test 2001 codes
-  result = api_ew.get_geo_codes([1946157127], Api_EW.Nomisweb.GeoCodeLookup["MSOA01"])
+  result = api_ew.get_geo_codes([1946157127], Api_EW.Nomisweb.GEOCODE_LOOKUP["MSOA01"])
   assert result == '1279265050...1279265157'
 
 
@@ -261,21 +261,21 @@ def test_get_and_add_descriptive_column(api_ew):
 
 
 def test_get_geog_from_names(query):
-  result = query.get_geog_from_names(["Leeds"], Api_EW.Nomisweb.GeoCodeLookup["OA11"])
+  result = query.get_geog_from_names(["Leeds"], Api_EW.Nomisweb.GEOCODE_LOOKUP["OA11"])
   assert result == '1254151943...1254154269,1254258198...1254258221,1254261711...1254261745,1254261853...1254261870,1254261894...1254261918,1254262125...1254262142,1254262341...1254262353,1254262394...1254262398,1254262498...1254262532,1254262620...1254262658,1254262922...1254262925'
 
   # same, but query with ONS code
-  result = query.get_geog_from_names(["E08000035"], Api_EW.Nomisweb.GeoCodeLookup["OA11"])
+  result = query.get_geog_from_names(["E08000035"], Api_EW.Nomisweb.GEOCODE_LOOKUP["OA11"])
   assert result == '1254151943...1254154269,1254258198...1254258221,1254261711...1254261745,1254261853...1254261870,1254261894...1254261918,1254262125...1254262142,1254262341...1254262353,1254262394...1254262398,1254262498...1254262532,1254262620...1254262658,1254262922...1254262925'
 
-  result = query.get_geog_from_names(["Newcastle upon Tyne"], Api_EW.Nomisweb.GeoCodeLookup["LSOA11"])
+  result = query.get_geog_from_names(["Newcastle upon Tyne"], Api_EW.Nomisweb.GEOCODE_LOOKUP["LSOA11"])
   assert result == '1249910667...1249910832,1249935220...1249935228'
 
-  result = query.get_geog_from_names(["Leeds", "Bradford"], Api_EW.Nomisweb.GeoCodeLookup["MSOA11"])
+  result = query.get_geog_from_names(["Leeds", "Bradford"], Api_EW.Nomisweb.GEOCODE_LOOKUP["MSOA11"])
   assert result == '1245710411...1245710471,1245710558...1245710660,1245714998...1245714998,1245715007...1245715007,1245715021...1245715022'
 
 def test_get_geog_from_codes(query):
-  result = query.api.get_geo_codes([Api_EW.Nomisweb.GeoCodeLookup["EnglandWales"]], Api_EW.Nomisweb.GeoCodeLookup["LAD"])
+  result = query.api.get_geo_codes([Api_EW.Nomisweb.GEOCODE_LOOKUP["EnglandWales"]], Api_EW.Nomisweb.GEOCODE_LOOKUP["LAD"])
   assert result == '1946157057...1946157404'
 
 # test example code
