@@ -2,13 +2,14 @@ __version__ = "1.1.6"
 
 from abc import ABC, abstractmethod
 from typing import Any
-
+from pathlib import Path
 import pandas as pd  # type: ignore
-
 
 class CensusAPI(ABC):
 
   URL: str
+
+  CACHE_DIR = Path.home() / ".cache/UKCensusAPI"
 
   @abstractmethod
   def get_geo_codes(self, la_codes: list[str], code_type: str) -> str:

@@ -2,18 +2,20 @@
 Data scraper for Scottish 2011 census Data
 """
 
+from typing import Any, Optional
 import os.path
 from pathlib import Path
 import urllib.parse
 import zipfile
 import pandas as pd
 import requests
+from functools import lru_cache
 
 import ukcensusapi.utils as utils
 
 # workaround for apparent bug in later versions of openssl (e.g. 1.1.1f on ubuntu focal)
 # that causes this issue: https://github.com/virgesmith/UKCensusAPI/issues/48
-def _ssl_get_workaround(url, headers):
+def _ssl_get_workaround(url: str, headers: dict[str, str]) -> Any:
   import ssl
   from urllib3 import poolmanager
   import warnings
@@ -90,7 +92,7 @@ class NRScotland:
   SCGeoCodes = [ "CA", "DZ", "OA" ]
 
   # initialise, supplying a location to cache downloads
-  def __init__(self, cache_dir):
+  def __init__(self, cache_dir: str):
     """Constructor.
     Args:
         cache_dir: cache directory
@@ -102,11 +104,11 @@ class NRScotland:
 
     self.offline_mode = not utils.check_online(self.URL1)
     if self.offline_mode:
-     print("Unable to contact %s, operating in offline mode - pre-cached data only" % self.URL1)
+      print("Unable to contact {self.URL1}, operating in offline mode - pre-cached data only")
 
     # download the lookup if not present
     lookup_file = self.cache_dir / "sc_lookup.csv"
-    if not os.path.isfile(str(lookup_file)):
+    if not lookup_file.exists():
       self.make_sc_lookup()
 
     self.area_lookup = pd.read_csv(str(self.cache_dir / "sc_lookup.csv"))
@@ -166,7 +168,7 @@ class NRScotland:
 
     col_index = 1
     while raw_cols[col_index][:8] == "Unnamed:":
-      # lists format better than numpy arrays 
+      # lists format better than numpy arrays
       fields[table + "_" + str(col_index) + "_CODE"] = raw_data[raw_cols[col_index]].unique().tolist()
       col_index = col_index + 1
 
@@ -181,13 +183,13 @@ class NRScotland:
     return (meta, raw_data)
     #print(data.head())
 
-  
-  
+
+
   def get_data(self, table, coverage, resolution, category_filters={}, r_compat=False):
     """
     Returns a table with categories in columns, filtered by geography and (optionally) category values
     If r_compat==True, instead of returning a pandas dataframe it returns a dict raw value data and column names
-    that can be converted into an R data.frame 
+    that can be converted into an R data.frame
     """
 
     # No data is available for Intermediate zones (~MSOA) so we get Data Zone (LSOA) then aggregate
@@ -337,3 +339,8 @@ class NRScotland:
     combined.to_csv(self.cache_dir / 'sc_lookup.csv', index=False)
     os.remove(self.cache_dir / 'OA_DZ_IZ_2011.xlsx')
     os.remove(self.cache_dir / 'oldoa-newoa-lookup.xls')
+
+
+@lru_cache(maxsize=1)
+def api_sc(*, cache_dir: Optional[str]=None) -> NRScotland:
+  return NRScotland(cache_dir=cache_dir)

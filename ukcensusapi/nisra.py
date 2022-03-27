@@ -1,15 +1,17 @@
 """
 Northern Ireland
 """
-
+from typing import Optional
 import os.path
 from pathlib import Path
 import urllib.parse
 import zipfile
 import pandas as pd
 import requests
+from functools import lru_cache
 
 import ukcensusapi.utils as utils
+
 
 # assumes all areas in coverage are the same type
 def _coverage_type(code):
@@ -29,6 +31,7 @@ def _coverage_type(code):
   else:
     raise ValueError("Invalid code: {}".format(code))
 
+
 class NISRA:
   """
   Scrapes and refomats NI 2011 census data from NISRA website
@@ -39,7 +42,7 @@ class NISRA:
   # timeout for http requests
   Timeout = 15
 
-  data_sources = ["Detailed Characteristics Tables (statistical geographies).zip", 
+  data_sources = ["Detailed Characteristics Tables (statistical geographies).zip",
                   "Key Statistics Tables (statistical geographies).zip",
                   "Local Characteristic Tables (statistical geographies).zip", # note slight inconsistency in name
                   "Quick Statistics Tables (statistical geographies).zip"]
@@ -53,37 +56,37 @@ class NISRA:
 
   NIGeoCodes = [ "LGD", "WARD", "SOA", "SA" ]
 
-  source_map = { "LC": 2, "DC": 0, "KS": 1, "QS": 3 } 
+  source_map = { "LC": 2, "DC": 0, "KS": 1, "QS": 3 }
 
   res_map = { "SA": "SMALL AREAS", "SOA": "SUPER OUTPUT AREAS"}
 
   LADs = {
-    "95AA":	"Antrim",
-    "95BB":	"Ards",
-    "95CC":	"Armagh",
-    "95DD":	"Ballymena",
-    "95EE":	"Ballymoney",
-    "95FF":	"Banbridge",
-    "95GG":	"Belfast",
-    "95HH":	"Carrickfergus",
-    "95II":	"Castlereagh",
-    "95JJ":	"Coleraine",
-    "95KK":	"Cookstown",
-    "95LL":	"Craigavon",
-    "95MM":	"Derry",
-    "95NN":	"Down",
-    "95OO":	"Dungannon",
-    "95PP":	"Fermanagh",
-    "95QQ":	"Larne",
-    "95RR":	"Limavady",
-    "95SS":	"Lisburn",
-    "95TT":	"Magherafelt",
-    "95UU":	"Moyle",
-    "95VV":	"Newry and Mourne",
-    "95WW":	"Newtownabbey",
-    "95XX":	"North Down",
-    "95YY":	"Omagh",
-    "95ZZ":	"Strabane" 
+    "95AA": "Antrim",
+    "95BB": "Ards",
+    "95CC": "Armagh",
+    "95DD": "Ballymena",
+    "95EE": "Ballymoney",
+    "95FF": "Banbridge",
+    "95GG": "Belfast",
+    "95HH": "Carrickfergus",
+    "95II": "Castlereagh",
+    "95JJ": "Coleraine",
+    "95KK": "Cookstown",
+    "95LL": "Craigavon",
+    "95MM": "Derry",
+    "95NN": "Down",
+    "95OO": "Dungannon",
+    "95PP": "Fermanagh",
+    "95QQ": "Larne",
+    "95RR": "Limavady",
+    "95SS": "Lisburn",
+    "95TT": "Magherafelt",
+    "95UU": "Moyle",
+    "95VV": "Newry and Mourne",
+    "95WW": "Newtownabbey",
+    "95XX": "North Down",
+    "95YY": "Omagh",
+    "95ZZ": "Strabane"
   }
 
     # initialise, supplying a location to cache downloads
@@ -146,7 +149,7 @@ class NISRA:
     raw_meta = pd.read_csv(z.open(NISRA.res_map[resolution]+"/"+table+"DESC0.CSV")) \
                  .drop(["ColumnVariableMeasurementUnit", "ColumnVariableStatisticalUnit"], axis=1)
     # if every field has the same number of commas we split, otherwise assume number of categories
-    # is the minimum. Warn that category names may be messed up 
+    # is the minimum. Warn that category names may be messed up
     commas = raw_meta["ColumnVariableDescription"].str.count(",").unique()
     min_categories = min(commas)
     if len(commas) > 1 and min_categories > 0:
@@ -160,14 +163,14 @@ class NISRA:
       raw_meta.rename({"ColumnVariableDescription": 0}, axis=1, inplace=True)
 
     #raw_meta['ColumnVariableCode'] = raw_meta['ColumnVariableCode'].map(lambda x: int(x[-4:]))
-    raw_meta = raw_meta.set_index("ColumnVariableCode", drop=True) 
+    raw_meta = raw_meta.set_index("ColumnVariableCode", drop=True)
 
     meta = { "table": table,
              "description": "",
              "geography": resolution,
              "fields": {} }
 
-    text_columns = range(0,len(raw_meta.columns)) 
+    text_columns = range(0,len(raw_meta.columns))
     for text_column in text_columns:
       raw_meta[text_column] = raw_meta[text_column].astype("category")
       code_column = table + "_" + str(text_column) + "_CODE"
@@ -213,7 +216,7 @@ class NISRA:
       lookup = pd.Series(lookup[actual_resolution].values, index=lookup[resolution]).to_dict()
       data.GEOGRAPHY_CODE = data.GEOGRAPHY_CODE.map(lookup)
       cols = list(data.columns)
-      # remove acts in-place and has no return value so can't chain it 
+      # remove acts in-place and has no return value so can't chain it
       cols.remove("OBS_VALUE")
       data = data.groupby(cols).sum().reset_index()
 
@@ -263,6 +266,7 @@ class NISRA:
       print("OK")
     return zipfile
 
+
 def _ni_resolution(resolution):
   """
   Maps E&W statistical geography codes to their closest NI equvalents
@@ -276,3 +280,7 @@ def _ni_resolution(resolution):
 
   return NISRA.NIGeoCodes[NISRA.GeoCodeLookup[resolution]]
 
+
+@lru_cache(maxsize=1)
+def api_ni(*, cache_dir: Optional[str]=None) -> NISRA:
+  return NISRA(cache_dir=cache_dir)

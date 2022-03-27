@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 
+from typing import Optional
 import pandas as pd
 
 """
 Example of adding context to a table
 """
 
-import ukcensusapi.Nomisweb as Api
+from ukcensusapi.nomisweb import api_ew
 
-def main():
-  api = Api.Nomisweb("/tmp/UKCensusAPI")
+
+def main(cache_dir: Optional[str]) -> None:
+  api = api_ew(cache_dir=cache_dir)
 
   print("Nomisweb census data geographical query example")
   print("See README.md for details on how to use this package")
@@ -34,4 +36,4 @@ def main():
   ks401.to_csv("/tmp/contextified", sep="\t")
 
 if __name__ == "__main__":
-  main()
+  main() # uses default cache_dir

@@ -1,7 +1,6 @@
 """
 Nomisweb API.
 """
-
 import os
 import json
 import hashlib
@@ -15,6 +14,7 @@ from urllib.error import URLError
 from urllib.parse import urlencode
 from socket import timeout
 import pandas as pd  # type: ignore
+from functools import lru_cache
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -27,11 +27,12 @@ def _get_api_key(cache_dir: Path) -> Optional[str]:
   Look for key in file NOMIS_API_KEY in cache dir, falling back to env var
   """
   filename = cache_dir / "NOMIS_API_KEY"
-  if os.path.isfile(str(filename)):
+  if filename.exists():
     with open(filename, "r") as file:
       content = file.read().splitlines()
       # return 1st line (if present)
-      return None if len(content) == 0 else content[0]
+      if len(content):
+         return content[0]
   return os.getenv("NOMIS_API_KEY")
 
 
@@ -95,11 +96,13 @@ class Nomisweb(CensusAPI):
     "UK": "2092957697"
   }
 
+  cache_dir: Path
+
   cached_lad_codes: Any
 
 
   # initialise, supplying a location to cache downloads
-  def __init__(self, cache_dir: str, verbose: bool=False) -> None:
+  def __init__(self, *, cache_dir: str, verbose: bool=False) -> None:
     """Constructor.
     Args:
         cache_dir: cache directory
@@ -292,7 +295,7 @@ class Nomisweb(CensusAPI):
 
     # Fetch the geographies available for this table
     geogs = {}
-    path = "api/v01/dataset/"+table+"/geography/TYPE.def.sdmx.json?"
+    path = f"api/v01/dataset/{table}/geography/TYPE.def.sdmx.json?"
     try:
       fdata = self.__fetch_json(path, {})
     except timeout:
@@ -431,3 +434,8 @@ class Nomisweb(CensusAPI):
     # convert KEYs on the fly to integers (if they've been loaded from json they will be strings)
     lookup = {int(k): v for k, v in metadata["fields"][column].items()}
     table[column + "_NAME"] = table[column].map(lookup)
+
+
+@lru_cache(maxsize=1)
+def api_ew(*, cache_dir: Optional[str]=None, verbose: bool=False) -> Nomisweb:
+  return Nomisweb(cache_dir=cache_dir, verbose=verbose)

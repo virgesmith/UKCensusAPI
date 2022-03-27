@@ -1,34 +1,23 @@
 """
 Common utility/helpers
 """
-import os
+from typing import Optional
 from pathlib import Path
 import requests
 
-def _expand_home(path):
-  """
-  pathlib doesn't interpret ~/ as $HOME
-  This doesnt deal with other user's homes e.g. ~another/dir is not changed
-  """
-  return Path(str(path).replace("~/", str(Path.home()) + "/"))
 
-def init_cache_dir(directory):
+def init_cache_dir(cache_dir: Optional[str]) -> Path:
   """
   Checks path exists and is a writable directory
   Create if it doesnt exist
   Throw PermissionError if not
   """
-  directory = _expand_home(directory)
+  DEFAULT_CACHE_DIR = "~/.cache/ukcensusapi"
+  if not cache_dir:
+    cache_dir = DEFAULT_CACHE_DIR
 
-  if not os.path.exists(str(directory)):
-    os.makedirs(str(directory))
-  
-  if not os.path.isdir(str(directory)):
-    raise PermissionError(str(directory) + " is not a directory")
-
-  if not os.access(str(directory), os.W_OK):
-    raise PermissionError(str(directory) + " is not writable")
-
+  directory = Path(cache_dir).expanduser()
+  directory.mkdir(parents=True, exist_ok=True)
   return directory
 
 def check_online(url, t=5):
