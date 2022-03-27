@@ -10,14 +10,14 @@ from ukcensusapi.nomisweb import Nomisweb, _shorten
 from ukcensusapi.query import Query #, NRScotland as Api_SC, NISRA as Api_NI, Query as Census
 
 
-def test_get_lad_codes(api_ew):
+def test_get_lad_codes(api_ew: Nomisweb) -> None:
   assert api_ew.get_lad_codes("Royston Vasey") == []
   assert api_ew.get_lad_codes("Leeds") == [1946157127]
   assert api_ew.get_lad_codes(["Leeds", "Bradford"]) == [1946157127, 1946157124]
 
 
 # This overlaps test_getGeographyFromCodes
-def test_geo_codes_ew(api_ew):
+def test_geo_codes_ew(api_ew: Nomisweb) -> None:
   result = api_ew.get_geo_codes([api_ew.GEOCODE_LOOKUP["EnglandWales"]], api_ew.GEOCODE_LOOKUP["LAD"])
   assert result == '1946157057...1946157404'
   result = api_ew.get_geo_codes([1946157127], api_ew.GEOCODE_LOOKUP["OA11"])
@@ -27,7 +27,7 @@ def test_geo_codes_ew(api_ew):
   assert result == '1279265050...1279265157'
 
 
-def test_get_metadata_ew(api_ew):
+def test_get_metadata_ew(api_ew: Nomisweb) -> None:
   meta = api_ew.get_metadata("NONEXISTENT")
   assert not meta
   meta = api_ew.get_metadata("KS401EW")
@@ -39,7 +39,7 @@ def test_get_metadata_ew(api_ew):
   assert meta["nomis_table"] == 'NM_1686_1'
 
 
-def test_get_url(api_ew):
+def test_get_url(api_ew: Nomisweb) -> None:
   table = "NM_618_1"
   query_params = {
     "CELL": "7...13",
@@ -52,7 +52,7 @@ def test_get_url(api_ew):
   assert api_ew.get_url(table, query_params) == "https://www.nomisweb.co.uk/api/v01/dataset/NM_618_1.data.tsv?CELL=7...13&MEASURES=20100&RURAL_URBAN=0&date=latest&geography=1245710558...1245710660%2C1245714998...1245714998%2C1245715007...1245715007%2C1245715021...1245715022&select=GEOGRAPHY_CODE%2CCELL%2COBS_VALUE"
 
 
-def test_get_data_ew(api_ew):
+def test_get_data_ew(api_ew: Nomisweb) -> None:
   table_name = "KS401EW"
 #    table_internal = "NM_618_1"
   query_params = {
@@ -71,8 +71,8 @@ def test_get_data_ew(api_ew):
 #'table': 'QS202NI', 'description': '', 'geography': 'SOA', 'fields': {'QS202NI_0_CODE': {0: 'All Household Reference Persons (HRPs)', 1: 'Ethnic group of HRP: Black', 2: 'Ethnic group of HRP: Chinese', 3: 'Ethnic group of HRP: Mixed', 4: 'Ethnic group of HRP: Other', 5: 'Ethnic group of HRP: Other Asian', 6: 'Ethnic group of HRP: White'}}}
 
 # OD data is structured differently
-def test_get_od_data(api_ew):
-  table = "WF01BEW"
+def test_get_od_data(api_ew: Nomisweb) -> None:
+  table_name = "WF01BEW"
 #    table_internal = "NM_1228_1"
   query_params = {
     "date": "latest",
@@ -82,13 +82,13 @@ def test_get_od_data(api_ew):
     "place_of_work": "1249934756...1249934758,1249934760,1249934761",
     "MEASURES": "20100"
   }
-  table = api_ew.get_data(table, query_params)
+  table = api_ew.get_data(table_name, query_params)
   assert table.shape == (25, 3)
   assert sum(table.OBS_VALUE) == 1791
 
 
 # Projection data doesnt explicitly have a table name - tests directly specifying nomis internal name
-def test_get_proj_data(api_ew):
+def test_get_proj_data(api_ew: Nomisweb) -> None:
   table_internal = "NM_2002_1"
   query_params = {
     "gender": "1,2",
@@ -104,7 +104,7 @@ def test_get_proj_data(api_ew):
   assert sum(table.OBS_VALUE) == 597505
 
 
-def test_get_and_add_descriptive_column(api_ew):
+def test_get_and_add_descriptive_column(api_ew: Nomisweb) -> None:
 
   table_name = "KS401EW"
 
@@ -136,7 +136,7 @@ def test_get_and_add_descriptive_column(api_ew):
   assert table.at[6, "CELL_NAME"] == "Caravan or other mobile or temporary structure"
 
 
-def test_get_geog_from_names():
+def test_get_geog_from_names() -> None:
   from conftest import TEST_CACHE_DIR
   query = Query(TEST_CACHE_DIR)
 
@@ -154,7 +154,7 @@ def test_get_geog_from_names():
   assert result == '1245710411...1245710471,1245710558...1245710660,1245714998...1245714998,1245715007...1245715007,1245715021...1245715022'
 
 
-def test_get_geog_from_codes():
+def test_get_geog_from_codes() -> None:
   from conftest import TEST_CACHE_DIR
   query = Query(TEST_CACHE_DIR)
   result = query.api.get_geo_codes([Nomisweb.GEOCODE_LOOKUP["EnglandWales"]], Nomisweb.GEOCODE_LOOKUP["LAD"])
@@ -162,20 +162,20 @@ def test_get_geog_from_codes():
 
 
 # test example code
-def test_geoquery():
+def test_geoquery() -> None:
   from conftest import TEST_CACHE_DIR
   import inst.examples.geoquery as eg_geo
   eg_geo.main(TEST_CACHE_DIR)
 
 
-def test_contextify():
+def test_contextify() -> None:
   from conftest import TEST_CACHE_DIR
   import inst.examples.contextify as eg_cont
   eg_cont.main(TEST_CACHE_DIR)
 
 
 # just checks code snippet runs ok (i.e. returns 0)
-def test_code_snippet():
+def test_code_snippet() -> None:
   from conftest import TEST_CACHE_DIR
   query = Query(TEST_CACHE_DIR)
 
@@ -196,7 +196,7 @@ def test_code_snippet():
 
 
 # checks the logic to compress a list of nomis geo codes into a shorter form for url
-def test_shorten_codelist():
+def test_shorten_codelist() -> None:
   n = list(range(1,21))
 
   for _ in range(0,100):

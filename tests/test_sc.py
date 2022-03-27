@@ -1,6 +1,8 @@
 import numpy as np
 
-def test_geo_codes_sc(api_sc):
+from ukcensusapi.nrscotland import NRScotland
+
+def test_geo_codes_sc(api_sc: NRScotland) -> None:
   lads = sorted(['S12000033', 'S12000034', 'S12000041', 'S12000035', 'S12000026', 'S12000005',
                   'S12000039', 'S12000006', 'S12000042', 'S12000008', 'S12000045', 'S12000010',
                   'S12000011', 'S12000036', 'S12000014', 'S12000015', 'S12000046', 'S12000017',
@@ -28,7 +30,7 @@ def test_geo_codes_sc(api_sc):
   assert len(result) == 1992
 
 
-def test_get_metadata_sc(api_sc):
+def test_get_metadata_sc(api_sc: NRScotland) -> None:
   # Scotland
   meta = api_sc.get_metadata("KS401SC", "LAD")
   assert meta["table"] == 'KS401SC'
@@ -36,19 +38,20 @@ def test_get_metadata_sc(api_sc):
   assert 'KS401SC_0_CODE' in meta["fields"]
 
 
-def test_get_data_sc(api_sc):
+def test_get_data_sc(api_sc: NRScotland) -> None:
   table_name = "KS401SC"
   geography = "S12000033" # Aberdeen
   categories = { "KS401SC_0_CODE": range(8,15) }
   table = api_sc.get_data(table_name, geography, "LAD", categories)
+  print(table)
   assert table.shape == (7, 3)
   assert sum(table.OBS_VALUE) == 108153
 
   table_name = "DC2101SC"
   geography = "S12000033" # Aberdeen
-  categories = { "DC2101SC_0_CODE": 4, # White Irish
-                 "DC2101SC_1_CODE": [1, 2], # M+F
-                 "DC2101SC_2_CODE": [6, 7, 8, 9, 10, 11, 12] } # 18-49
+  categories = {"DC2101SC_0_CODE": 4, # White Irish
+                "DC2101SC_1_CODE": [1, 2], # M+F
+                "DC2101SC_2_CODE": [6, 7, 8, 9, 10, 11, 12] } # 18-49
   table = api_sc.get_data(table_name, geography, "LAD", categories)
   assert table.shape == (14, 5)
   assert sum(table.OBS_VALUE) == 1732

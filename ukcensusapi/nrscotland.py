@@ -2,16 +2,18 @@
 Data scraper for Scottish 2011 census Data
 """
 
-from typing import Any, Optional
+from typing import Any, Optional, Union
 import os.path
 from pathlib import Path
 import urllib.parse
 import zipfile
-import pandas as pd
+import pandas as pd  # type: ignore
 import requests
 from functools import lru_cache
 
+from ukcensusapi import CensusAPI
 import ukcensusapi.utils as utils
+
 
 # workaround for apparent bug in later versions of openssl (e.g. 1.1.1f on ubuntu focal)
 # that causes this issue: https://github.com/virgesmith/UKCensusAPI/issues/48
@@ -21,8 +23,9 @@ def _ssl_get_workaround(url: str, headers: dict[str, str]) -> Any:
   import warnings
   # suppress ResourceWarning: unclosed <ssl.SSLSocket...
   warnings.filterwarnings(action='ignore', category=ResourceWarning, message="unclosed <ssl.SSLSocket.*>")
+
   class TLSAdapter(requests.adapters.HTTPAdapter):
-    def init_poolmanager(self, connections, maxsize, block=False):
+    def init_poolmanager(self, connections, maxsize, block=False):  # type: ignore
       """Create and initialize the urllib3 PoolManager."""
       ctx = ssl.create_default_context()
       ctx.set_ciphers('DEFAULT@SECLEVEL=1')
@@ -44,9 +47,7 @@ def _ssl_get_workaround(url: str, headers: dict[str, str]) -> Any:
 
 
 # assumes all areas in coverage are the same type
-def _coverage_type(code):
-  if isinstance(code, list):
-    code = code[0]
+def _coverage_type(code: str) -> str:
   if code == "S92000003":
     return "ALL"
   elif code[:3] == "S12":
@@ -58,10 +59,10 @@ def _coverage_type(code):
   elif code[:3] == "S00":
     return "OA11"
   else:
-    raise ValueError("Invalid code: {}".format(code))
+    raise ValueError(f"Invalid code: {code}")
 
 
-class NRScotland:
+class NRScotland(CensusAPI):
   """
   NRScotland web data scraper.
   """
@@ -92,7 +93,7 @@ class NRScotland:
   SCGeoCodes = [ "CA", "DZ", "OA" ]
 
   # initialise, supplying a location to cache downloads
-  def __init__(self, cache_dir: str):
+  def __init__(self, cache_dir: Optional[str]):
     """Constructor.
     Args:
         cache_dir: cache directory
@@ -116,33 +117,38 @@ class NRScotland:
     # TODO use a map (just in case col order changes)
     self.area_lookup.columns = ["OA11", "LSOA11", "MSOA11", "LAD"]
 
-  def get_geog(self, coverage, resolution):
+  def get_geog(self, coverage_in: str, resolution: str) -> list:
     """
     Returns all areas at resolution in coverage
     """
     # assumes all areas in coverage are the same type
-    coverage_type = _coverage_type(coverage)
+    # ensure list
+    if isinstance(coverage_in, str):
+      coverage = [coverage_in]
+    else:
+      coverage = coverage_in
+
+    coverage_type = _coverage_type(coverage[0])
     if coverage_type == "ALL":
       return self.area_lookup[resolution].unique()
 
-    # ensure list
-    if isinstance(coverage, str):
-      coverage = [coverage]
-
     return self.area_lookup[self.area_lookup[coverage_type].isin(coverage)][resolution].unique()
 
-  def get_metadata(self, table, resolution):
+  def get_metadata(self, table: str, resolution: Optional[str]) -> dict[str, Any]:
     """
     Returns the table metadata
     """
+    if not resolution:
+      raise ValueError("NRScotland requires a (geographical) resolution parameter when extracting table metadata")
     return self.__get_rawdata(table, resolution)[0]
 
-  def __get_rawdata(self, table, resolution):
+  def __get_rawdata(self, table: str, resolution: str) -> tuple[dict[str, Any], pd.DataFrame]:
     """
     Gets the raw csv data and metadata
     """
+    file = self.cache_dir / f"{table}.csv"
 
-    if not os.path.exists(os.path.join(str(self.cache_dir), table + ".csv")):
+    if not file.exists():
       z = zipfile.ZipFile(str(self.__source_to_zip(NRScotland.data_sources[NRScotland.GeoCodeLookup[resolution]])))
       #print(z.namelist())
       try:
@@ -155,7 +161,8 @@ class NRScotland:
         print("Please also consider politely asking NRScotland to change the compression algorithm!\n")
         exit(1)
     else:
-      raw_data = pd.read_csv(os.path.join(str(self.cache_dir), table + ".csv"))
+      raw_data = pd.read_csv(file)
+
     # more sophisticate way to check for no data?
     if raw_data.shape == (2,1):
       raise ValueError("Table {}: data not available at {} resolution.".format(table, resolution))
@@ -175,17 +182,16 @@ class NRScotland:
     categories = raw_data.columns.tolist()[col_index:]
     fields[table + "_0_CODE"] = dict(zip(range(len(categories)), categories))
 
-    meta = { "table": table,
-             "description": "",
-             "geography": resolution,
-             "fields": fields
-          }
+    meta = {
+      "table": table,
+      "description": "",
+      "geography": resolution,
+      "fields": fields
+    }
     return (meta, raw_data)
-    #print(data.head())
 
 
-
-  def get_data(self, table, coverage, resolution, category_filters={}, r_compat=False):
+  def get_data(self, table: str, coverage: str, resolution: str, category_filters: dict = {}, r_compat: bool = False) -> pd.DataFrame:
     """
     Returns a table with categories in columns, filtered by geography and (optionally) category values
     If r_compat==True, instead of returning a pandas dataframe it returns a dict raw value data and column names
@@ -211,7 +217,7 @@ class NRScotland:
     id_vars = ["GEOGRAPHY_CODE"]
     for i in range(1,len(meta["fields"])):
       id_vars.append(table + "_" + str(i) + "_CODE")
-    cols = id_vars.copy()
+    cols: list = id_vars.copy()
     cols.extend(list(range(0,len(lookup))))
 
     raw_data.columns = cols
@@ -261,7 +267,8 @@ class NRScotland:
       return data
 
   # TODO this is very close to duplicating the code in Nomisweb.py - refactor
-  def contextify(self, table, meta, colname):
+  #def contextify(self, table_name: str, column: str, table: pd.DataFrame) -> None:
+  def contextify(self, table: pd.DataFrame, meta: dict, colname: str) -> pd.DataFrame:
     """
     Replaces the numeric category codes with the descriptive strings from the metadata
     """
@@ -274,11 +281,11 @@ class NRScotland:
 
     return table
 
-  def __source_to_zip(self, source_name):
+  def __source_to_zip(self, source_name: str) -> Path:
     """
     Downloads if necessary and returns the name of the locally cached zip file of the source data (replacing spaces with _)
     """
-    zip = self.cache_dir / (source_name.replace(" ", "_") + ".zip")
+    zip = self.cache_dir / f'{source_name.replace(" ", "_")}.zip'
     headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:92.0) Gecko/20100101 Firefox/92.0'}
     if not os.path.isfile(str(zip)):
       if source_name.split()[0] == 'Council':
@@ -293,7 +300,7 @@ class NRScotland:
       print("OK")
     return zip
 
-  def make_sc_lookup(self):
+  def make_sc_lookup(self) -> None:
     """
     Generates sc_lookup file if not already in cache directory.
     Generates from two separate lookup files from this page on nrscotland:

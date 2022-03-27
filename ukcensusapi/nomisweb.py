@@ -102,7 +102,7 @@ class Nomisweb(CensusAPI):
 
 
   # initialise, supplying a location to cache downloads
-  def __init__(self, *, cache_dir: str, verbose: bool=False) -> None:
+  def __init__(self, *, cache_dir: Optional[str], verbose: bool=False) -> None:
     """Constructor.
     Args:
         cache_dir: cache directory
@@ -131,7 +131,7 @@ class Nomisweb(CensusAPI):
     # static member
     Nomisweb.cached_lad_codes = self.__cache_lad_codes()
 
-  def get_geo_codes(self, la_codes: Union[str, list[str]], code_type: str) -> str:
+  def get_geo_codes(self, la_codes: Union[str, int, list[str], list[int]], code_type: str) -> str:
     """Get nomis geographical codes.
 
     Args:
@@ -198,7 +198,7 @@ class Nomisweb(CensusAPI):
   # Two reasons for this:
   # - pandas/R dataframes conversion is done via matrix (which drops col names)
   # - reporting errors to R is useful (print statements aren't displayed in R(Studio))
-  def get_data(self, table: str, query_params: dict[str, Any], r_compat: bool=False) -> Union[pd.DataFrame, str]:
+  def get_data(self, table: str, query_params: dict[str, Any], r_compat: bool=False) -> pd.DataFrame:
     """Downloads or retrieves data given a table and query parameters.
     Args:
        table: ONS table name, or nomisweb table code if no explicit ONS name
@@ -224,7 +224,8 @@ class Nomisweb(CensusAPI):
       # check for empty file, if so delete it and report error
       if os.stat(str(filename)).st_size == 0:
         os.remove(str(filename))
-        return "ERROR: Query returned no data. Check table and query parameters"
+        print("ERROR: Query returned no data. Check table and query parameters")
+        return pd.DataFrame()
     else:
       if self.verbose:
         print("Using cached data: " + str(filename))
@@ -237,16 +238,17 @@ class Nomisweb(CensusAPI):
       warnings.warn("Data download has reached nomisweb's single-query row limit. Truncation is extremely likely")
     return data
 
-  def get_metadata(self, table_name: str) -> dict[str, Any]:
+  def get_metadata(self, table_name: str, resolution: Optional[str] = None) -> dict[str, Any]:
     """Downloads census table metadata.
     Args:
       table_name: the (ONS) table name, e.g. KS4402EW
     Returns:
       a dictionary containing information about the table contents including categories and category values.
     """
+    if resolution:
+      print("Warning: ignoring the (geographical) resolution parameter when extracting table metadata")
+
     # see if already downloaded
-
-
     if not table_name.startswith("NM_"):
       path = "api/v01/dataset/def.sdmx.json?"
       query_params = {"search": "*"+table_name+"*"}

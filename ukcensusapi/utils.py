@@ -20,6 +20,7 @@ def init_cache_dir(cache_dir: Optional[str]) -> Path:
   directory.mkdir(parents=True, exist_ok=True)
   return directory
 
+
 def check_online(url, t=5):
   try:
     headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:92.0) Gecko/20100101 Firefox/92.0'}

@@ -4,19 +4,18 @@ See README.md for details on how to use this package
 """
 from string import Template
 import ukcensusapi
-from ukcensusapi.nomisweb import Nomisweb, api_ew
-from ukcensusapi.nrscotland import NRScotland, api_sc
-from ukcensusapi.nisra import NISRA, api_ni
+from ukcensusapi.nomisweb import api_ew
+from ukcensusapi.nrscotland import api_sc
+from ukcensusapi.nisra import api_ni
 
 
 def _get_scni(table, api, codes):
-  meta = { "geographies": {}}
+  meta = {"geographies": {}}
   for k in codes:
     try:
       raw = api.get_metadata(table, k)
       meta["table"] = raw["table"]
       meta["description"] = raw["description"]
-      #meta["geographies"] = {}
       meta["geographies"][raw["geography"]] = raw["fields"]
     except ValueError:
       pass
@@ -29,7 +28,7 @@ def _print_scni(meta):
     for c in meta["geographies"][k]:
       print("  %s:" % c)
       for i, v in meta["geographies"][k][c].items():
-        print("    %3d: %s" %(i, v))
+        print("    %3d: %s" % (i, v))
 
 
 class Query:
@@ -51,14 +50,14 @@ class Query:
 
     # only init Sc/NI APIs if required (large initial download)
     if table.endswith("SC"):
-      api_sc = api_sc(cache_dir=self.api.cache_dir)
+      api = api_sc(cache_dir=self.api.cache_dir)
       print("Data source: NRScotland")
-      _print_scni(_get_scni(table, api_sc, api_sc.GeoCodeLookup.keys()))
+      _print_scni(_get_scni(table, api, api.GeoCodeLookup.keys()))
       return
     elif table.endswith("NI"):
-      api_ni = api_ni(self.cache_dir)
+      api = api_ni(self.cache_dir)
       print("Data source: NISRA")
-      _print_scni(_get_scni(table, api_ni, ApiNI.NISRA.GeoCodeLookup.keys()))
+      _print_scni(_get_scni(table, api, api.GeoCodeLookup.keys()))
       return
     print("Data source: nomisweb (default)")
 
@@ -88,7 +87,6 @@ class Query:
     add_geog = input("Add geography? (y/N): ") == "y"
     if add_geog:
       query_params["geography"] = self.__add_geog(meta)
-      #print(query_params)
 
       get_data = input("Get data now? (y/N): ") == "y"
       if get_data:
@@ -118,13 +116,13 @@ class Query:
     coverage = input("\nGeographical coverage\nE/EW/GB/UK or LAD codes(s)/name(s), comma separated: ")
 
     if coverage == "E":
-      coverage_codes = [ApiEW.Nomisweb.GEOCODE_LOOKUP["England"]]
+      coverage_codes = [self.api.GEOCODE_LOOKUP["England"]]
     elif coverage == "EW":
-      coverage_codes = [ApiEW.Nomisweb.GEOCODE_LOOKUP["EnglandWales"]]
+      coverage_codes = [self.api.GEOCODE_LOOKUP["EnglandWales"]]
     elif coverage == "GB":
-      coverage_codes = [ApiEW.Nomisweb.GEOCODE_LOOKUP["GB"]]
+      coverage_codes = [self.api.GEOCODE_LOOKUP["GB"]]
     elif coverage == "UK":
-      coverage_codes = [ApiEW.Nomisweb.GEOCODE_LOOKUP["UK"]]
+      coverage_codes = [self.api.GEOCODE_LOOKUP["UK"]]
     else:
       coverage_codes = self.api.get_lad_codes(coverage.split(","))
 
@@ -152,7 +150,8 @@ class Query:
 
     with open("./inst/templates/query.py_template", "r") as template_file, open(snippet_file, "w") as py_file:
       template = Template(template_file.read())
-      code = template.substitute(description=meta["description"],
+      code = template.substitute(
+        description=meta["description"],
         version=ukcensusapi.__version__,
         query_url=self.api.get_url(meta["nomis_table"], query_params),
         cache_dir=self.api.cache_dir,
@@ -171,7 +170,8 @@ class Query:
 
     with open("./inst/templates/query.R_template", "r") as template_file, open(snippet_file, "w") as r_file:
       template = Template(template_file.read())
-      code = template.substitute(description=meta["description"],
+      code = template.substitute(
+        description=meta["description"],
         version=ukcensusapi.__version__,
         query_url=self.api.get_url(meta["nomis_table"], query_params),
         cache_dir=self.api.cache_dir,
@@ -180,4 +180,3 @@ class Query:
         query=_dict_to_R_list(query_params),
         dataset=table.lower())
       r_file.write(code)
-

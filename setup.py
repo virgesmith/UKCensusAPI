@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 
-import setuptools
+import setuptools  # type: ignore
 
-def readme():
+
+def readme() -> str:
   with open('README.md') as f:
     return f.read()
 
-setuptools.setup(name='ukcensusapi',
+
+setuptools.setup(
+  name='ukcensusapi',
   version='1.1.6',
   description='UK census data query automation',
   long_description=readme(),
