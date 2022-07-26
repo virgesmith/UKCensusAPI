@@ -330,7 +330,7 @@ query_params["date"] = "latest"
 query_params["geography"] = "1245714681...1245714688"
 query_params["MEASURES"] = "20100"
 query_params["CELL"] = "7...13"
-KS401EW = api.get_data(table, table_internal, query_params)
+KS401EW = api.get_data(table, query_params)
 ```
 The the R code:
 ```
